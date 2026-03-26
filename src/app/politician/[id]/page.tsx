@@ -1,16 +1,14 @@
-
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
-import Image from 'next/image';
 import { useFirebase, useDoc, useCollection } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
 import { calculateAccountabilityScore } from '@/lib/scoring';
 import { 
   ArrowLeft, Landmark, Calendar, ShieldAlert, History, 
   Link as LinkIcon, Download, Gavel, Wallet, Clock, 
-  ExternalLink, FileText, Info, Loader2
+  ExternalLink, FileText, Info, Loader2, User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
@@ -21,26 +19,21 @@ import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from '@/lib/utils';
-import { Politician, CaseRecord, OfficeHeld } from '@/lib/types';
+import { Politician } from '@/lib/types';
 
 export default function PoliticianProfile() {
   const { id } = useParams();
   const router = useRouter();
   const { db } = useFirebase();
 
-  // Fetch Politician
   const polRef = useMemo(() => id && db ? doc(db, 'politicians', id as string) : null, [id, db]);
   const { data: politician, loading: polLoading } = useDoc<any>(polRef);
 
-  // Fetch Sub-collections
   const casesRef = useMemo(() => id && db ? collection(db, 'politicians', id as string, 'cases') : null, [id, db]);
   const { data: casesData, loading: casesLoading } = useCollection<any>(casesRef);
 
   const officesRef = useMemo(() => id && db ? collection(db, 'politicians', id as string, 'offices') : null, [id, db]);
   const { data: officesData, loading: officesLoading } = useCollection<any>(officesRef);
-
-  const detentionsRef = useMemo(() => id && db ? collection(db, 'politicians', id as string, 'detentions') : null, [id, db]);
-  const { data: detentionsData } = useCollection<any>(detentionsRef);
 
   const fullPolitician = useMemo(() => {
     if (!politician) return null;
@@ -48,16 +41,16 @@ export default function PoliticianProfile() {
       ...politician,
       cases: casesData || [],
       offices: officesData || [],
-      detentions: detentionsData || [],
-      forfeitures: [], // Simplified for MVP or fetch separately
+      detentions: [],
+      forfeitures: [],
     } as Politician;
-  }, [politician, casesData, officesData, detentionsData]);
+  }, [politician, casesData, officesData]);
 
   if (polLoading || casesLoading || officesLoading) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <Loader2 className="w-12 h-12 animate-spin mx-auto text-accent" />
-        <p className="mt-4 text-muted-foreground">Aggregating public records...</p>
+        <p className="mt-4 text-muted-foreground font-medium uppercase tracking-widest text-xs">Aggregating public records...</p>
       </div>
     );
   }
@@ -65,8 +58,8 @@ export default function PoliticianProfile() {
   if (!fullPolitician) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold mb-4">Record not found</h1>
-        <Button onClick={() => router.push('/')}>Return to Leaderboard</Button>
+        <h1 className="text-2xl font-black mb-4">Record not found</h1>
+        <Button onClick={() => router.push('/')}>Return to Registry</Button>
       </div>
     );
   }
@@ -77,197 +70,197 @@ export default function PoliticianProfile() {
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <button 
         onClick={() => router.push('/')}
-        className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8 group"
+        className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8 group uppercase text-xs font-black tracking-widest"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        Back to Leaderboard
+        Registry Leaderboard
       </button>
 
-      {/* Header Profile Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        <div className="lg:col-span-2 flex flex-col md:flex-row gap-8 items-start">
-          <div className="relative w-full md:w-64 aspect-square rounded-2xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 bg-muted">
-            <Image 
-              src={fullPolitician.profileImageUrl} 
-              alt={fullPolitician.fullName}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="flex-grow space-y-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl md:text-5xl font-headline font-extrabold text-primary">{fullPolitician.fullName}</h1>
-              <AccountabilityBadge score={scoreBreakdown.total} className="text-lg py-2 px-4 shadow-sm" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
+        <div className="lg:col-span-2 space-y-8">
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="w-full md:w-64 aspect-square rounded-3xl bg-primary/5 border-4 border-white shadow-2xl flex-shrink-0 flex items-center justify-center">
+              <User className="w-32 h-32 text-primary opacity-20" />
             </div>
-            
-            <div className="flex flex-wrap gap-4 text-muted-foreground">
-              <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-md">
-                <Landmark className="w-4 h-4" />
-                <span className="text-sm font-medium">{fullPolitician.primaryParty}</span>
+            <div className="flex-grow space-y-6">
+              <div className="flex flex-wrap items-center gap-4">
+                <h1 className="text-4xl md:text-6xl font-headline font-black text-primary leading-none">
+                  {fullPolitician.fullName}
+                </h1>
+                <AccountabilityBadge score={scoreBreakdown.total} className="text-xl py-3 px-6 shadow-xl bg-white border-none" />
               </div>
-              <div className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-md">
-                <Calendar className="w-4 h-4" />
-                <span className="text-sm font-medium">Public Figure since {new Date().getFullYear() - 12}</span>
+              
+              <div className="flex flex-wrap gap-3">
+                <div className="flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-xl border border-primary/5">
+                  <Landmark className="w-4 h-4 text-accent" />
+                  <span className="text-xs font-black text-primary uppercase tracking-widest">{fullPolitician.primaryParty}</span>
+                </div>
+                <div className="flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-xl border border-primary/5">
+                  <Calendar className="w-4 h-4 text-accent" />
+                  <span className="text-xs font-black text-primary uppercase tracking-widest">Active Figure</span>
+                </div>
               </div>
-            </div>
 
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              {fullPolitician.bio}
-            </p>
+              <p className="text-lg leading-relaxed text-muted-foreground font-medium italic">
+                {fullPolitician.bio || "No biography available in the public archive."}
+              </p>
 
-            <div className="pt-2">
               <BadgeList politician={fullPolitician} />
             </div>
           </div>
         </div>
 
         <div className="space-y-6">
-          <Card className="bg-primary text-primary-foreground border-none shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm uppercase tracking-widest opacity-80">Audit Summary</CardTitle>
+          <Card className="bg-primary text-primary-foreground border-none shadow-2xl rounded-3xl overflow-hidden">
+            <CardHeader className="pb-4 bg-white/5 border-b border-white/10">
+              <CardTitle className="text-xs uppercase tracking-widest font-black opacity-60 flex items-center gap-2">
+                <ShieldAlert className="w-4 h-4" />
+                Audit Scorecard
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <CardContent className="p-8 space-y-6">
+              <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-1">
-                  <p className="text-2xl font-bold">{scoreBreakdown.convictions}</p>
-                  <p className="text-[10px] opacity-80 uppercase font-bold">Convictions</p>
+                  <p className="text-3xl font-black">{scoreBreakdown.convictions}</p>
+                  <p className="text-[10px] opacity-60 uppercase font-black tracking-widest">Convictions</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-2xl font-bold">{scoreBreakdown.charges}</p>
-                  <p className="text-[10px] opacity-80 uppercase font-bold">Charges</p>
+                  <p className="text-3xl font-black">{scoreBreakdown.charges}</p>
+                  <p className="text-[10px] opacity-60 uppercase font-black tracking-widest">Charges</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-2xl font-bold">${(fullPolitician.totalForfeiture / 1000000).toFixed(2)}M</p>
-                  <p className="text-[10px] opacity-80 uppercase font-bold">Forfeited</p>
+                  <p className="text-3xl font-black text-accent">${(fullPolitician.totalForfeiture / 1000000).toFixed(1)}M</p>
+                  <p className="text-[10px] opacity-60 uppercase font-black tracking-widest">Restitution</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-2xl font-bold">{scoreBreakdown.investigations}</p>
-                  <p className="text-[10px] opacity-80 uppercase font-bold">Inquiry</p>
+                  <p className="text-3xl font-black">{scoreBreakdown.investigations}</p>
+                  <p className="text-[10px] opacity-60 uppercase font-black tracking-widest">Inquiries</p>
                 </div>
               </div>
-              <Button className="w-full bg-accent hover:bg-accent/90 text-white gap-2 font-bold shadow-md">
+              <Button className="w-full bg-accent hover:bg-accent/90 text-white gap-2 font-black shadow-lg rounded-xl h-12 uppercase tracking-widest text-xs">
                 <Download className="w-4 h-4" />
-                Download Public Dossier
+                Archive Dossier
               </Button>
             </CardContent>
           </Card>
           
-          <Alert variant="default" className="bg-amber-50 border-amber-200">
-            <Info className="h-4 w-4 text-amber-600" />
-            <AlertTitle className="text-amber-800 font-bold">Verified Attribution</AlertTitle>
-            <AlertDescription className="text-amber-700 text-xs">
-              Every record on this profile is sourced from attributed court documents or verified media outlets.
+          <Alert variant="default" className="bg-white border-primary/5 rounded-3xl p-6 shadow-sm">
+            <Info className="h-5 w-5 text-accent" />
+            <AlertTitle className="text-primary font-black uppercase tracking-widest text-[10px] ml-2">Integrity Verification</AlertTitle>
+            <AlertDescription className="text-muted-foreground text-xs leading-relaxed ml-2 mt-2">
+              Every case record is attributed to official gazettes or verified investigative media.
             </AlertDescription>
           </Alert>
         </div>
       </div>
 
-      <Separator className="mb-12" />
+      <Separator className="mb-12 opacity-5" />
 
-      {/* Main Tabs Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2">
           <Tabs defaultValue="cases" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8 h-12 bg-secondary/30 border p-1 rounded-lg">
-              <TabsTrigger value="cases" className="gap-2 font-bold data-[state=active]:bg-white data-[state=active]:text-primary">
+            <TabsList className="grid w-full grid-cols-3 mb-10 h-14 bg-primary/5 border-none p-1 rounded-2xl">
+              <TabsTrigger value="cases" className="gap-2 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg rounded-xl">
                 <Gavel className="w-4 h-4" />
                 Case History
               </TabsTrigger>
-              <TabsTrigger value="offices" className="gap-2 font-bold data-[state=active]:bg-white data-[state=active]:text-primary">
+              <TabsTrigger value="offices" className="gap-2 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg rounded-xl">
                 <Landmark className="w-4 h-4" />
                 Public Service
               </TabsTrigger>
-              <TabsTrigger value="forfeitures" className="gap-2 font-bold data-[state=active]:bg-white data-[state=active]:text-primary">
+              <TabsTrigger value="restitution" className="gap-2 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg rounded-xl">
                 <Wallet className="w-4 h-4" />
-                Restitution
+                Recovery
               </TabsTrigger>
             </TabsList>
             
             <TabsContent value="cases" className="space-y-8">
-              {fullPolitician.cases.length > 0 ? fullPolitician.cases.map((c) => (
-                <div key={c.id} className="relative pl-8 border-l-2 border-primary/20 last:border-0 pb-8">
-                  <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-accent shadow-[0_0_0_4px_white]" />
-                  <div className="bg-white p-6 rounded-xl border border-primary/10 shadow-sm space-y-4 hover:border-accent/20 transition-colors">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                      <span className="text-sm font-bold text-accent px-3 py-1 bg-accent/5 rounded-full">
-                        {new Date(c.caseStartDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
+              {fullPolitician.cases.length > 0 ? fullPolitician.cases.map((c, idx) => (
+                <div key={idx} className="relative pl-10 border-l-4 border-primary/5 last:border-0 pb-10">
+                  <div className="absolute left-[-10px] top-0 w-5 h-5 rounded-full bg-accent shadow-xl border-4 border-white" />
+                  <Card className="border-none shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden">
+                    <CardHeader className="flex flex-row items-center justify-between pb-4 bg-secondary/5">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-accent bg-accent/5 px-3 py-1 rounded-full">
+                        {new Date(c.caseStartDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
                       </span>
-                      <span className={cn(
-                        "text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded border",
-                        c.status === 'convicted' ? "bg-red-50 text-red-600 border-red-100" : 
-                        c.status === 'charged' ? "bg-orange-50 text-orange-600 border-orange-100" :
-                        "bg-blue-50 text-blue-600 border-blue-100"
+                      <Badge className={cn(
+                        "text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full",
+                        c.status === 'convicted' ? "bg-red-500 text-white" : 
+                        c.status === 'charged' ? "bg-orange-500 text-white" :
+                        "bg-blue-500 text-white"
                       )}>
                         {c.status.replace('_', ' ')}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-primary">{c.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed text-sm">{c.description}</p>
-                    
-                    <div className="flex flex-wrap gap-4 pt-4 border-t">
-                      <div className="space-y-1">
-                        <p className="text-[10px] uppercase font-bold text-muted-foreground">Amount Involved</p>
-                        <p className="text-sm font-bold">{c.currency} {c.amountInvolved.toLocaleString()}</p>
-                      </div>
-                      <div className="space-y-1 flex-grow">
-                        <p className="text-[10px] uppercase font-bold text-muted-foreground">Source Links</p>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="text-xs text-muted-foreground italic">Verification required</span>
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-4">
+                      <h3 className="text-xl font-black text-primary">{c.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed text-sm font-medium">{c.description}</p>
+                      
+                      <div className="pt-4 border-t border-primary/5 grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest">Amount Involved</p>
+                          <p className="text-sm font-black text-primary">{c.currency} {c.amountInvolved.toLocaleString()}</p>
+                        </div>
+                        <div className="space-y-1 text-right">
+                          <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest">Verification</p>
+                          <span className="text-[10px] text-accent font-black underline flex items-center justify-end gap-1">
+                            Primary Source <ExternalLink className="w-3 h-3" />
+                          </span>
                         </div>
                       </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 </div>
               )) : (
-                <div className="text-center py-12 bg-muted/30 rounded-xl border-2 border-dashed">
-                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                  <p className="text-muted-foreground">No verifiable legal records found on file.</p>
+                <div className="text-center py-20 bg-primary/5 rounded-3xl border-4 border-dashed border-primary/5">
+                  <FileText className="w-16 h-16 mx-auto mb-4 opacity-10" />
+                  <p className="text-muted-foreground font-black uppercase tracking-widest text-xs">No verifiable legal records archived.</p>
                 </div>
               )}
             </TabsContent>
             
             <TabsContent value="offices">
               <div className="grid gap-4">
-                {fullPolitician.offices.length > 0 ? fullPolitician.offices.map((office) => (
-                  <Card key={office.id} className="hover:border-accent/20 transition-colors">
-                    <CardContent className="p-6 flex items-center justify-between">
-                      <div>
-                        <p className="font-bold text-primary text-lg">{office.officeTitle}</p>
-                        <p className="text-sm text-muted-foreground">{office.state || 'Federal Level'}</p>
+                {fullPolitician.offices.length > 0 ? fullPolitician.offices.map((office, idx) => (
+                  <Card key={idx} className="border-none shadow-sm rounded-2xl hover:bg-secondary/5 transition-colors">
+                    <CardContent className="p-8 flex items-center justify-between">
+                      <div className="space-y-1">
+                        <p className="font-black text-primary text-xl">{office.officeTitle}</p>
+                        <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{office.state || 'Federal Level'}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-accent">{new Date(office.startDate).getFullYear()} - {office.endDate ? new Date(office.endDate).getFullYear() : 'Present'}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Tenure</p>
+                        <p className="font-black text-accent text-lg">{new Date(office.startDate).getFullYear()} - {office.endDate ? new Date(office.endDate).getFullYear() : 'Present'}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Tenure Audit</p>
                       </div>
                     </CardContent>
                   </Card>
                 )) : (
-                   <div className="text-center py-12 bg-muted/30 rounded-xl border-2 border-dashed">
-                    <Landmark className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                    <p className="text-muted-foreground">No public service history recorded.</p>
+                   <div className="text-center py-20 bg-primary/5 rounded-3xl border-4 border-dashed border-primary/5">
+                    <Landmark className="w-16 h-16 mx-auto mb-4 opacity-10" />
+                    <p className="text-muted-foreground font-black uppercase tracking-widest text-xs">No public service history recorded.</p>
                   </div>
                 )}
               </div>
             </TabsContent>
 
-            <TabsContent value="forfeitures">
+            <TabsContent value="restitution">
               <div className="grid gap-4">
                 {fullPolitician.totalForfeiture > 0 ? (
-                  <Card className="border-l-4 border-l-accent bg-accent/5">
-                    <CardContent className="p-6">
+                  <Card className="border-none shadow-2xl bg-accent text-white rounded-3xl overflow-hidden relative">
+                    <Wallet className="w-40 h-40 absolute -right-10 -bottom-10 opacity-10" />
+                    <CardContent className="p-10 relative z-10">
                       <div className="flex justify-between items-center">
-                        <div className="space-y-1">
-                          <p className="text-3xl font-black text-accent">${(fullPolitician.totalForfeiture).toLocaleString()}</p>
-                          <p className="text-sm font-bold text-primary uppercase tracking-wider">Total Public Asset Recovery</p>
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Total Public Asset Recovery</p>
+                          <p className="text-5xl font-black">${(fullPolitician.totalForfeiture).toLocaleString()}</p>
                         </div>
-                        <Wallet className="w-12 h-12 text-accent/20" />
                       </div>
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="text-center py-12 bg-muted/30 rounded-xl border-2 border-dashed">
-                    <Wallet className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                    <p className="text-muted-foreground">No public assets recovered on file.</p>
+                  <div className="text-center py-20 bg-primary/5 rounded-3xl border-4 border-dashed border-primary/5">
+                    <Wallet className="w-16 h-16 mx-auto mb-4 opacity-10" />
+                    <p className="text-muted-foreground font-black uppercase tracking-widest text-xs">No public assets recovered on file.</p>
                   </div>
                 )}
               </div>
@@ -275,22 +268,23 @@ export default function PoliticianProfile() {
           </Tabs>
         </div>
 
-        <aside className="space-y-8">
+        <aside className="space-y-10">
            <FactSnippet politician={fullPolitician} />
            
-           <Card className="bg-secondary/20 border-accent/20 shadow-sm">
-             <CardHeader>
-               <CardTitle className="text-lg flex items-center gap-2">
-                 <ShieldAlert className="w-5 h-5 text-accent" />
+           <Card className="bg-white border-2 border-primary/5 shadow-sm rounded-3xl p-6">
+             <CardHeader className="p-0 mb-6">
+               <CardTitle className="text-lg font-black flex items-center gap-3 text-primary uppercase tracking-tight">
+                 <ShieldAlert className="w-6 h-6 text-accent" />
                  Contribute Records
                </CardTitle>
-               <CardDescription className="text-xs">Community-driven verification</CardDescription>
              </CardHeader>
-             <CardContent>
-               <p className="text-sm text-muted-foreground mb-4">
-                 Found a court ruling or credible news report missing from this dossier? Every submission must be backed by a primary source URL.
+             <CardContent className="p-0">
+               <p className="text-xs font-medium text-muted-foreground mb-6 leading-relaxed">
+                 Every entry in our registry must be backed by documented evidence. Found a court ruling or credible news report missing? 
                </p>
-               <Button variant="outline" className="w-full border-primary/20 text-primary font-bold hover:bg-white transition-colors">Submit Source</Button>
+               <Button variant="outline" className="w-full border-primary/10 text-primary font-black uppercase tracking-widest text-[10px] hover:bg-primary hover:text-white transition-all rounded-xl h-12">
+                 Submit Primary Source
+               </Button>
              </CardContent>
            </Card>
         </aside>

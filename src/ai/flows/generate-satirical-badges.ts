@@ -18,7 +18,6 @@ const GenerateSatiricalBadgesInputSchema = z.object({
       title: z.string().describe("Title of the case."),
       description: z.string().describe("A brief description of the case."),
       status: z.string().describe("The current status of the case (e.g., 'convicted', 'settled', 'pending')."),
-      convictionCount: z.number().optional().describe("Number of convictions related to this case."),
       forfeitureAmount: z.number().optional().describe("Amount of money or assets forfeited in this case."),
     })
   ).describe("A summary of the politician's relevant case history, to inform badge generation."),
@@ -50,7 +49,6 @@ Case History Summaries:
     - Case Title: {{{title}}}
     - Description: {{{description}}}
     - Status: {{{status}}}
-    {{#if convictionCount}}- Conviction Count: {{{convictionCount}}}{{/if}}
     {{#if forfeitureAmount}}- Forfeiture Amount: $\${{{forfeitureAmount}}}{{/if}}
   {{/each}}
 {{else}}
