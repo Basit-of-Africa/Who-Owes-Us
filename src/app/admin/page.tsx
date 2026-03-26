@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useFirebase, useCollection } from '@/firebase';
-import { collection, addDoc, serverTimestamp, doc, getDocs, deleteDoc, writeBatch } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDocs, deleteDoc } from 'firebase/firestore';
 import { 
   Table, 
   TableBody, 
@@ -13,13 +13,34 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Trash2, Search, ShieldCheck, Database, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { Trash2, Search, ShieldCheck, Database, Loader2, Sparkles, AlertCircle, ListPlus } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { scrapePoliticianData } from '@/ai/flows/scrape-politician-flow';
 import { calculateAccountabilityScore } from '@/lib/scoring';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
+
+const PROMINENT_POLITICIANS = [
+  "Bola Ahmed Tinubu",
+  "Kashim Shettima",
+  "Peter Obi",
+  "Atiku Abubakar",
+  "Nyesom Wike",
+  "Bukola Saraki",
+  "Diezani Alison-Madueke",
+  "James Ibori",
+  "Orji Uzor Kalu",
+  "Rochas Okorocha",
+  "Yahaya Bello",
+  "Godwin Emefiele",
+  "Dino Melaye",
+  "Godswill Akpabio",
+  "Hope Uzodinma",
+  "Seyi Makinde",
+  "Babajide Sanwo-Olu"
+];
 
 export default function AdminPage() {
   const { db } = useFirebase();
@@ -27,6 +48,8 @@ export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [scrapeName, setScrapeName] = useState('');
   const [isScraping, setIsScraping] = useState(false);
+  const [isBatching, setIsBatching] = useState(false);
+  const [batchProgress, setBatchProgress] = useState(0);
   const [clearing, setClearing] = useState(false);
 
   const politiciansQuery = db ? collection(db, 'politicians') : null;
@@ -36,55 +59,56 @@ export default function AdminPage() {
     (p as any).fullName.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
+  const ingestPolitician = async (name: string) => {
+    if (!db) return;
+    const data = await scrapePoliticianData({ fullName: name });
+    
+    const scoreResult = calculateAccountabilityScore({
+      ...data,
+      id: 'temp',
+      forfeitures: [],
+      detentions: [],
+    } as any);
+
+    const polRef = await addDoc(collection(db, 'politicians'), {
+      fullName: data.fullName,
+      aliasNames: data.aliasNames,
+      bio: data.bio,
+      primaryParty: data.primaryParty,
+      accountabilityScore: scoreResult.total,
+      totalForfeiture: data.totalForfeiture,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+
+    for (const office of data.offices) {
+      await addDoc(collection(db, 'politicians', polRef.id, 'offices'), {
+        ...office,
+        politicianId: polRef.id
+      });
+    }
+
+    for (const c of data.cases) {
+      const { sources, ...caseData } = c;
+      const caseRef = await addDoc(collection(db, 'politicians', polRef.id, 'cases'), {
+        ...caseData,
+        politicianId: polRef.id
+      });
+
+      for (const s of sources) {
+        await addDoc(collection(db, 'politicians', polRef.id, 'cases', caseRef.id, 'sources'), s);
+      }
+    }
+  };
+
   const handleAIScrape = async () => {
     if (!db || !scrapeName.trim()) return;
     setIsScraping(true);
     try {
-      const data = await scrapePoliticianData({ fullName: scrapeName });
-      
-      // Calculate initial score for the record
-      // Note: We'll pass a dummy object that matches the Politician type for scoring
-      const scoreResult = calculateAccountabilityScore({
-        ...data,
-        id: 'temp',
-        forfeitures: [],
-        detentions: [],
-      } as any);
-
-      const polRef = await addDoc(collection(db, 'politicians'), {
-        fullName: data.fullName,
-        aliasNames: data.aliasNames,
-        bio: data.bio,
-        primaryParty: data.primaryParty,
-        accountabilityScore: scoreResult.total,
-        totalForfeiture: data.totalForfeiture,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-
-      // Add sub-collections
-      for (const office of data.offices) {
-        await addDoc(collection(db, 'politicians', polRef.id, 'offices'), {
-          ...office,
-          politicianId: polRef.id
-        });
-      }
-
-      for (const c of data.cases) {
-        const { sources, ...caseData } = c;
-        const caseRef = await addDoc(collection(db, 'politicians', polRef.id, 'cases'), {
-          ...caseData,
-          politicianId: polRef.id
-        });
-
-        for (const s of sources) {
-          await addDoc(collection(db, 'politicians', polRef.id, 'cases', caseRef.id, 'sources'), s);
-        }
-      }
-
+      await ingestPolitician(scrapeName);
       toast({
         title: "Dossier Aggregated",
-        description: `Public records for ${data.fullName} have been structured and saved.`,
+        description: `Public records for ${scrapeName} have been structured and saved.`,
       });
       setScrapeName('');
     } catch (e: any) {
@@ -99,13 +123,36 @@ export default function AdminPage() {
     }
   };
 
+  const handleBatchDiscovery = async () => {
+    if (!db || isBatching) return;
+    setIsBatching(true);
+    setBatchProgress(0);
+    
+    let successCount = 0;
+    for (let i = 0; i < PROMINENT_POLITICIANS.length; i++) {
+      const name = PROMINENT_POLITICIANS[i];
+      try {
+        await ingestPolitician(name);
+        successCount++;
+      } catch (e) {
+        console.error(`Failed to ingest ${name}:`, e);
+      }
+      setBatchProgress(((i + 1) / PROMINENT_POLITICIANS.length) * 100);
+    }
+
+    toast({
+      title: "Batch Discovery Complete",
+      description: `Successfully ingested ${successCount} out of ${PROMINENT_POLITICIANS.length} dossiers.`,
+    });
+    setIsBatching(false);
+  };
+
   const handleClearDatabase = async () => {
     if (!db) return;
     setClearing(true);
     try {
       const snapshot = await getDocs(collection(db, 'politicians'));
       for (const d of snapshot.docs) {
-        // Simple delete for root docs in MVP
         await deleteDoc(doc(db, 'politicians', d.id));
       }
       toast({
@@ -137,10 +184,19 @@ export default function AdminPage() {
         </div>
         <div className="flex gap-2">
           <Button 
+            variant="outline" 
+            className="gap-2 h-12 px-6 bg-white/10 hover:bg-white/20 border-white/20 text-white"
+            onClick={handleBatchDiscovery}
+            disabled={isBatching || isScraping || clearing}
+          >
+            {isBatching ? <Loader2 className="w-4 h-4 animate-spin" /> : <ListPlus className="w-4 h-4" />}
+            Batch Discover Prominent Figures
+          </Button>
+          <Button 
             variant="destructive" 
             className="gap-2 h-12 px-6"
             onClick={handleClearDatabase}
-            disabled={clearing || isScraping}
+            disabled={clearing || isScraping || isBatching}
           >
             {clearing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
             Clear All
@@ -148,19 +204,31 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {isBatching && (
+        <div className="mb-8 p-6 bg-white border-2 rounded-xl shadow-sm space-y-4">
+          <div className="flex justify-between items-center text-sm font-bold">
+            <span className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-accent animate-pulse" />
+              Running Batch Discovery Engine...
+            </span>
+            <span>{Math.round(batchProgress)}%</span>
+          </div>
+          <Progress value={batchProgress} className="h-2" />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-3 space-y-8">
-          {/* AI Scraper Card */}
           <Card className="border-2 border-accent/20 bg-accent/5 overflow-hidden">
             <CardHeader className="bg-white border-b">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl flex items-center gap-2 text-primary">
                     <Sparkles className="w-5 h-5 text-accent" />
-                    AI Public Record Discovery
+                    Targeted Public Record Discovery
                   </CardTitle>
                   <CardDescription>
-                    Enter a politician's name to automatically aggregate their public service and legal history.
+                    Enter a specific politician's name to trigger the AI scraper.
                   </CardDescription>
                 </div>
               </div>
@@ -172,21 +240,17 @@ export default function AdminPage() {
                   className="h-12 border-2 text-lg"
                   value={scrapeName}
                   onChange={(e) => setScrapeName(e.target.value)}
-                  disabled={isScraping}
+                  disabled={isScraping || isBatching}
                 />
                 <Button 
                   onClick={handleAIScrape}
-                  disabled={isScraping || !scrapeName.trim()}
+                  disabled={isScraping || isBatching || !scrapeName.trim()}
                   className="h-12 px-8 bg-accent hover:bg-accent/90 font-bold gap-2"
                 >
                   {isScraping ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
                   Discover & Verify
                 </Button>
               </div>
-              <p className="text-[10px] mt-4 text-muted-foreground uppercase font-bold tracking-widest flex items-center gap-2">
-                <AlertCircle className="w-3 h-3" />
-                Aggregating from 2014-Present verified sources
-              </p>
             </CardContent>
           </Card>
 
@@ -241,7 +305,7 @@ export default function AdminPage() {
                         <div className="flex flex-col items-center gap-4">
                           <Database className="w-12 h-12 opacity-10" />
                           <p className="text-lg">The registry is empty.</p>
-                          <p className="text-sm max-w-xs mx-auto">Use the AI Public Record Discovery tool above to search for and ingest politician data.</p>
+                          <p className="text-sm max-w-xs mx-auto">Use the AI Public Record Discovery tools above to start ingesting dossiers.</p>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -255,24 +319,24 @@ export default function AdminPage() {
         <div className="space-y-6">
           <Alert className="bg-primary/5 border-primary/20">
             <Sparkles className="h-4 w-4 text-accent" />
-            <AlertTitle className="font-bold text-primary">Bias Control</AlertTitle>
+            <AlertTitle className="font-bold text-primary">Mass Discovery</AlertTitle>
             <AlertDescription className="text-xs">
-              Automated ingestion prevents manual selection bias. Records are synthesized from public court and news archives.
+              The Batch Discovery Engine scans for verified records for over 15 prominent Nigerian political figures simultaneously.
             </AlertDescription>
           </Alert>
 
           <Card className="bg-white border-2">
             <CardHeader>
-              <CardTitle className="text-lg">System Health</CardTitle>
+              <CardTitle className="text-lg">System Status</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Total Dossiers</span>
+                <span className="text-sm text-muted-foreground">Total Records</span>
                 <span className="font-bold">{filtered.length}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">AI Verification Rate</span>
-                <span className="font-bold text-accent">98.2%</span>
+                <span className="text-sm text-muted-foreground">AI Scrape Rate</span>
+                <span className="font-bold text-accent">Active</span>
               </div>
             </CardContent>
           </Card>
