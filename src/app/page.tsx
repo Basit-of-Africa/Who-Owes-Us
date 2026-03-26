@@ -1,13 +1,11 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
-import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, Filter, Sparkles, Trophy } from 'lucide-react';
+import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, Filter, User, Gavel, Landmark } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import {
@@ -29,14 +27,12 @@ export default function HomePage() {
   const politiciansRef = db ? collection(db, 'politicians') : null;
   const { data: politicians, loading } = useCollection(politiciansRef);
 
-  // Optimized Auto-Seed Logic with Parallel Processing
   useEffect(() => {
     async function performAutoSeed() {
       if (!db || loading || !politicians || politicians.length > 0 || isAutoSeeding) return;
       
       setIsAutoSeeding(true);
       try {
-        // Parallelized writes for speed
         await Promise.all(INITIAL_REGISTRY_SEED.map(async (data) => {
           const polRef = await addDoc(collection(db, 'politicians'), {
             fullName: data.fullName,
@@ -45,12 +41,11 @@ export default function HomePage() {
             primaryParty: data.primaryParty || 'Unknown',
             accountabilityScore: 0, 
             totalForfeiture: data.totalForfeiture || 0,
-            profileImageUrl: data.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(data.fullName!)}/400/400`,
+            profileImageUrl: data.profileImageUrl || '',
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
           });
 
-          // Parallelize sub-collection writes
           if (data.cases) {
             await Promise.all(data.cases.map(c => 
               addDoc(collection(db, 'politicians', polRef.id, 'cases'), c)
@@ -162,17 +157,17 @@ export default function HomePage() {
             {filteredPoliticians.map((p: any) => (
               <Link key={p.id} href={`/politician/${p.id}`}>
                 <Card className="h-full hover:shadow-2xl transition-all group overflow-hidden border-none shadow-md bg-white rounded-2xl flex flex-col">
-                  <div className="aspect-[4/5] relative overflow-hidden bg-muted">
-                    <Image 
-                      src={p.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(p.fullName)}/400/400`} 
-                      alt={p.fullName}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
+                  <div className="aspect-[4/5] relative overflow-hidden bg-secondary/10 flex items-center justify-center transition-colors group-hover:bg-secondary/20">
+                    <div className="flex flex-col items-center gap-3 opacity-20 group-hover:opacity-40 transition-opacity">
+                      <User className="w-24 h-24 text-primary" />
+                      <Landmark className="w-8 h-8 text-primary" />
+                    </div>
+                    
                     <div className="absolute top-4 right-4 z-20">
                       <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} className="shadow-lg bg-white/90 backdrop-blur-md" />
                     </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10">
+                    
+                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10">
                        <p className="text-accent text-[10px] font-bold uppercase tracking-widest mb-1">{p.primaryParty}</p>
                        <h3 className="text-white text-xl font-bold leading-tight">{p.fullName}</h3>
                     </div>
