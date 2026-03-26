@@ -14,6 +14,8 @@
         "primaryParty": { "type": "string" },
         "accountabilityScore": { "type": "number" },
         "totalForfeiture": { "type": "number" },
+        "sourceOrigin": { "type": "string" },
+        "sourceUrl": { "type": "string" },
         "partyHistory": { 
           "type": "array",
           "items": {
@@ -38,21 +40,35 @@
         "amountInvolved": { "type": "number" },
         "currency": { "type": "string" },
         "caseStartDate": { "type": "string", "format": "date" },
-        "caseEndDate": { "type": "string", "format": "date" },
-        "sources": { 
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "title": { "type": "string" },
-              "url": { "type": "string" },
-              "publisher": { "type": "string" },
-              "publicationDate": { "type": "string" }
-            }
-          }
-        }
+        "caseEndDate": { "type": "string", "format": "date" }
       },
       "required": ["title", "status"]
+    },
+    "OfficeHeld": {
+      "title": "Office Held",
+      "description": "A public office occupied by the politician.",
+      "type": "object",
+      "properties": {
+        "officeTitle": { "type": "string" },
+        "state": { "type": "string" },
+        "constituency": { "type": "string" },
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" }
+      },
+      "required": ["officeTitle", "startDate"]
+    },
+    "Source": {
+      "title": "Source",
+      "description": "Verifiable source for a case or record.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string" },
+        "publisher": { "type": "string" },
+        "publicationDate": { "type": "string", "format": "date" },
+        "credibilityRating": { "type": "number" }
+      },
+      "required": ["title", "url", "publisher"]
     }
   },
   "auth": {
@@ -60,20 +76,24 @@
   },
   "firestore": {
     "/politicians/{politicianId}": {
-      "schema": "#/entities/Politician",
-      "description": "Collection of politicians."
+      "schema": "#/backend/entities/Politician",
+      "description": "Main politician records."
     },
     "/politicians/{politicianId}/cases/{caseId}": {
-      "schema": "#/entities/CaseRecord",
-      "description": "Cases associated with a politician."
+      "schema": "#/backend/entities/CaseRecord",
+      "description": "Legal cases for a politician."
     },
     "/politicians/{politicianId}/offices/{officeId}": {
-      "schema": { "type": "object" },
+      "schema": "#/backend/entities/OfficeHeld",
       "description": "Offices held by a politician."
+    },
+    "/politicians/{politicianId}/cases/{caseId}/sources/{sourceId}": {
+      "schema": "#/backend/entities/Source",
+      "description": "Sources attributed to a specific case."
     },
     "/politicians/{politicianId}/detentions/{detentionId}": {
       "schema": { "type": "object" },
-      "description": "Detention records for a politician."
+      "description": "Records of detention periods."
     }
   }
 }

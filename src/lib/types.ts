@@ -2,7 +2,7 @@
 export type CaseStatus = 'alleged' | 'under_investigation' | 'charged' | 'convicted' | 'dismissed';
 
 export interface Source {
-  id: string;
+  id?: string;
   title: string;
   url: string;
   publisher: string;
@@ -11,7 +11,7 @@ export interface Source {
 }
 
 export interface CaseRecord {
-  id: string;
+  id?: string;
   politicianId: string;
   title: string;
   description: string;
@@ -20,11 +20,11 @@ export interface CaseRecord {
   currency: string;
   caseStartDate: string;
   caseEndDate?: string;
-  sources: Source[];
+  sources?: Source[];
 }
 
 export interface Forfeiture {
-  id: string;
+  id?: string;
   caseId: string;
   amount: number;
   currency: string;
@@ -33,7 +33,7 @@ export interface Forfeiture {
 }
 
 export interface Detention {
-  id: string;
+  id?: string;
   politicianId: string;
   caseId?: string;
   startDate: string;
@@ -43,7 +43,7 @@ export interface Detention {
 }
 
 export interface OfficeHeld {
-  id: string;
+  id?: string;
   politicianId: string;
   officeTitle: string;
   state?: string;
@@ -67,6 +67,8 @@ export interface Politician {
   accountabilityScore: number;
   totalForfeiture: number;
   partyHistory: { party: string; years: string }[];
+  sourceOrigin?: string;
+  sourceUrl?: string;
 }
 
 export interface ScoreBreakdown {
