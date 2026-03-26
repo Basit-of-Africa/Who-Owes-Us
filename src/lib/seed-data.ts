@@ -133,6 +133,42 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     ]
   },
   {
+    fullName: 'Peter Obi',
+    primaryParty: 'LP',
+    bio: 'Former Governor of Anambra State and 2023 Presidential Candidate. Known for his focus on cost-cutting.',
+    profileImageUrl: 'https://picsum.photos/seed/peterobi/400/400',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Pandora Papers Disclosure',
+        description: 'Inquiry into offshore company holdings and non-disclosure during public office tenure.',
+        status: 'under_investigation',
+        amountInvolved: 0,
+        currency: 'USD',
+        caseStartDate: '2021-10-04',
+        sources: [{ title: 'Premium Times Pandora Leak', url: 'https://premiumtimesng.com', publisher: 'Premium Times', publicationDate: '2021-10-04', credibilityRating: 5 }]
+      }
+    ]
+  },
+  {
+    fullName: 'Atiku Abubakar',
+    primaryParty: 'PDP',
+    bio: 'Former Vice President of Nigeria. Involved in multiple presidential bids and various business-related inquiries.',
+    profileImageUrl: 'https://picsum.photos/seed/atiku/400/400',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Jefferson Bribery Report',
+        description: 'US Senate report documenting allegations of illicit transfers and bribery involving offshore entities.',
+        status: 'alleged',
+        amountInvolved: 40000000,
+        currency: 'USD',
+        caseStartDate: '2010-02-04',
+        sources: [{ title: 'US Senate PSI Report', url: 'https://senate.gov', publisher: 'US Senate', publicationDate: '2010-02-04', credibilityRating: 5 }]
+      }
+    ]
+  },
+  {
     fullName: 'Orji Uzor Kalu',
     primaryParty: 'APC',
     bio: 'Senator and former Governor of Abia State. Involved in long-running legal proceedings regarding Abia State treasury funds.',
@@ -147,42 +183,6 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         currency: 'NGN',
         caseStartDate: '2007-07-11',
         sources: [{ title: 'Supreme Court Ruling', url: 'https://supremecourt.gov.ng', publisher: 'Supreme Court of Nigeria', publicationDate: '2020-05-08', credibilityRating: 5 }]
-      }
-    ]
-  },
-  {
-    fullName: 'Hadi Sirika',
-    primaryParty: 'APC',
-    bio: 'Former Aviation Minister. Investigated for his role in the Nigeria Air project launch.',
-    profileImageUrl: 'https://picsum.photos/seed/sirika/400/400',
-    totalForfeiture: 0,
-    cases: [
-      {
-        title: 'Nigeria Air Project Fraud',
-        description: 'EFCC charges relating to the procurement and consultancy contracts for the national carrier project.',
-        status: 'charged',
-        amountInvolved: 8000000000,
-        currency: 'NGN',
-        caseStartDate: '2024-05-14',
-        sources: [{ title: 'EFCC Prosecution Desk', url: 'https://efcc.gov.ng', publisher: 'EFCC', publicationDate: '2024-05-15', credibilityRating: 5 }]
-      }
-    ]
-  },
-  {
-    fullName: 'Joshua Dariye',
-    primaryParty: 'APC',
-    bio: 'Former Governor of Plateau State. Convicted for N1.16bn ecological fund fraud; later pardoned.',
-    profileImageUrl: 'https://picsum.photos/seed/dariye/400/400',
-    totalForfeiture: 1160000000,
-    cases: [
-      {
-        title: 'Ecological Fund Diversion',
-        description: 'Convicted for misappropriating Plateau State funds designated for ecological disasters.',
-        status: 'convicted',
-        amountInvolved: 1160000000,
-        currency: 'NGN',
-        caseStartDate: '2007-07-13',
-        sources: [{ title: 'Justice Adebukola Banjoko Ruling', url: 'https://fcthighcourt.gov.ng', publisher: 'FCT High Court', publicationDate: '2018-06-12', credibilityRating: 5 }]
       }
     ]
   }

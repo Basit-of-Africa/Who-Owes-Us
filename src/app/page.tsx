@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
-import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, Filter, Sparkles } from 'lucide-react';
+import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, Filter, Sparkles, Trophy } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import {
@@ -29,14 +29,15 @@ export default function HomePage() {
   const politiciansRef = db ? collection(db, 'politicians') : null;
   const { data: politicians, loading } = useCollection(politiciansRef);
 
-  // Auto-Seed Logic: Trigger if database is empty on first load
+  // Optimized Auto-Seed Logic
   useEffect(() => {
     async function performAutoSeed() {
       if (!db || loading || !politicians || politicians.length > 0 || isAutoSeeding) return;
       
       setIsAutoSeeding(true);
       try {
-        for (const data of INITIAL_REGISTRY_SEED) {
+        // Use Promise.all for faster parallel writes
+        await Promise.all(INITIAL_REGISTRY_SEED.map(async (data) => {
           const polRef = await addDoc(collection(db, 'politicians'), {
             fullName: data.fullName,
             aliasNames: data.aliasNames || [],
@@ -50,11 +51,11 @@ export default function HomePage() {
           });
 
           if (data.cases) {
-            for (const c of data.cases) {
-              await addDoc(collection(db, 'politicians', polRef.id, 'cases'), c);
-            }
+            await Promise.all(data.cases.map(c => 
+              addDoc(collection(db, 'politicians', polRef.id, 'cases'), c)
+            ));
           }
-        }
+        }));
       } catch (e) {
         console.error("Auto-seed failed", e);
       } finally {
@@ -113,9 +114,12 @@ export default function HomePage() {
       </section>
 
       {isAutoSeeding && (
-        <div className="mb-8 p-4 bg-accent/10 border border-accent/20 rounded-2xl flex items-center justify-center gap-3 text-accent font-bold animate-pulse">
-          <Sparkles className="w-5 h-5" />
-          Initializing Global Politician Dossiers...
+        <div className="mb-8 p-6 bg-accent/5 border-2 border-dashed border-accent/20 rounded-2xl flex flex-col items-center justify-center gap-3 text-accent text-center">
+          <Sparkles className="w-8 h-8 animate-bounce" />
+          <div>
+            <p className="font-black text-lg">Initializing Master Dossiers...</p>
+            <p className="text-xs opacity-70">Synchronizing verified public records across the web.</p>
+          </div>
         </div>
       )}
 
@@ -148,7 +152,7 @@ export default function HomePage() {
       {loading && !isAutoSeeding ? (
         <div className="flex flex-col items-center justify-center py-32 space-y-4">
           <Loader2 className="w-12 h-12 animate-spin text-accent" />
-          <p className="text-muted-foreground font-medium">Opening Registry...</p>
+          <p className="text-muted-foreground font-medium uppercase tracking-widest text-xs">Opening Public Registry...</p>
         </div>
       ) : (
         <>
@@ -196,8 +200,8 @@ export default function HomePage() {
             ))}
           </div>
           
-          {filteredPoliticians.length === 0 && !loading && (
-            <div className="text-center py-40">
+          {filteredPoliticians.length === 0 && !loading && !isAutoSeeding && (
+            <div className="text-center py-40 bg-white rounded-3xl border-4 border-dashed">
               <Filter className="w-16 h-16 mx-auto mb-6 text-muted-foreground opacity-20" />
               <h3 className="text-xl font-bold text-primary">No dossiers found</h3>
               <p className="text-muted-foreground mt-2">Try adjusting your filters or search terms.</p>
