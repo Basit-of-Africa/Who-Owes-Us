@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 export default function HomePage() {
   const { db } = useFirebase();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('score');
+  const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('forfeiture');
   const [isAutoSeeding, setIsAutoSeeding] = useState(false);
 
   const politiciansRef = db ? collection(db, 'politicians') : null;
@@ -117,11 +117,11 @@ export default function HomePage() {
           <div className="bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 lg:min-w-[360px] shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <ShieldCheck className="w-5 h-5 text-accent" />
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/60">Verified Restitution</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/60">Verified Registry Assets</p>
             </div>
-            <p className="text-5xl md:text-6xl font-black text-accent mb-2">${(totalRestitution / 1000000).toFixed(2)}M</p>
+            <p className="text-5xl md:text-6xl font-black text-accent mb-2">₦{(totalRestitution / 1000000000).toFixed(1)}B</p>
             <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">
-              Source-Attributed Financial Recovery
+              Total Cumulative Record Value
             </p>
           </div>
         </div>
@@ -133,8 +133,8 @@ export default function HomePage() {
             <Loader2 className="w-12 h-12 animate-spin text-accent" />
           </div>
           <div>
-            <h3 className="font-black text-2xl text-primary uppercase tracking-tight">Syncing Records...</h3>
-            <p className="text-sm text-muted-foreground mt-2 font-medium">Archiving public history for prominent figures. One moment.</p>
+            <h3 className="font-black text-2xl text-primary uppercase tracking-tight">Syncing Master Dossiers...</h3>
+            <p className="text-sm text-muted-foreground mt-2 font-medium">Archiving high-value records for top political figures.</p>
           </div>
         </div>
       )}
@@ -143,7 +143,7 @@ export default function HomePage() {
         <div className="relative flex-grow">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input 
-            placeholder="Search by name, party, or case..." 
+            placeholder="Search by name, party, or amount..." 
             className="pl-14 h-16 bg-white border-none shadow-sm text-lg rounded-2xl focus:ring-2 focus:ring-accent font-medium placeholder:text-muted-foreground/60"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -157,25 +157,22 @@ export default function HomePage() {
               <SelectValue placeholder="Sort Registry" />
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-none shadow-2xl">
+              <SelectItem value="forfeiture">Amount Tied (High-Low)</SelectItem>
               <SelectItem value="score">Accountability Score</SelectItem>
-              <SelectItem value="forfeiture">Forfeiture Amount</SelectItem>
               <SelectItem value="name">Alphabetical (A-Z)</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </section>
 
-      {loading && !isAutoSeeding ? (
-        <div className="flex flex-col items-center justify-center py-40 space-y-4">
-          <Loader2 className="w-16 h-16 animate-spin text-accent/20" />
-          <p className="text-muted-foreground font-black uppercase tracking-[0.2em] text-[10px]">Loading registry...</p>
-        </div>
-      ) : (
+      {!loading || filteredPoliticians.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredPoliticians.map((p: any, index: number) => {
               const rank = index + 1;
-              const isTop3 = rank <= 3 && sortBy === 'score';
+              const isTop3ByAmount = rank <= 3 && sortBy === 'forfeiture';
+              const isTop3ByScore = rank <= 3 && sortBy === 'score';
+              const isTop3 = isTop3ByAmount || isTop3ByScore;
               
               return (
                 <Link key={p.id} href={`/politician/${p.id}`} className="group">
@@ -212,8 +209,15 @@ export default function HomePage() {
                           <p className="text-2xl font-black text-primary">{(p as any).cases?.length || 0}</p>
                         </div>
                         <div className="space-y-1 text-right">
-                          <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Restitution</p>
-                          <p className="text-2xl font-black text-accent">${((p.totalForfeiture || 0) / 1000000).toFixed(1)}M</p>
+                          <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Amount Tied</p>
+                          <p className="text-2xl font-black text-accent">
+                            {p.totalForfeiture >= 1000000000 
+                              ? `₦${(p.totalForfeiture / 1000000000).toFixed(1)}B` 
+                              : p.totalForfeiture >= 1000000 
+                                ? `₦${(p.totalForfeiture / 1000000).toFixed(1)}M`
+                                : `₦${(p.totalForfeiture).toLocaleString()}`
+                            }
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -235,15 +239,20 @@ export default function HomePage() {
             <div className="text-center py-40 bg-white rounded-[2.5rem] border-4 border-dashed border-primary/5">
               <ShieldAlert className="w-20 h-20 mx-auto mb-8 text-muted-foreground opacity-10" />
               <h3 className="text-2xl font-black text-primary uppercase tracking-tight">Registry Empty</h3>
-              <p className="text-muted-foreground mt-2 font-medium">No archived records match your criteria.</p>
+              <p className="text-muted-foreground mt-2 font-medium">No archived records match your search criteria.</p>
             </div>
           )}
         </>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-40 space-y-4">
+          <Loader2 className="w-16 h-16 animate-spin text-accent/20" />
+          <p className="text-muted-foreground font-black uppercase tracking-[0.2em] text-[10px]">Assembling registry...</p>
+        </div>
       )}
 
       <footer className="mt-32 pt-16 border-t border-primary/5 text-center">
         <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.3em] leading-relaxed max-w-3xl mx-auto italic opacity-60">
-          "Who Owes Us?" is an independent registry of public history. Information is synthesized from documented court filings and official reports.
+          "Who Owes Us?" is an independent registry. Ranking is determined by documented public records of financial misappropriation and legal status.
         </p>
       </footer>
     </div>
