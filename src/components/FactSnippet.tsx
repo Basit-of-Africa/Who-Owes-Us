@@ -1,15 +1,19 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { generateShareableFacts } from '@/ai/flows/generate-shareable-facts-flow';
 import { Card, CardContent } from '@/components/ui/card';
-import { Share2, Quote, Loader2, Twitter, MessageCircle } from 'lucide-react';
+import { Share2, Quote, Loader2, Twitter, MessageCircle, Copy, Check } from 'lucide-react';
 import { Politician } from '@/lib/types';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 export function FactSnippet({ politician }: { politician: Politician }) {
   const [snippets, setSnippets] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     async function loadFacts() {
@@ -36,7 +40,21 @@ export function FactSnippet({ politician }: { politician: Politician }) {
     loadFacts();
   }, [politician.id]);
 
-  if (loading) return <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-accent" /></div>;
+  const copyToClipboard = (text: string, idx: number) => {
+    navigator.clipboard.writeText(`${text} #WhoOwesUs #NigeriaAccountability`);
+    setCopiedIdx(idx);
+    toast({ title: "Copied!", description: "Snippet copied for sharing." });
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
+
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center p-12 bg-primary/5 rounded-3xl border border-dashed">
+      <Loader2 className="w-6 h-6 animate-spin text-accent mb-2" />
+      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Synthesizing facts...</p>
+    </div>
+  );
+
+  if (snippets.length === 0) return null;
 
   return (
     <div className="space-y-4">
@@ -44,20 +62,30 @@ export function FactSnippet({ politician }: { politician: Politician }) {
         <Share2 className="w-4 h-4 text-accent" />
         Social Snippets
       </h3>
-      <div className="grid gap-3">
+      <div className="grid gap-4">
         {snippets.map((snippet, idx) => (
-          <Card key={idx} className="bg-white border-l-4 border-accent group shadow-sm">
+          <Card key={idx} className="bg-white border-l-4 border-accent group shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-4 relative">
               <Quote className="w-8 h-8 text-accent/10 absolute top-2 right-2 group-hover:text-accent/20 transition-colors" />
               <p className="text-xs font-bold leading-relaxed pr-6 text-primary">{snippet}</p>
               <div className="flex gap-2 mt-4 justify-end">
-                <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1 hover:bg-sky-50 text-sky-600">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-3 text-[10px] gap-2 hover:bg-secondary text-primary font-black uppercase tracking-widest"
+                  onClick={() => copyToClipboard(snippet, idx)}
+                >
+                  {copiedIdx === idx ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                  Copy
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-3 text-[10px] gap-2 hover:bg-sky-50 text-sky-600 font-black uppercase tracking-widest"
+                  onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(snippet + ' #WhoOwesUs')}`, '_blank')}
+                >
                   <Twitter className="w-3 h-3" />
                   X
-                </Button>
-                <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1 hover:bg-green-50 text-green-600">
-                  <MessageCircle className="w-3 h-3" />
-                  WhatsApp
                 </Button>
               </div>
             </CardContent>
