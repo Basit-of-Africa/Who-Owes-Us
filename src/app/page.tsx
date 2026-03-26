@@ -29,14 +29,14 @@ export default function HomePage() {
   const politiciansRef = db ? collection(db, 'politicians') : null;
   const { data: politicians, loading } = useCollection(politiciansRef);
 
-  // Optimized Auto-Seed Logic
+  // Optimized Auto-Seed Logic with Parallel Processing
   useEffect(() => {
     async function performAutoSeed() {
       if (!db || loading || !politicians || politicians.length > 0 || isAutoSeeding) return;
       
       setIsAutoSeeding(true);
       try {
-        // Use Promise.all for faster parallel writes
+        // Parallelized writes for speed
         await Promise.all(INITIAL_REGISTRY_SEED.map(async (data) => {
           const polRef = await addDoc(collection(db, 'politicians'), {
             fullName: data.fullName,
@@ -50,6 +50,7 @@ export default function HomePage() {
             updatedAt: serverTimestamp(),
           });
 
+          // Parallelize sub-collection writes
           if (data.cases) {
             await Promise.all(data.cases.map(c => 
               addDoc(collection(db, 'politicians', polRef.id, 'cases'), c)
@@ -71,13 +72,14 @@ export default function HomePage() {
     
     return [...politicians]
       .filter(p => {
-        const matchesSearch = (p as any).fullName.toLowerCase().includes(searchQuery.toLowerCase());
+        const fullName = (p as any).fullName || '';
+        const matchesSearch = fullName.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesSearch;
       })
       .sort((a, b) => {
         if (sortBy === 'score') return ((b as any).accountabilityScore || 0) - ((a as any).accountabilityScore || 0);
         if (sortBy === 'forfeiture') return ((b as any).totalForfeiture || 0) - ((a as any).totalForfeiture || 0);
-        return (a as any).fullName.localeCompare((b as any).fullName);
+        return ((a as any).fullName || '').localeCompare((b as any).fullName || '');
       });
   }, [searchQuery, sortBy, politicians]);
 
@@ -114,11 +116,11 @@ export default function HomePage() {
       </section>
 
       {isAutoSeeding && (
-        <div className="mb-8 p-6 bg-accent/5 border-2 border-dashed border-accent/20 rounded-2xl flex flex-col items-center justify-center gap-3 text-accent text-center">
-          <Sparkles className="w-8 h-8 animate-bounce" />
+        <div className="mb-8 p-10 bg-white border-2 border-dashed border-accent/20 rounded-3xl flex flex-col items-center justify-center gap-4 text-accent text-center shadow-sm">
+          <Loader2 className="w-10 h-10 animate-spin text-accent" />
           <div>
-            <p className="font-black text-lg">Initializing Master Dossiers...</p>
-            <p className="text-xs opacity-70">Synchronizing verified public records across the web.</p>
+            <p className="font-black text-xl text-primary">Initializing Master Dossiers...</p>
+            <p className="text-sm text-muted-foreground mt-1">This initial audit may take a minute. Please do not close the tab.</p>
           </div>
         </div>
       )}
@@ -136,14 +138,14 @@ export default function HomePage() {
         
         <div className="flex gap-4">
           <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-            <SelectTrigger className="w-[200px] h-14 bg-white border-none shadow-sm rounded-2xl font-bold">
+            <SelectTrigger className="w-[220px] h-14 bg-white border-none shadow-sm rounded-2xl font-bold">
               <ArrowUpDown className="w-4 h-4 mr-2 text-accent" />
-              <SelectValue placeholder="Sort" />
+              <SelectValue placeholder="Sort Registry" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="score">Accountability Score</SelectItem>
               <SelectItem value="forfeiture">Forfeiture Amount</SelectItem>
-              <SelectItem value="name">A - Z</SelectItem>
+              <SelectItem value="name">Alphabetical (A-Z)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -168,7 +170,7 @@ export default function HomePage() {
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute top-4 right-4 z-20">
-                      <AccountabilityBadge score={p.accountabilityScore || 0} className="shadow-lg bg-white/90 backdrop-blur-md" />
+                      <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} className="shadow-lg bg-white/90 backdrop-blur-md" />
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10">
                        <p className="text-accent text-[10px] font-bold uppercase tracking-widest mb-1">{p.primaryParty}</p>
@@ -192,7 +194,7 @@ export default function HomePage() {
                       Audit Status: Verified
                     </span>
                     <span className="text-primary text-xs font-bold flex items-center gap-1 group-hover:text-accent transition-colors">
-                      Profile <ExternalLink className="w-3 h-3" />
+                      View Profile <ExternalLink className="w-3 h-3" />
                     </span>
                   </CardFooter>
                 </Card>

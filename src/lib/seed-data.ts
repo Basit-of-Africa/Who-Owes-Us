@@ -43,14 +43,32 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     ]
   },
   {
+    fullName: 'James Ibori',
+    primaryParty: 'PDP',
+    bio: 'Former Governor of Delta State. Convicted in the UK for money laundering following systemic asset stripping of the state treasury.',
+    profileImageUrl: 'https://picsum.photos/seed/ibori/400/400',
+    totalForfeiture: 130000000,
+    cases: [
+      {
+        title: 'London Money Laundering Conviction',
+        description: 'Sentenced to 13 years by a UK court for stealing and laundering public funds from Delta State.',
+        status: 'convicted',
+        amountInvolved: 130000000,
+        currency: 'GBP',
+        caseStartDate: '2012-04-17',
+        sources: [{ title: 'UK Metropolitan Police Report', url: 'https://met.police.uk', publisher: 'Met Police', publicationDate: '2012-04-17', credibilityRating: 5 }]
+      }
+    ]
+  },
+  {
     fullName: 'Sambo Dasuki',
     primaryParty: 'Independent',
-    bio: 'Former National Security Adviser. Central figure in the $2.1 billion arms deal probe (Dasukigate).',
+    bio: 'Former National Security Adviser. Central figure in the $2.1 billion arms deal diversion probe (Dasukigate).',
     profileImageUrl: 'https://picsum.photos/seed/dasuki/400/400',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Arms Deal Diversion',
+        title: 'Arms Deal Fund Diversion',
         description: 'Allegations of diverting funds intended for the procurement of arms for the fight against Boko Haram.',
         status: 'charged',
         amountInvolved: 2100000000,
@@ -63,13 +81,13 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Yahaya Bello',
     primaryParty: 'APC',
-    bio: 'Former Governor of Kogi State. Currently facing multiple charges related to money laundering and public fund misappropriation.',
+    bio: 'Former Governor of Kogi State. Currently facing multiple high-value charges related to public fund misappropriation.',
     profileImageUrl: 'https://picsum.photos/seed/yahayabello/400/400',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'N80 Billion Money Laundering',
-        description: 'EFCC investigation into the laundering of state funds during his tenure as Governor.',
+        title: 'N80 Billion Laundering Probe',
+        description: 'EFCC investigation into the laundering of N80 billion in state funds through various conduits.',
         status: 'charged',
         amountInvolved: 80000000000,
         currency: 'NGN',
@@ -81,13 +99,13 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Godwin Emefiele',
     primaryParty: 'Independent',
-    bio: 'Former Governor of the Central Bank of Nigeria. Facing multiple counts including forgery and procurement fraud.',
+    bio: 'Former Governor of the Central Bank of Nigeria. Facing multiple counts including forgery, procurement fraud, and naira redesign irregularities.',
     profileImageUrl: 'https://picsum.photos/seed/emefiele/400/400',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Procurement Fraud Inquiry',
-        description: 'Charges related to the illegal printing of naira notes and procurement irregularities.',
+        title: 'Procurement Fraud & Forgery',
+        description: 'Charges related to the illegal printing of naira notes and massive procurement irregularities at the CBN.',
         status: 'charged',
         amountInvolved: 1200000000,
         currency: 'NGN',
@@ -99,13 +117,13 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Betta Edu',
     primaryParty: 'APC',
-    bio: 'Former Minister of Humanitarian Affairs and Poverty Alleviation. Suspended following financial transfer irregularities.',
+    bio: 'Former Minister of Humanitarian Affairs and Poverty Alleviation. Suspended following financial transfer scandals involving private accounts.',
     profileImageUrl: 'https://picsum.photos/seed/bettaedu/400/400',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Edugate Inquiry',
-        description: 'Investigation into the transfer of N585 million into a private account for social intervention programs.',
+        title: 'Ministerial Fund Mismanagement',
+        description: 'Investigation into the transfer of N585 million intended for social intervention into a private bank account.',
         status: 'under_investigation',
         amountInvolved: 585000000,
         currency: 'NGN',
@@ -115,33 +133,15 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     ]
   },
   {
-    fullName: 'James Ibori',
-    primaryParty: 'PDP',
-    bio: 'Former Governor of Delta State. Convicted in the UK for money laundering following systemic asset stripping.',
-    profileImageUrl: 'https://picsum.photos/seed/ibori/400/400',
-    totalForfeiture: 130000000,
-    cases: [
-      {
-        title: 'London Laundering Case',
-        description: 'Sentenced to 13 years for stealing and laundering public funds from Delta State.',
-        status: 'convicted',
-        amountInvolved: 130000000,
-        currency: 'GBP',
-        caseStartDate: '2012-04-17',
-        sources: [{ title: 'UK Metropolitan Police Report', url: 'https://met.police.uk', publisher: 'Met Police', publicationDate: '2012-04-17', credibilityRating: 5 }]
-      }
-    ]
-  },
-  {
     fullName: 'Peter Obi',
     primaryParty: 'LP',
-    bio: 'Former Governor of Anambra State and 2023 Presidential Candidate. Known for his focus on cost-cutting.',
+    bio: 'Former Governor of Anambra State and 2023 Presidential Candidate. Noted for offshore financial holdings identified in international leaks.',
     profileImageUrl: 'https://picsum.photos/seed/peterobi/400/400',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Pandora Papers Disclosure',
-        description: 'Inquiry into offshore company holdings and non-disclosure during public office tenure.',
+        title: 'Pandora Papers Inquiry',
+        description: 'International investigation into offshore company holdings and non-disclosure during public office tenure.',
         status: 'under_investigation',
         amountInvolved: 0,
         currency: 'USD',
@@ -153,13 +153,13 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Atiku Abubakar',
     primaryParty: 'PDP',
-    bio: 'Former Vice President of Nigeria. Involved in multiple presidential bids and various business-related inquiries.',
+    bio: 'Former Vice President of Nigeria. Involved in various international business-related inquiries and multiple presidential bids.',
     profileImageUrl: 'https://picsum.photos/seed/atiku/400/400',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Jefferson Bribery Report',
-        description: 'US Senate report documenting allegations of illicit transfers and bribery involving offshore entities.',
+        title: 'US Senate Bribery Investigation',
+        description: 'US Senate report documenting allegations of illicit transfers and bribery involving offshore entities linked to his family.',
         status: 'alleged',
         amountInvolved: 40000000,
         currency: 'USD',
@@ -171,18 +171,36 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Orji Uzor Kalu',
     primaryParty: 'APC',
-    bio: 'Senator and former Governor of Abia State. Involved in long-running legal proceedings regarding Abia State treasury funds.',
+    bio: 'Senator and former Governor of Abia State. Involved in long-running legal proceedings regarding the misappropriation of Abia State treasury funds.',
     profileImageUrl: 'https://picsum.photos/seed/kalu/400/400',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'N7.1 Billion Slush Fund',
-        description: 'Retrial ordered for allegations of misappropriating Abia State funds during his governorship.',
+        title: 'N7.1 Billion Treasury Fraud',
+        description: 'Retrial proceedings for allegations of misappropriating Abia State funds during his tenure as governor.',
         status: 'charged',
         amountInvolved: 7100000000,
         currency: 'NGN',
         caseStartDate: '2007-07-11',
         sources: [{ title: 'Supreme Court Ruling', url: 'https://supremecourt.gov.ng', publisher: 'Supreme Court of Nigeria', publicationDate: '2020-05-08', credibilityRating: 5 }]
+      }
+    ]
+  },
+  {
+    fullName: 'Godswill Akpabio',
+    primaryParty: 'APC',
+    bio: 'Current Senate President and former Governor of Akwa Ibom State. Frequently cited in inquiries regarding NDDC and state funding.',
+    profileImageUrl: 'https://picsum.photos/seed/akpabio/400/400',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'NDDC Forensic Audit Inquiry',
+        description: 'Inquiry into financial management at the Niger Delta Development Commission during his ministerial tenure.',
+        status: 'under_investigation',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2020-07-20',
+        sources: [{ title: 'Senate Inquiry Report', url: 'https://nass.gov.ng', publisher: 'National Assembly', publicationDate: '2020-07-20', credibilityRating: 4 }]
       }
     ]
   }

@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import { Plus, X, BarChart3, Scale, Wallet, Loader2, Users } from 'lucide-react';
+import { Plus, X, Scale, Wallet, Loader2, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
