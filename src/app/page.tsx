@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -5,9 +6,9 @@ import Link from 'next/link';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
-import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, Filter, User, Gavel, Landmark } from 'lucide-react';
+import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, Filter, User, Landmark, ShieldAlert } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -41,7 +42,7 @@ export default function HomePage() {
             primaryParty: data.primaryParty || 'Unknown',
             accountabilityScore: 0, 
             totalForfeiture: data.totalForfeiture || 0,
-            profileImageUrl: data.profileImageUrl || '',
+            profileImageUrl: '', // Intentionally blank as requested to use icons
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
           });
@@ -84,48 +85,55 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <section className="mb-12 bg-primary rounded-3xl p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+      <section className="mb-12 bg-primary rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px]" />
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-12">
           <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <Badge className="bg-accent hover:bg-accent text-white border-none px-3 py-1">Master Registry</Badge>
+            <div className="flex items-center gap-3 mb-8">
+              <Badge className="bg-accent hover:bg-accent text-white border-none px-4 py-1.5 font-black uppercase text-[10px] tracking-widest">
+                Master Audit Registry
+              </Badge>
               <div className="h-px w-12 bg-white/20" />
-              <span className="text-sm font-medium text-white/60">Verified Corruption Footprints</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Verified Corruption Footprints</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-headline font-black leading-tight mb-6">
+            <h1 className="text-5xl md:text-7xl font-headline font-black leading-none mb-8 uppercase tracking-tighter">
               Who Owes Us?
             </h1>
-            <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-2xl font-medium">
-              A civic accountability platform aggregating verified corruption records of Nigerian politicians. Tracking national restitution through data-first audit scores.
+            <p className="text-xl md:text-2xl text-white/80 leading-tight max-w-2xl font-medium italic">
+              "A civic accountability platform aggregating verified corruption records of Nigerian politicians. Tracking national restitution through data-first audit scores."
             </p>
           </div>
-          <div className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 lg:min-w-[300px] shadow-inner">
-            <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-2">Verified Asset Recovery</p>
-            <p className="text-4xl md:text-5xl font-black text-accent">${(totalRestitution / 1000000).toFixed(2)}M</p>
-            <p className="text-xs text-white/40 mt-4 flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3" /> Source-Attributed Documents
+          <div className="bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 lg:min-w-[360px] shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <ShieldCheck className="w-5 h-5 text-accent" />
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/60">Verified Restitution</p>
+            </div>
+            <p className="text-5xl md:text-6xl font-black text-accent mb-2">${(totalRestitution / 1000000).toFixed(2)}M</p>
+            <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">
+              Source-Attributed Financial Recovery
             </p>
           </div>
         </div>
       </section>
 
       {isAutoSeeding && (
-        <div className="mb-8 p-10 bg-white border-2 border-dashed border-accent/20 rounded-3xl flex flex-col items-center justify-center gap-4 text-accent text-center shadow-sm">
-          <Loader2 className="w-10 h-10 animate-spin text-accent" />
+        <div className="mb-12 p-16 bg-white border-4 border-dashed border-accent/10 rounded-[2.5rem] flex flex-col items-center justify-center gap-6 text-center shadow-sm">
+          <div className="p-5 bg-accent/10 rounded-3xl">
+            <Loader2 className="w-12 h-12 animate-spin text-accent" />
+          </div>
           <div>
-            <p className="font-black text-xl text-primary">Initializing Master Dossiers...</p>
-            <p className="text-sm text-muted-foreground mt-1">This initial audit may take a minute. Please do not close the tab.</p>
+            <h3 className="font-black text-2xl text-primary uppercase tracking-tight">Initializing Master Dossiers...</h3>
+            <p className="text-sm text-muted-foreground mt-2 font-medium">Synthesizing public records for 500+ political figures. This may take a moment.</p>
           </div>
         </div>
       )}
 
-      <section className="mb-10 flex flex-col md:flex-row gap-4">
+      <section className="mb-12 flex flex-col md:flex-row gap-4">
         <div className="relative flex-grow">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input 
             placeholder="Search by name, alias, or corruption case..." 
-            className="pl-12 h-14 bg-white border-none shadow-sm text-lg rounded-2xl focus:ring-accent"
+            className="pl-14 h-16 bg-white border-none shadow-sm text-lg rounded-2xl focus:ring-2 focus:ring-accent font-medium placeholder:text-muted-foreground/60"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -133,11 +141,11 @@ export default function HomePage() {
         
         <div className="flex gap-4">
           <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-            <SelectTrigger className="w-[220px] h-14 bg-white border-none shadow-sm rounded-2xl font-bold">
-              <ArrowUpDown className="w-4 h-4 mr-2 text-accent" />
+            <SelectTrigger className="w-[240px] h-16 bg-white border-none shadow-sm rounded-2xl font-black uppercase text-[11px] tracking-widest px-6">
+              <ArrowUpDown className="w-4 h-4 mr-3 text-accent" />
               <SelectValue placeholder="Sort Registry" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-2xl border-none shadow-2xl">
               <SelectItem value="score">Accountability Score</SelectItem>
               <SelectItem value="forfeiture">Forfeiture Amount</SelectItem>
               <SelectItem value="name">Alphabetical (A-Z)</SelectItem>
@@ -147,49 +155,49 @@ export default function HomePage() {
       </section>
 
       {loading && !isAutoSeeding ? (
-        <div className="flex flex-col items-center justify-center py-32 space-y-4">
-          <Loader2 className="w-12 h-12 animate-spin text-accent" />
-          <p className="text-muted-foreground font-medium uppercase tracking-widest text-xs">Opening Public Registry...</p>
+        <div className="flex flex-col items-center justify-center py-40 space-y-4">
+          <Loader2 className="w-16 h-16 animate-spin text-accent/20" />
+          <p className="text-muted-foreground font-black uppercase tracking-[0.2em] text-[10px]">Opening Public Registry...</p>
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredPoliticians.map((p: any) => (
-              <Link key={p.id} href={`/politician/${p.id}`}>
-                <Card className="h-full hover:shadow-2xl transition-all group overflow-hidden border-none shadow-md bg-white rounded-2xl flex flex-col">
-                  <div className="aspect-[4/5] relative overflow-hidden bg-secondary/10 flex items-center justify-center transition-colors group-hover:bg-secondary/20">
-                    <div className="flex flex-col items-center gap-3 opacity-20 group-hover:opacity-40 transition-opacity">
+              <Link key={p.id} href={`/politician/${p.id}`} className="group">
+                <Card className="h-full hover:shadow-[0_32px_64px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 border-none shadow-md bg-white rounded-[2rem] flex flex-col overflow-hidden relative">
+                  <div className="aspect-[4/5] relative overflow-hidden bg-primary/5 flex items-center justify-center transition-colors group-hover:bg-primary/10">
+                    <div className="flex flex-col items-center gap-4 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-500">
                       <User className="w-24 h-24 text-primary" />
-                      <Landmark className="w-8 h-8 text-primary" />
+                      <Landmark className="w-10 h-10 text-primary" />
                     </div>
                     
-                    <div className="absolute top-4 right-4 z-20">
-                      <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} className="shadow-lg bg-white/90 backdrop-blur-md" />
+                    <div className="absolute top-5 right-5 z-20">
+                      <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} className="shadow-2xl bg-white/95 backdrop-blur-md border-none px-4 py-2" />
                     </div>
                     
-                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10">
-                       <p className="text-accent text-[10px] font-bold uppercase tracking-widest mb-1">{p.primaryParty}</p>
-                       <h3 className="text-white text-xl font-bold leading-tight">{p.fullName}</h3>
+                    <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent z-10">
+                       <p className="text-accent text-[10px] font-black uppercase tracking-[0.2em] mb-2">{p.primaryParty}</p>
+                       <h3 className="text-white text-2xl font-black leading-tight uppercase tracking-tighter">{p.fullName}</h3>
                     </div>
                   </div>
-                  <CardContent className="p-6 flex-grow">
-                    <div className="grid grid-cols-2 gap-4">
+                  <CardContent className="p-8 flex-grow">
+                    <div className="grid grid-cols-2 gap-8">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">Verified Cases</p>
-                        <p className="text-lg font-black text-primary">{(p as any).cases?.length || 0}</p>
+                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Verified Cases</p>
+                        <p className="text-2xl font-black text-primary">{(p as any).cases?.length || 0}</p>
                       </div>
                       <div className="space-y-1 text-right">
-                        <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">Restitution</p>
-                        <p className="text-lg font-black text-accent">${((p.totalForfeiture || 0) / 1000000).toFixed(1)}M</p>
+                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Restitution</p>
+                        <p className="text-2xl font-black text-accent">${((p.totalForfeiture || 0) / 1000000).toFixed(1)}M</p>
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="px-6 py-4 bg-secondary/10 border-t border-primary/5 flex items-center justify-between">
-                    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
-                      Audit Status: Verified
-                    </span>
-                    <span className="text-primary text-xs font-bold flex items-center gap-1 group-hover:text-accent transition-colors">
-                      View Profile <ExternalLink className="w-3 h-3" />
+                  <CardFooter className="px-8 py-6 bg-secondary/10 border-t border-primary/5 flex items-center justify-between">
+                    <Badge variant="outline" className="text-[9px] font-black text-muted-foreground uppercase tracking-widest border-primary/10 bg-white/50">
+                      Verified Audit
+                    </Badge>
+                    <span className="text-primary text-xs font-black flex items-center gap-1.5 group-hover:text-accent transition-colors uppercase tracking-widest">
+                      Audit Profile <ExternalLink className="w-3.5 h-3.5" />
                     </span>
                   </CardFooter>
                 </Card>
@@ -198,18 +206,18 @@ export default function HomePage() {
           </div>
           
           {filteredPoliticians.length === 0 && !loading && !isAutoSeeding && (
-            <div className="text-center py-40 bg-white rounded-3xl border-4 border-dashed">
-              <Filter className="w-16 h-16 mx-auto mb-6 text-muted-foreground opacity-20" />
-              <h3 className="text-xl font-bold text-primary">No dossiers found</h3>
-              <p className="text-muted-foreground mt-2">Try adjusting your filters or search terms.</p>
+            <div className="text-center py-40 bg-white rounded-[2.5rem] border-4 border-dashed border-primary/5">
+              <ShieldAlert className="w-20 h-20 mx-auto mb-8 text-muted-foreground opacity-10" />
+              <h3 className="text-2xl font-black text-primary uppercase tracking-tight">No Dossiers Found</h3>
+              <p className="text-muted-foreground mt-2 font-medium">Try adjusting your filters or search terms for the active registry.</p>
             </div>
           )}
         </>
       )}
 
-      <footer className="mt-20 pt-10 border-t border-primary/10 text-center">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-relaxed max-w-2xl mx-auto italic">
-          "Who Owes Us?" is an independent platform for civic transparency. All data is aggregated from public court documents and legislative records.
+      <footer className="mt-32 pt-16 border-t border-primary/5 text-center">
+        <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.3em] leading-relaxed max-w-3xl mx-auto italic opacity-60">
+          "Who Owes Us?" is an independent, non-partisan platform for civic transparency. Data is synthesized from public court filings and legislative archives since 2014.
         </p>
       </footer>
     </div>
