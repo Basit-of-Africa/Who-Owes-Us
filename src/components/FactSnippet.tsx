@@ -22,8 +22,8 @@ export function FactSnippet({ politician }: { politician: Politician }) {
             caseTitle: c.title,
             description: c.description,
             convictionStatus: c.status,
-            forfeitureAmount: c.forfeitureAmount,
-            sources: c.sources
+            forfeitureAmount: c.amountInvolved,
+            sources: c.sources.map(s => s.url)
           }))
         });
         setSnippets(result.snippets);
@@ -36,28 +36,27 @@ export function FactSnippet({ politician }: { politician: Politician }) {
     loadFacts();
   }, [politician.id]);
 
-  if (loading) return <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin" /></div>;
+  if (loading) return <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-accent" /></div>;
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold flex items-center gap-2">
-        <Share2 className="w-5 h-5 text-primary" />
-        Spread the Word
+      <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2 text-muted-foreground">
+        <Share2 className="w-4 h-4 text-primary" />
+        Social Snippets
       </h3>
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         {snippets.map((snippet, idx) => (
-          <Card key={idx} className="bg-white border-l-4 border-accent">
+          <Card key={idx} className="bg-white border-l-4 border-accent group">
             <CardContent className="p-4 relative">
-              <Quote className="w-8 h-8 text-accent/10 absolute top-2 right-2" />
-              <p className="text-sm font-medium leading-relaxed pr-8">{snippet}</p>
+              <Quote className="w-8 h-8 text-accent/10 absolute top-2 right-2 group-hover:text-accent/20 transition-colors" />
+              <p className="text-xs font-bold leading-relaxed pr-6 text-primary">{snippet}</p>
               <div className="flex gap-2 mt-4 justify-end">
-                <Button variant="outline" size="sm" className="h-8 gap-2">
-                  <Twitter className="w-3.5 h-3.5 text-sky-500" />
-                  Tweet
+                <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1 hover:bg-sky-50 text-sky-600">
+                  <Twitter className="w-3 h-3" />
+                  X
                 </Button>
-                <Button variant="outline" size="sm" className="h-8 gap-2">
-                  <Facebook className="w-3.5 h-3.5 text-blue-600" />
-                  Post
+                <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1 hover:bg-green-50 text-green-600">
+                  WhatsApp
                 </Button>
               </div>
             </CardContent>

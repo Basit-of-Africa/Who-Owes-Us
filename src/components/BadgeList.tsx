@@ -21,14 +21,13 @@ export function BadgeList({ politician }: { politician: Politician }) {
           title: c.title,
           description: c.description,
           status: c.status,
-          forfeitureAmount: c.forfeitureAmount
+          forfeitureAmount: c.amountInvolved
         }))
       });
       setBadges(result);
     } catch (e) {
-      console.error(e);
-      // Fallback
-      setBadges(['Civic Enigma', 'Frequent Court Visitor']);
+      // Satirical fallback badges as per prompt
+      setBadges(['Frequent Court Visitor', 'Asset Recovery Contributor']);
     } finally {
       setLoading(false);
     }
@@ -39,23 +38,20 @@ export function BadgeList({ politician }: { politician: Politician }) {
   }, [politician.id]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-accent" />
-          Citizen Badges
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <Sparkles className="w-4 h-4 text-accent" />
+        <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          Satirical Designations
         </h3>
-        {loading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
+        {loading && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
       </div>
       <div className="flex flex-wrap gap-2">
         {badges.map((badge, idx) => (
-          <Badge key={idx} variant="secondary" className="px-3 py-1 bg-accent/10 text-accent hover:bg-accent hover:text-white transition-colors cursor-default border-accent/20">
+          <Badge key={idx} variant="secondary" className="px-3 py-1 bg-accent/5 text-accent border-accent/20 hover:bg-accent hover:text-white transition-colors cursor-default">
             {badge}
           </Badge>
         ))}
-        {badges.length === 0 && !loading && (
-          <p className="text-sm text-muted-foreground">No badges generated yet.</p>
-        )}
       </div>
     </div>
   );

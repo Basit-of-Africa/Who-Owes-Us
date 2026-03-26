@@ -5,9 +5,10 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { politicians } from '@/lib/mock-data';
+import { calculateAccountabilityScore } from '@/lib/scoring';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, SlidersHorizontal, ArrowUpDown, ExternalLink, Filter } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowUpDown, ExternalLink, Filter, ShieldCheck } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import {
@@ -23,38 +24,47 @@ export default function HomePage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('score');
 
+  const processedPoliticians = useMemo(() => {
+    return politicians.map(p => ({
+      ...p,
+      calculatedScore: calculateAccountabilityScore(p).total
+    }));
+  }, []);
+
   const filteredPoliticians = useMemo(() => {
-    return politicians
+    return processedPoliticians
       .filter(p => {
         const matchesSearch = p.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            p.offices.some(o => o.toLowerCase().includes(searchQuery.toLowerCase()));
-        const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
-        return matchesSearch && matchesStatus;
+                            p.offices.some(o => o.officeTitle.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesSearch;
       })
       .sort((a, b) => {
-        if (sortBy === 'score') return b.accountabilityScore - a.accountabilityScore;
+        if (sortBy === 'score') return b.calculatedScore - a.calculatedScore;
         if (sortBy === 'forfeiture') return b.totalForfeiture - a.totalForfeiture;
         return a.fullName.localeCompare(b.fullName);
       });
-  }, [searchQuery, statusFilter, sortBy]);
+  }, [searchQuery, sortBy, processedPoliticians]);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* Hero / Header Section */}
       <section className="mb-12 text-center md:text-left md:flex md:items-center md:justify-between bg-primary/5 p-8 rounded-2xl border border-primary/10">
         <div className="md:max-w-2xl">
-          <h1 className="text-4xl md:text-5xl font-headline font-extrabold text-primary mb-4 leading-tight">
-            Who Owes Us?
-          </h1>
+          <div className="flex items-center gap-2 mb-4">
+             <ShieldCheck className="w-8 h-8 text-accent" />
+             <h1 className="text-4xl md:text-5xl font-headline font-extrabold text-primary leading-tight">
+                Who Owes Us?
+             </h1>
+          </div>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            A public dashboard tracking the transparency, corruption records, and financial restitution status of public officials. Your window into civic accountability.
+            The Public Accountability Registry tracking corruption records, public service timelines, and financial restitution of Nigerian public officials since 2014.
           </p>
         </div>
         <div className="hidden lg:block">
-           <div className="bg-white p-6 rounded-xl shadow-sm border space-y-2">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Restitution Tracker</p>
-              <p className="text-3xl font-bold text-accent">${(politicians.reduce((sum, p) => sum + p.totalForfeiture, 0) / 1000000).toFixed(1)}M</p>
-              <p className="text-sm text-muted-foreground">Total Public Assets Recovered</p>
+           <div className="bg-white p-6 rounded-xl shadow-sm border-2 border-primary/5 space-y-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">National Restitution</p>
+              <p className="text-3xl font-bold text-accent">${(politicians.reduce((sum, p) => sum + p.totalForfeiture, 0) / 1000000).toFixed(2)}M</p>
+              <p className="text-xs text-muted-foreground">Source-Verified Public Asset Recoveries</p>
            </div>
         </div>
       </section>
@@ -64,29 +74,16 @@ export default function HomePage() {
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input 
-            placeholder="Search politicians by name or office..." 
-            className="pl-10 h-12 bg-white"
+            placeholder="Search politicians by name, alias, or office..." 
+            className="pl-10 h-12 bg-white border-2 focus:border-accent"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         
         <div className="flex items-center gap-2">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px] h-12 bg-white">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="convicted">Convicted</SelectItem>
-              <SelectItem value="under investigation">Under Investigation</SelectItem>
-              <SelectItem value="active">Active Duty</SelectItem>
-            </SelectContent>
-          </Select>
-
           <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-            <SelectTrigger className="w-[180px] h-12 bg-white">
+            <SelectTrigger className="w-[200px] h-12 bg-white border-2">
               <ArrowUpDown className="w-4 h-4 mr-2" />
               <SelectValue placeholder="Sort By" />
             </SelectTrigger>
@@ -103,41 +100,46 @@ export default function HomePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredPoliticians.map((p) => (
           <Link key={p.id} href={`/politician/${p.id}`}>
-            <Card className="h-full hover:shadow-lg transition-all group overflow-hidden border-2 hover:border-primary/20">
+            <Card className="h-full hover:shadow-xl transition-all group overflow-hidden border-2 border-primary/5 hover:border-accent/20">
               <CardHeader className="p-0">
-                <div className="aspect-[4/3] relative bg-muted overflow-hidden">
+                <div className="aspect-square relative bg-muted overflow-hidden">
                   <Image 
-                    src={p.imageUrl} 
+                    src={p.profileImageUrl} 
                     alt={p.fullName}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 right-4">
-                    <AccountabilityBadge score={p.accountabilityScore} className="shadow-md bg-white/95 backdrop-blur-sm" />
+                    <AccountabilityBadge score={p.calculatedScore} className="shadow-md bg-white/95 backdrop-blur-sm" />
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                     <p className="text-white text-xs font-bold uppercase tracking-widest">{p.primaryParty}</p>
+                     <h3 className="text-white text-xl font-bold">{p.fullName}</h3>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-1 text-primary group-hover:text-accent transition-colors">{p.fullName}</h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-1">{p.offices.join(' • ')}</p>
+                <p className="text-xs font-medium text-muted-foreground mb-4 line-clamp-1">
+                   {p.offices[0].officeTitle} • {p.offices[0].state || 'National'}
+                </p>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">Case Count</p>
-                    <p className="text-lg font-bold">{p.caseCount}</p>
+                    <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">Verified Cases</p>
+                    <p className="text-lg font-bold">{p.cases.length}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">Forfeiture</p>
-                    <p className="text-lg font-bold text-accent">${(p.totalForfeiture / 1000000).toFixed(1)}M</p>
+                    <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-tighter">Public Restitution</p>
+                    <p className="text-lg font-bold text-accent">${(p.totalForfeiture / 1000000).toFixed(2)}M</p>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="px-6 py-4 bg-secondary/30 border-t flex items-center justify-between">
-                <span className="text-xs font-semibold capitalize px-2 py-1 rounded bg-white text-muted-foreground border">
-                  {p.status}
+              <CardFooter className="px-6 py-3 bg-secondary/20 border-t flex items-center justify-between">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Data Verified
                 </span>
                 <span className="text-primary text-xs font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                  View Profile <ExternalLink className="w-3 h-3" />
+                  Dossier <ExternalLink className="w-3 h-3" />
                 </span>
               </CardFooter>
             </Card>
@@ -145,12 +147,9 @@ export default function HomePage() {
         ))}
       </div>
 
-      {filteredPoliticians.length === 0 && (
-        <div className="text-center py-20 bg-white rounded-xl border border-dashed">
-          <p className="text-muted-foreground text-lg">No politicians found matching your criteria.</p>
-          <Button variant="link" onClick={() => { setSearchQuery(''); setStatusFilter('all'); }}>Clear all filters</Button>
-        </div>
-      )}
+      <section className="mt-16 text-center text-xs text-muted-foreground max-w-2xl mx-auto italic">
+         "Who Owes Us?" is an independent platform. Records are aggregated from public court documents and verified news media. Disclaimers apply.
+      </section>
     </div>
   );
 }
