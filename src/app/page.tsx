@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
-import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, Filter, User, Landmark, ShieldAlert } from 'lucide-react';
+import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, User, Landmark, ShieldAlert } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import {
@@ -34,6 +34,7 @@ export default function HomePage() {
       
       setIsAutoSeeding(true);
       try {
+        // Parallel batch ingestion for speed
         await Promise.all(INITIAL_REGISTRY_SEED.map(async (data) => {
           const polRef = await addDoc(collection(db, 'politicians'), {
             fullName: data.fullName,
@@ -42,7 +43,7 @@ export default function HomePage() {
             primaryParty: data.primaryParty || 'Unknown',
             accountabilityScore: 0, 
             totalForfeiture: data.totalForfeiture || 0,
-            profileImageUrl: '', // Intentionally blank as requested to use icons
+            profileImageUrl: '', 
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
           });
@@ -123,7 +124,7 @@ export default function HomePage() {
           </div>
           <div>
             <h3 className="font-black text-2xl text-primary uppercase tracking-tight">Initializing Master Dossiers...</h3>
-            <p className="text-sm text-muted-foreground mt-2 font-medium">Synthesizing public records for 500+ political figures. This may take a moment.</p>
+            <p className="text-sm text-muted-foreground mt-2 font-medium">Synthesizing public records for hundreds of political figures. This may take a moment.</p>
           </div>
         </div>
       )}
@@ -217,7 +218,7 @@ export default function HomePage() {
 
       <footer className="mt-32 pt-16 border-t border-primary/5 text-center">
         <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.3em] leading-relaxed max-w-3xl mx-auto italic opacity-60">
-          "Who Owes Us?" is an independent, non-partisan platform for civic transparency. Data is synthesized from public court filings and legislative archives since 2014.
+          "Who Owes Us?" is an independent, non-partisan platform for civic transparency. Data is synthesized from public court filings and legislative archives.
         </p>
       </footer>
     </div>
