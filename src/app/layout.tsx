@@ -1,9 +1,9 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseProvider } from '@/firebase/provider';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Who Owes Us? | Politician Accountability Tracker',
@@ -29,10 +29,18 @@ export default function RootLayout({
             {children}
           </main>
           <footer className="border-t bg-white py-12 mt-20">
-            <div className="container mx-auto px-4 text-center">
+            <div className="container mx-auto px-4 text-center space-y-4">
               <p className="text-muted-foreground text-sm">
                 &copy; {new Date().getFullYear()} Who Owes Us? Project. Data provided for transparency and civic awareness.
               </p>
+              <div className="flex justify-center gap-6">
+                <Link href="/disclaimer" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-accent transition-colors">
+                  Legal Disclaimer
+                </Link>
+                <Link href="/" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-accent transition-colors">
+                  Public Registry
+                </Link>
+              </div>
             </div>
           </footer>
           <Toaster />
