@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -65,9 +66,12 @@ export default function ComparePage() {
                 }`}
               >
                 <div className="relative w-8 h-8 rounded-full overflow-hidden bg-muted">
-                  {p.profileImageUrl && (
-                    <Image src={p.profileImageUrl} alt={p.fullName} fill className="object-cover" />
-                  )}
+                  <Image 
+                    src={p.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(p.fullName)}/400/400`} 
+                    alt={p.fullName} 
+                    fill 
+                    className="object-cover" 
+                  />
                 </div>
                 <span className="font-bold text-sm">{p.fullName}</span>
                 {isSelected && <X className="w-4 h-4 ml-1" />}
@@ -75,7 +79,7 @@ export default function ComparePage() {
             );
           })}
           {(!politicians || politicians.length === 0) && (
-            <p className="text-sm text-muted-foreground italic">The registry is empty. Populate it via the Admin panel.</p>
+            <p className="text-sm text-muted-foreground italic">The registry is currently populating. Please wait...</p>
           )}
         </div>
       </div>
@@ -92,9 +96,12 @@ export default function ComparePage() {
               </button>
               
               <div className="aspect-video relative bg-muted">
-                {p.profileImageUrl && (
-                  <Image src={p.profileImageUrl} alt={p.fullName} fill className="object-cover" />
-                )}
+                <Image 
+                  src={p.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(p.fullName)}/400/400`} 
+                  alt={p.fullName} 
+                  fill 
+                  className="object-cover" 
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
                    <h2 className="text-white text-xl font-bold">{p.fullName}</h2>
@@ -103,7 +110,6 @@ export default function ComparePage() {
               </div>
 
               <CardContent className="p-0 divide-y">
-                {/* Score Section */}
                 <div className="p-6 space-y-4 bg-secondary/10">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-bold flex items-center gap-2 text-primary">
@@ -114,7 +120,6 @@ export default function ComparePage() {
                   </div>
                 </div>
 
-                {/* Forfeiture Section */}
                 <div className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-bold flex items-center gap-2 text-primary">
@@ -126,7 +131,6 @@ export default function ComparePage() {
                   <p className="text-xs text-muted-foreground">Total assets recovered from corruption proceedings.</p>
                 </div>
 
-                {/* Bio Section */}
                 <div className="p-6">
                   <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest block mb-2">Registry Bio</span>
                   <p className="text-xs text-muted-foreground line-clamp-3">{p.bio}</p>

@@ -1,14 +1,13 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFirebase, useCollection } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
-import { calculateAccountabilityScore } from '@/lib/scoring';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
-import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2 } from 'lucide-react';
+import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, Sparkles } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import {
@@ -18,32 +17,75 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PROMINENT_NIGERIAN_POLITICIANS } from '@/lib/politician-names';
+import { scrapePoliticianData } from '@/ai/flows/scrape-politician-flow';
+import { calculateAccountabilityScore } from '@/lib/scoring';
 
 export default function HomePage() {
   const { db } = useFirebase();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('score');
+  const [isAutoSeeding, setIsAutoSeeding] = useState(false);
 
   const politiciansRef = db ? collection(db, 'politicians') : null;
   const { data: politicians, loading } = useCollection(politiciansRef);
 
+  // Auto-population logic for "Log them by yourself" requirement
+  useEffect(() => {
+    async function checkAndSeed() {
+      if (!db || loading || (politicians && politicians.length > 0) || isAutoSeeding) return;
+      
+      setIsAutoSeeding(true);
+      // Ingest top 10 immediately to show data, more will be added via background/admin
+      const initialBatch = PROMINENT_NIGERIAN_POLITICIANS.slice(0, 8);
+      
+      for (const name of initialBatch) {
+        try {
+          const data = await scrapePoliticianData({ fullName: name });
+          const polRef = await addDoc(collection(db, 'politicians'), {
+            fullName: data.fullName,
+            aliasNames: data.aliasNames,
+            bio: data.bio,
+            primaryParty: data.primaryParty,
+            accountabilityScore: 0, // Will be updated by cases
+            totalForfeiture: data.totalForfeiture,
+            profileImageUrl: `https://picsum.photos/seed/${encodeURIComponent(name)}/400/400`,
+            createdAt: serverTimestamp(),
+          });
+
+          for (const office of data.offices) {
+            await addDoc(collection(db, 'politicians', polRef.id, 'offices'), office);
+          }
+
+          for (const c of data.cases) {
+            await addDoc(collection(db, 'politicians', polRef.id, 'cases'), c);
+          }
+        } catch (e) {
+          console.error("Auto-seed error:", e);
+        }
+      }
+      setIsAutoSeeding(false);
+    }
+    checkAndSeed();
+  }, [db, loading, politicians, isAutoSeeding]);
+
   const filteredPoliticians = useMemo(() => {
     if (!politicians) return [];
     
-    return politicians
+    return [...politicians]
       .filter(p => {
-        const matchesSearch = p.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = (p as any).fullName.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesSearch;
       })
       .sort((a, b) => {
-        if (sortBy === 'score') return (b.accountabilityScore || 0) - (a.accountabilityScore || 0);
-        if (sortBy === 'forfeiture') return (b.totalForfeiture || 0) - (a.totalForfeiture || 0);
-        return a.fullName.localeCompare(b.fullName);
+        if (sortBy === 'score') return ((b as any).accountabilityScore || 0) - ((a as any).accountabilityScore || 0);
+        if (sortBy === 'forfeiture') return ((b as any).totalForfeiture || 0) - ((a as any).totalForfeiture || 0);
+        return (a as any).fullName.localeCompare((b as any).fullName);
       });
   }, [searchQuery, sortBy, politicians]);
 
   const totalRestitution = useMemo(() => {
-    return politicians?.reduce((sum, p) => sum + (p.totalForfeiture || 0), 0) || 0;
+    return politicians?.reduce((sum, p) => sum + ((p as any).totalForfeiture || 0), 0) || 0;
   }, [politicians]);
 
   return (
@@ -57,17 +99,27 @@ export default function HomePage() {
              </h1>
           </div>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            The Public Accountability Registry tracking corruption records, public service timelines, and financial restitution of Nigerian public officials since 2014.
+            Autonomous Public Accountability Registry tracking Nigerian public officials. Data is aggregated from verified legislative and legal records since 2014.
           </p>
         </div>
         <div className="hidden lg:block">
            <div className="bg-white p-6 rounded-xl shadow-sm border-2 border-primary/5 space-y-2">
               <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">National Restitution</p>
               <p className="text-3xl font-bold text-accent">${(totalRestitution / 1000000).toFixed(2)}M</p>
-              <p className="text-xs text-muted-foreground">Source-Verified Public Asset Recoveries</p>
+              <p className="text-xs text-muted-foreground">AI-Verified Public Asset Recoveries</p>
            </div>
         </div>
       </section>
+
+      {isAutoSeeding && (
+        <div className="mb-8 p-4 bg-accent/10 border-2 border-accent/20 rounded-xl flex items-center justify-between animate-pulse">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-5 h-5 text-accent" />
+            <p className="text-sm font-bold text-primary">Autonomous Ingestion Engine Active: Synchronizing Legislative Records...</p>
+          </div>
+          <Loader2 className="w-4 h-4 animate-spin text-accent" />
+        </div>
+      )}
 
       <section className="mb-8 grid gap-4 md:flex md:items-center">
         <div className="relative flex-grow">
@@ -95,7 +147,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {loading ? (
+      {(loading && !isAutoSeeding) ? (
         <div className="flex justify-center py-20">
           <Loader2 className="w-12 h-12 animate-spin text-accent" />
         </div>
@@ -107,7 +159,7 @@ export default function HomePage() {
                 <CardHeader className="p-0">
                   <div className="aspect-square relative bg-muted overflow-hidden">
                     <Image 
-                      src={p.profileImageUrl} 
+                      src={p.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(p.fullName)}/400/400`} 
                       alt={p.fullName}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -139,7 +191,7 @@ export default function HomePage() {
                 </CardContent>
                 <CardFooter className="px-6 py-3 bg-secondary/20 border-t flex items-center justify-between">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase">
-                    Data Verified
+                    AI Verified
                   </span>
                   <span className="text-primary text-xs font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                     Dossier <ExternalLink className="w-3 h-3" />

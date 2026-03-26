@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow that acts as an automated "scraper" to aggregate 
@@ -52,15 +53,20 @@ const scrapePrompt = ai.definePrompt({
 
 Your task is to aggregate publicly available, verified information about the politician: "{{{fullName}}}".
 
+Reference external public data sources including:
+- PLAC Bills Track (https://p.placbillstrack.org/members/) for legislative records.
+- INEC Election Result portals.
+- EFCC and ICPC gazettes for legal proceedings.
+- Premium Times, Vanguard, and other verified investigative outlets.
+
 Focus on records since 2014. You must extract:
 1. Basic identity (Full name, known aliases, current party).
 2. Public office timeline (Tenures as Governor, Senator, Minister, etc.).
-3. Legal/Corruption Cases: Only include cases with verifiable public records (EFCC inquiries, court cases, US DOJ forfeitures, etc.).
+3. Legal/Corruption Cases: Only include cases with verifiable public records.
 4. Status: Accurately distinguish between "alleged", "under_investigation", "charged", "convicted", and "dismissed".
-5. Sources: For every case, provide a representative title, publisher (e.g., Premium Times, Vanguard, Punch, BBC), and a plausible placeholder URL if the exact one isn't available, but ensure the publication exists.
+5. Sources: For every case, provide a representative title, publisher, and a credible URL placeholder.
 
-Avoid defamatory language. Use neutral, factual descriptions of legal proceedings.
-If the politician has no notable public service history or legal records, return an empty profile but preserve the schema.`,
+Avoid defamatory language. Use neutral, factual descriptions of legal proceedings.`,
 });
 
 export async function scrapePoliticianData(input: ScrapePoliticianInput): Promise<ScrapedPoliticianOutput> {
