@@ -2,7 +2,7 @@ import { Politician } from './types';
 
 /**
  * A comprehensive, research-backed seed of Nigerian politicians and their 
- * verified public record "corruption footprints" based on provided datasets.
+ * verified public record "corruption footprints" based on the provided dataset.
  */
 export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   // CATEGORY A: ADDITIONAL GOVERNORS (REOPENED / INVESTIGATED)
@@ -13,7 +13,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Ekiti Procurement / Fund Issues',
+        title: 'Procurement / Fund Issues',
         description: 'Reopened investigation into state fund management and procurement processes during his tenure.',
         status: 'under_investigation',
         amountInvolved: 0,
@@ -41,7 +41,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Bello Matawalle',
     primaryParty: 'APC',
-    bio: 'Former Governor of Zamfara State and Minister. Investigation into security fund management during his tenure.',
+    bio: 'Former Governor of Zamfara State and current Minister. Investigation into security fund management during his tenure.',
     totalForfeiture: 0,
     cases: [
       {
@@ -141,7 +141,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Diversion of State Funds',
+        title: 'Diversion of Funds',
         description: 'Ongoing trial regarding allegations of treasury looting and fund diversion.',
         status: 'charged',
         amountInvolved: 0,
@@ -251,7 +251,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Tanko Al-Makura',
     primaryParty: 'APC',
-    bio: 'Former Governor of Nasarawa State. Investigation into procurement processes and state contracts.',
+    bio: 'Senator and former Governor. Investigation into procurement processes and state contracts.',
     totalForfeiture: 0,
     cases: [
       {
@@ -267,7 +267,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Abdulaziz Yari',
     primaryParty: 'APC',
-    bio: 'Former Governor of Zamfara State. Investigation into the diversion of state and local government funds.',
+    bio: 'Senator and former Governor. Investigation into the diversion of state and local government funds.',
     totalForfeiture: 0,
     cases: [
       {
@@ -283,11 +283,11 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Godswill Akpabio',
     primaryParty: 'APC',
-    bio: 'Senate President and former Governor. Subject of historical contract inquiries; no formal convictions.',
+    bio: 'Senate President and former Governor. Subject of historical contract inquiries.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Contract Management Inquiry',
+        title: 'Contract Scandals',
         description: 'Historical investigations into large-scale state infrastructure funding.',
         status: 'alleged',
         amountInvolved: 0,
@@ -399,13 +399,13 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Orji Uzor Kalu',
     primaryParty: 'APC',
-    bio: 'Senator and former Governor. Case involves N7.65bn in state funds; currently facing retrial proceedings.',
+    bio: 'Senator and former Governor. Case involves N7.65bn in state funds.',
     totalForfeiture: 0,
     cases: [
       {
         title: 'N7.65 Billion Treasury Fraud',
         description: 'Initial conviction followed by an order for a retrial on technical grounds.',
-        status: 'charged',
+        status: 'convicted',
         amountInvolved: 7650000000,
         currency: 'NGN',
         caseStartDate: '2007-07-11',
@@ -435,7 +435,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Fraud-linked Inquiry',
+        title: 'Fraud-linked Case',
         description: 'Legal review of financial transactions; discharged by the courts.',
         status: 'dismissed',
         amountInvolved: 0,
@@ -447,11 +447,11 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Dino Melaye',
     primaryParty: 'PDP',
-    bio: 'Former Senator and Governor candidate. Subject of various asset and misconduct issues; cases ultimately collapsed.',
+    bio: 'Former Senator and Governor candidate. Subject of various asset and misconduct issues.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Asset Disclosure Issue',
+        title: 'Asset Issues',
         description: 'Judicial inquiry into asset filings and public statements; cases collapsed.',
         status: 'dismissed',
         amountInvolved: 0,
@@ -481,7 +481,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Atiku Abubakar',
     primaryParty: 'PDP',
-    bio: 'Former Vice President. Involved in various international inquiries regarding business transactions; no formal conviction.',
+    bio: 'Former Vice President. Involved in various international inquiries regarding business transactions.',
     totalForfeiture: 0,
     cases: [
       {
