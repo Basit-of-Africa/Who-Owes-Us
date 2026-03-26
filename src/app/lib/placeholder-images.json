@@ -1,0 +1,23 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "politician-1",
+      "description": "Professional portrait of a male politician in a suit",
+      "imageUrl": "https://picsum.photos/seed/pol1/400/400",
+      "imageHint": "politician portrait"
+    },
+    {
+      "id": "politician-2",
+      "description": "Professional portrait of a female politician in a blazer",
+      "imageUrl": "https://picsum.photos/seed/pol2/400/400",
+      "imageHint": "woman leader"
+    },
+    {
+      "id": "politician-3",
+      "description": "Official portrait of a senior government official",
+      "imageUrl": "https://picsum.photos/seed/pol3/400/400",
+      "imageHint": "government official"
+    }
+  ]
+}
