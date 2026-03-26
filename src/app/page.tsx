@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useFirebase, useCollection } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, limit, getDocs } from 'firebase/firestore';
 import { Input } from '@/components/ui/input';
 import { Search, ArrowUpDown, ExternalLink, ShieldCheck, Loader2, User, Landmark, ShieldAlert } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
@@ -30,11 +29,16 @@ export default function HomePage() {
 
   useEffect(() => {
     async function performAutoSeed() {
-      if (!db || loading || !politicians || politicians.length > 0 || isAutoSeeding) return;
+      if (!db || loading || isAutoSeeding) return;
+      
+      // Check if we already have data
+      const q = query(collection(db, 'politicians'), limit(1));
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) return;
       
       setIsAutoSeeding(true);
       try {
-        // Parallel batch ingestion for speed
         await Promise.all(INITIAL_REGISTRY_SEED.map(async (data) => {
           const polRef = await addDoc(collection(db, 'politicians'), {
             fullName: data.fullName,
@@ -50,7 +54,13 @@ export default function HomePage() {
 
           if (data.cases) {
             await Promise.all(data.cases.map(c => 
-              addDoc(collection(db, 'politicians', polRef.id, 'cases'), c)
+              addDoc(collection(db, 'politicians', polRef.id, 'cases'), {
+                ...c,
+                politicianId: polRef.id,
+                amountInvolved: c.amountInvolved || 0,
+                currency: c.currency || 'NGN',
+                caseStartDate: c.caseStartDate || new Date().toISOString()
+              })
             ));
           }
         }));
@@ -62,7 +72,7 @@ export default function HomePage() {
     }
 
     performAutoSeed();
-  }, [db, loading, politicians, isAutoSeeding]);
+  }, [db, loading, isAutoSeeding]);
 
   const filteredPoliticians = useMemo(() => {
     if (!politicians) return [];
@@ -92,7 +102,7 @@ export default function HomePage() {
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-8">
               <Badge className="bg-accent hover:bg-accent text-white border-none px-4 py-1.5 font-black uppercase text-[10px] tracking-widest">
-                Master Audit Registry
+                Audit Registry
               </Badge>
               <div className="h-px w-12 bg-white/20" />
               <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Verified Corruption Footprints</span>
@@ -101,7 +111,7 @@ export default function HomePage() {
               Who Owes Us?
             </h1>
             <p className="text-xl md:text-2xl text-white/80 leading-tight max-w-2xl font-medium italic">
-              "A civic accountability platform aggregating verified corruption records of Nigerian politicians. Tracking national restitution through data-first audit scores."
+              "An independent civic registry archiving the public records of Nigerian political figures. Data-first accountability scoring."
             </p>
           </div>
           <div className="bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 lg:min-w-[360px] shadow-2xl">
@@ -123,8 +133,8 @@ export default function HomePage() {
             <Loader2 className="w-12 h-12 animate-spin text-accent" />
           </div>
           <div>
-            <h3 className="font-black text-2xl text-primary uppercase tracking-tight">Initializing Master Dossiers...</h3>
-            <p className="text-sm text-muted-foreground mt-2 font-medium">Synthesizing public records for hundreds of political figures. This may take a moment.</p>
+            <h3 className="font-black text-2xl text-primary uppercase tracking-tight">Syncing Records...</h3>
+            <p className="text-sm text-muted-foreground mt-2 font-medium">Archiving public history for prominent figures. One moment.</p>
           </div>
         </div>
       )}
@@ -133,7 +143,7 @@ export default function HomePage() {
         <div className="relative flex-grow">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input 
-            placeholder="Search by name, alias, or corruption case..." 
+            placeholder="Search by name, party, or case..." 
             className="pl-14 h-16 bg-white border-none shadow-sm text-lg rounded-2xl focus:ring-2 focus:ring-accent font-medium placeholder:text-muted-foreground/60"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -158,7 +168,7 @@ export default function HomePage() {
       {loading && !isAutoSeeding ? (
         <div className="flex flex-col items-center justify-center py-40 space-y-4">
           <Loader2 className="w-16 h-16 animate-spin text-accent/20" />
-          <p className="text-muted-foreground font-black uppercase tracking-[0.2em] text-[10px]">Opening Public Registry...</p>
+          <p className="text-muted-foreground font-black uppercase tracking-[0.2em] text-[10px]">Loading registry...</p>
         </div>
       ) : (
         <>
@@ -168,8 +178,7 @@ export default function HomePage() {
                 <Card className="h-full hover:shadow-[0_32px_64px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 border-none shadow-md bg-white rounded-[2rem] flex flex-col overflow-hidden relative">
                   <div className="aspect-[4/5] relative overflow-hidden bg-primary/5 flex items-center justify-center transition-colors group-hover:bg-primary/10">
                     <div className="flex flex-col items-center gap-4 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-500">
-                      <User className="w-24 h-24 text-primary" />
-                      <Landmark className="w-10 h-10 text-primary" />
+                      <Landmark className="w-24 h-24 text-primary" />
                     </div>
                     
                     <div className="absolute top-5 right-5 z-20">
@@ -184,7 +193,7 @@ export default function HomePage() {
                   <CardContent className="p-8 flex-grow">
                     <div className="grid grid-cols-2 gap-8">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Verified Cases</p>
+                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.2em]">Archived Cases</p>
                         <p className="text-2xl font-black text-primary">{(p as any).cases?.length || 0}</p>
                       </div>
                       <div className="space-y-1 text-right">
@@ -195,7 +204,7 @@ export default function HomePage() {
                   </CardContent>
                   <CardFooter className="px-8 py-6 bg-secondary/10 border-t border-primary/5 flex items-center justify-between">
                     <Badge variant="outline" className="text-[9px] font-black text-muted-foreground uppercase tracking-widest border-primary/10 bg-white/50">
-                      Verified Audit
+                      Audit Verified
                     </Badge>
                     <span className="text-primary text-xs font-black flex items-center gap-1.5 group-hover:text-accent transition-colors uppercase tracking-widest">
                       Audit Profile <ExternalLink className="w-3.5 h-3.5" />
@@ -209,8 +218,8 @@ export default function HomePage() {
           {filteredPoliticians.length === 0 && !loading && !isAutoSeeding && (
             <div className="text-center py-40 bg-white rounded-[2.5rem] border-4 border-dashed border-primary/5">
               <ShieldAlert className="w-20 h-20 mx-auto mb-8 text-muted-foreground opacity-10" />
-              <h3 className="text-2xl font-black text-primary uppercase tracking-tight">No Dossiers Found</h3>
-              <p className="text-muted-foreground mt-2 font-medium">Try adjusting your filters or search terms for the active registry.</p>
+              <h3 className="text-2xl font-black text-primary uppercase tracking-tight">Registry Empty</h3>
+              <p className="text-muted-foreground mt-2 font-medium">No archived records match your criteria.</p>
             </div>
           )}
         </>
@@ -218,7 +227,7 @@ export default function HomePage() {
 
       <footer className="mt-32 pt-16 border-t border-primary/5 text-center">
         <p className="text-[11px] text-muted-foreground font-black uppercase tracking-[0.3em] leading-relaxed max-w-3xl mx-auto italic opacity-60">
-          "Who Owes Us?" is an independent, non-partisan platform for civic transparency. Data is synthesized from public court filings and legislative archives.
+          "Who Owes Us?" is an independent registry of public history. Information is synthesized from documented court filings and official reports.
         </p>
       </footer>
     </div>

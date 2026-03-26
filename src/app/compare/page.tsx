@@ -1,12 +1,11 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import { Plus, X, Scale, Wallet, Loader2, Users, User, Landmark, ShieldCheck, Search } from 'lucide-react';
+import { X, Scale, Wallet, Loader2, Users, User, Landmark, ShieldCheck, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -44,7 +43,7 @@ export default function ComparePage() {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <Loader2 className="w-12 h-12 animate-spin mx-auto text-accent" />
-        <p className="mt-4 text-muted-foreground font-medium uppercase tracking-widest text-xs">Loading Audit Registry...</p>
+        <p className="mt-4 text-muted-foreground font-medium uppercase tracking-widest text-xs">Opening Audit Matrix...</p>
       </div>
     );
   }
@@ -53,14 +52,14 @@ export default function ComparePage() {
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-headline font-black text-primary mb-2 uppercase tracking-tight">Audit Comparison</h1>
-        <p className="text-muted-foreground font-medium">Select up to 3 public officials to audit their corruption footprints side-by-side.</p>
+        <p className="text-muted-foreground font-medium">Select up to 3 figures to audit their records side-by-side.</p>
       </div>
 
       <section className="mb-16">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <h3 className="text-xs font-black flex items-center gap-2 text-primary uppercase tracking-widest">
             <Users className="w-4 h-4 text-accent" />
-            Registry Options ({politicians?.length || 0})
+            Registry Selection ({politicians?.length || 0})
           </h3>
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -91,7 +90,7 @@ export default function ComparePage() {
                   "p-3 rounded-xl transition-colors",
                   isSelected ? "bg-white/10" : "bg-primary/5 group-hover:bg-primary/10"
                 )}>
-                  <User className={cn("w-6 h-6", isSelected ? "text-white" : "text-primary")} />
+                  <Landmark className={cn("w-6 h-6", isSelected ? "text-white" : "text-primary")} />
                 </div>
                 <div className="space-y-1">
                   <p className={cn("font-black text-[10px] leading-tight line-clamp-2", isSelected ? "text-white" : "text-primary")}>
@@ -117,7 +116,7 @@ export default function ComparePage() {
           <div className="w-full border-t border-primary/5"></div>
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-background px-6 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Comparative Audit Matrix</span>
+          <span className="bg-background px-6 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Comparative Matrix</span>
         </div>
       </div>
 
@@ -135,8 +134,7 @@ export default function ComparePage() {
                 
                 <div className="aspect-[4/3] relative bg-primary/5 flex items-center justify-center overflow-hidden">
                   <div className="flex flex-col items-center gap-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <User className="w-20 h-20 text-primary" />
-                    <Landmark className="w-8 h-8 text-primary" />
+                    <Landmark className="w-20 h-20 text-primary" />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/20 to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6">
@@ -163,45 +161,26 @@ export default function ComparePage() {
 
                   <div className="p-6 space-y-4">
                      <div className="flex justify-between text-xs">
-                        <span className="text-muted-foreground font-black uppercase tracking-tighter">Verified Cases</span>
+                        <span className="text-muted-foreground font-black uppercase tracking-tighter">Archived Cases</span>
                         <span className="font-black text-primary">{p.cases?.length || 0}</span>
                      </div>
                      <div className="flex justify-between text-xs">
-                        <span className="text-muted-foreground font-black uppercase tracking-tighter">Audit Status</span>
+                        <span className="text-muted-foreground font-black uppercase tracking-tighter">Status</span>
                         <Badge variant="outline" className="border-accent/20 text-accent font-black text-[9px] uppercase tracking-widest bg-accent/5">
                           <ShieldCheck className="w-3 h-3 mr-1" />
                           Verified
                         </Badge>
                      </div>
                   </div>
-
-                  <div className="p-6">
-                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-4 italic font-medium">
-                      {p.bio}
-                    </p>
-                  </div>
                 </CardContent>
               </Card>
             ))}
-            
-            {selectedIds.length < 3 && (
-               <div 
-                className="border-4 border-dashed rounded-3xl flex flex-col items-center justify-center p-12 text-center text-muted-foreground bg-primary/5 border-primary/5 hover:bg-primary/10 transition-all cursor-pointer group" 
-                onClick={() => {}}
-              >
-                  <div className="p-4 bg-white rounded-2xl shadow-sm mb-4 group-hover:scale-110 transition-transform">
-                    <Plus className="w-8 h-8 text-accent opacity-40" />
-                  </div>
-                  <p className="font-black text-primary uppercase tracking-widest text-sm">Select Official</p>
-                  <p className="text-[10px] mt-1 font-medium">Compare audit data side-by-side.</p>
-               </div>
-            )}
           </div>
         ) : (
           <div className="text-center py-40 bg-white rounded-3xl border-4 border-dashed border-primary/5">
              <Scale className="w-16 h-16 mx-auto mb-6 text-muted-foreground opacity-20" />
-             <h2 className="text-2xl font-black text-primary mb-2 uppercase tracking-tight">Comparison Matrix Empty</h2>
-             <p className="text-muted-foreground max-w-sm mx-auto font-medium">Pick up to 3 Nigerian politicians from the registry options above to begin a comparative audit.</p>
+             <h2 className="text-2xl font-black text-primary mb-2 uppercase tracking-tight">Audit Matrix Ready</h2>
+             <p className="text-muted-foreground max-w-sm mx-auto font-medium">Select figures from the registry above to begin a comparative audit.</p>
           </div>
         )}
       </div>
