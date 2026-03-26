@@ -4,6 +4,7 @@ import { differenceInDays, parseISO } from 'date-fns';
 
 /**
  * Scoring Algorithm
+ * Formula:
  * Score = 
  *   (Alleged × 1) + 
  *   (Investigations × 2) + 
@@ -20,13 +21,14 @@ export function calculateAccountabilityScore(politician: Politician): ScoreBreak
     convicted: politician.cases.filter(c => c.status === 'convicted').length,
   };
 
-  const totalForfeited = politician.forfeitures.reduce((sum, f) => sum + f.amount, 0);
-  const forfeitedFactor = Math.log10(totalForfeited + 1) * 5;
+  // Convert all forfeitures to a base value for log calculation
+  // For simplicity, we assume the totalForfeiture property is already in a normalized "value" units
+  const forfeitedFactor = Math.log10(politician.totalForfeiture + 1) * 5;
 
-  const detentionDays = politician.detentions.reduce((sum, d) => {
+  const detentionDays = (politician.detentions || []).reduce((sum, d) => {
     const start = parseISO(d.startDate);
     const end = d.endDate ? parseISO(d.endDate) : new Date();
-    return sum + differenceInDays(end, start);
+    return sum + Math.max(0, differenceInDays(end, start));
   }, 0);
 
   const detentionFactor = detentionDays / 30;

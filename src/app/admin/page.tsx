@@ -14,10 +14,11 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Trash2, Search, ShieldCheck, Database, Loader2, Sparkles, AlertCircle, ListPlus, Gavel } from 'lucide-react';
+import { Trash2, Search, Database, Loader2, Sparkles, Gavel, ListPlus } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { scrapePoliticianData } from '@/ai/flows/scrape-politician-flow';
+import { INITIAL_REGISTRY_SEED } from '@/lib/seed-data';
 import { PROMINENT_NIGERIAN_POLITICIANS } from '@/lib/politician-names';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -39,28 +40,49 @@ export default function AdminPage() {
     (p as any).fullName.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  const ingestPolitician = async (name: string) => {
+  const ingestPolitician = async (politicianData: any) => {
     if (!db) return;
-    const data = await scrapePoliticianData({ fullName: name });
     
     const polRef = await addDoc(collection(db, 'politicians'), {
-      fullName: data.fullName,
-      aliasNames: data.aliasNames,
-      bio: data.bio,
-      primaryParty: data.primaryParty,
+      fullName: politicianData.fullName,
+      aliasNames: politicianData.aliasNames || [],
+      bio: politicianData.bio || '',
+      primaryParty: politicianData.primaryParty || 'Unknown',
       accountabilityScore: 0, 
-      totalForfeiture: data.totalForfeiture,
-      profileImageUrl: `https://picsum.photos/seed/${encodeURIComponent(name)}/400/400`,
+      totalForfeiture: politicianData.totalForfeiture || 0,
+      profileImageUrl: politicianData.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(politicianData.fullName)}/400/400`,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
 
-    for (const office of data.offices) {
-      await addDoc(collection(db, 'politicians', polRef.id, 'offices'), office);
+    if (politicianData.offices) {
+      for (const office of politicianData.offices) {
+        await addDoc(collection(db, 'politicians', polRef.id, 'offices'), office);
+      }
     }
 
-    for (const c of data.cases) {
-      await addDoc(collection(db, 'politicians', polRef.id, 'cases'), c);
+    if (politicianData.cases) {
+      for (const c of politicianData.cases) {
+        await addDoc(collection(db, 'politicians', polRef.id, 'cases'), c);
+      }
+    }
+  };
+
+  const handleSeedRegistry = async () => {
+    if (!db || isBatching) return;
+    setIsBatching(true);
+    setBatchProgress(0);
+    
+    try {
+      for (let i = 0; i < INITIAL_REGISTRY_SEED.length; i++) {
+        await ingestPolitician(INITIAL_REGISTRY_SEED[i]);
+        setBatchProgress(((i + 1) / INITIAL_REGISTRY_SEED.length) * 100);
+      }
+      toast({ title: "Registry Seeded", description: `${INITIAL_REGISTRY_SEED.length} high-profile dossiers archived.` });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Seeding Failed" });
+    } finally {
+      setIsBatching(false);
     }
   };
 
@@ -68,7 +90,8 @@ export default function AdminPage() {
     if (!db || !scrapeName.trim()) return;
     setIsScraping(true);
     try {
-      await ingestPolitician(scrapeName);
+      const data = await scrapePoliticianData({ fullName: scrapeName });
+      await ingestPolitician(data);
       toast({
         title: "Dossier Ingested",
         description: `Verified public record for ${scrapeName} has been archived.`,
@@ -83,32 +106,6 @@ export default function AdminPage() {
     } finally {
       setIsScraping(false);
     }
-  };
-
-  const handleBatchDiscovery = async () => {
-    if (!db || isBatching) return;
-    setIsBatching(true);
-    setBatchProgress(0);
-    
-    // Process in smaller batches for demo stability
-    const batchSize = 20; 
-    const targetList = PROMINENT_NIGERIAN_POLITICIANS.slice(0, batchSize);
-    
-    let successCount = 0;
-    for (let i = 0; i < targetList.length; i++) {
-      const name = targetList[i];
-      try {
-        await ingestPolitician(name);
-        successCount++;
-      } catch (e) {}
-      setBatchProgress(((i + 1) / targetList.length) * 100);
-    }
-
-    toast({
-      title: "Batch Discovery Complete",
-      description: `Ingested ${successCount} profile dossiers successfully.`,
-    });
-    setIsBatching(false);
   };
 
   const handleClearDatabase = async () => {
@@ -134,13 +131,13 @@ export default function AdminPage() {
           </div>
           <div>
             <h1 className="text-3xl font-headline font-black">Registry Management</h1>
-            <p className="text-primary-foreground/60 text-sm font-medium">Authoritative Audit Control & AI Record Ingestion</p>
+            <p className="text-primary-foreground/60 text-sm font-medium">Verified Public Record Audits</p>
           </div>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10" onClick={handleBatchDiscovery} disabled={isBatching}>
-            {isBatching ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ListPlus className="w-4 h-4 mr-2" />}
-            Batch Discover
+          <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10" onClick={handleSeedRegistry} disabled={isBatching}>
+            <ListPlus className="w-4 h-4 mr-2" />
+            Seed Initial Registry
           </Button>
           <Button variant="destructive" onClick={handleClearDatabase} disabled={clearing} className="shadow-lg">
             Wipe Registry
@@ -154,7 +151,7 @@ export default function AdminPage() {
             <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest text-primary">
               <span className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-accent animate-pulse" />
-                Aggregating Footprints...
+                Seeding Master Dossiers...
               </span>
               <span>{Math.round(batchProgress)}%</span>
             </div>
@@ -221,30 +218,10 @@ export default function AdminPage() {
                       </TableCell>
                     </TableRow>
                   ))}
-                  {filtered.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={4} className="h-32 text-center text-muted-foreground italic">
-                        No records found in current registry.
-                      </TableCell>
-                    </TableRow>
-                  )}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="space-y-6">
-           <Card className="bg-accent/5 border-accent/20">
-             <CardHeader>
-               <CardTitle className="text-sm font-black uppercase tracking-widest text-accent">Audit Guidelines</CardTitle>
-             </CardHeader>
-             <CardContent className="text-xs space-y-4 text-muted-foreground leading-relaxed">
-               <p>• Every ingested record must be backed by a verifiable source (PLAC, Court, Gazettes).</p>
-               <p>• Scoring is calculated autonomously based on legal status weights and asset recovery volume.</p>
-               <p>• Satirical badges are AI-generated but must remain non-defamatory and context-relevant.</p>
-             </CardContent>
-           </Card>
         </div>
       </div>
     </div>
