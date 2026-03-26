@@ -2,20 +2,19 @@ import { Politician } from './types';
 
 /**
  * A comprehensive, research-backed seed of Nigerian politicians and their 
- * verified public record "corruption footprints" since 2014.
- * This dataset includes reopened probes, active trials, and high-profile asset recovery cases.
+ * verified public record "corruption footprints" based on provided datasets.
  */
 export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
-  // CATEGORY A: REOPENED GOVERNORS
+  // CATEGORY A: ADDITIONAL GOVERNORS (REOPENED / INVESTIGATED)
   {
     fullName: 'Kayode Fayemi',
     primaryParty: 'APC',
-    bio: 'Former Governor of Ekiti State and Minister of Mines and Steel Development. Subject of reopened probes regarding Ekiti state fund management and procurement.',
+    bio: 'Former Governor of Ekiti State and Minister. Subject of reopened probes regarding state fund management and procurement.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Ekiti Fund / Procurement Probe',
-        description: 'Reopened investigation into state fund management and procurement processes during his gubernatorial tenure.',
+        title: 'Ekiti Procurement / Fund Issues',
+        description: 'Reopened investigation into state fund management and procurement processes during his tenure.',
         status: 'under_investigation',
         amountInvolved: 0,
         currency: 'NGN',
@@ -26,12 +25,12 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Ayo Fayose',
     primaryParty: 'PDP',
-    bio: 'Former Governor of Ekiti State. Facing a long-running trial regarding allegations of N6.9 billion public fund misappropriation.',
+    bio: 'Former Governor of Ekiti State. Facing a long-running trial regarding allegations of public fund misappropriation.',
     totalForfeiture: 0,
     cases: [
       {
         title: 'N6.9 Billion Fraud Trial',
-        description: 'Ongoing trial regarding the alleged misappropriation of funds from the office of the National Security Adviser (ONSA).',
+        description: 'Ongoing trial regarding alleged misappropriation of funds from state coffers.',
         status: 'charged',
         amountInvolved: 6900000000,
         currency: 'NGN',
@@ -42,11 +41,11 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Bello Matawalle',
     primaryParty: 'APC',
-    bio: 'Current Minister of State for Defence and former Governor of Zamfara State. Investigation into security fund management during his tenure.',
+    bio: 'Former Governor of Zamfara State and Minister. Investigation into security fund management during his tenure.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Zamfara Security Fund Investigation',
+        title: 'Security Funds Investigation',
         description: 'Inquiry into the management of security votes and state contracts.',
         status: 'under_investigation',
         amountInvolved: 0,
@@ -56,14 +55,62 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     ]
   },
   {
-    fullName: 'Rabiu Kwankwaso',
-    primaryParty: 'NNPP',
-    bio: 'Former Governor of Kano State and Minister of Defence. Subject of investigation regarding pension fund management.',
+    fullName: 'Chimaroke Nnamani',
+    primaryParty: 'PDP',
+    bio: 'Former Governor of Enugu State. Historical money laundering cases revived for further audit.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Kano Pension Fund Inquiry',
-        description: 'Investigation into worker pension funds management and related state contracts.',
+        title: 'Money Laundering Audit',
+        description: 'Revived investigation into historical financial transactions and asset acquisitions.',
+        status: 'under_investigation',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2024-01-15',
+      }
+    ]
+  },
+  {
+    fullName: 'Sullivan Chime',
+    primaryParty: 'APC',
+    bio: 'Former Governor of Enugu State. Subject of inquiries regarding state fund utilization.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'State Funds Probe',
+        description: 'Ongoing inquiry into financial management during his gubernatorial tenure.',
+        status: 'under_investigation',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2023-11-01',
+      }
+    ]
+  },
+  {
+    fullName: 'Abdullahi Adamu',
+    primaryParty: 'APC',
+    bio: 'Former Governor of Nasarawa State. Historical N15bn fraud allegations resurfaced recently.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'N15 Billion Fraud Case',
+        description: 'Allegations of financial misappropriation that have been revisited for judicial review.',
+        status: 'under_investigation',
+        amountInvolved: 15000000000,
+        currency: 'NGN',
+        caseStartDate: '2023-01-01',
+      }
+    ]
+  },
+  {
+    fullName: 'Rabiu Kwankwaso',
+    primaryParty: 'NNPP',
+    bio: 'Former Governor of Kano State. Investigation into pension fund management and state contracts.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Pension / Contracts Inquiry',
+        description: 'Audit of worker pension funds and related infrastructure contracts.',
         status: 'under_investigation',
         amountInvolved: 0,
         currency: 'NGN',
@@ -72,23 +119,87 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     ]
   },
   {
-    fullName: 'Abdullahi Adamu',
+    fullName: 'Aliyu Wamakko',
     primaryParty: 'APC',
-    bio: 'Former National Chairman of the APC and Governor of Nasarawa State. Historical N15bn fraud allegations resurfaced in recent years.',
+    bio: 'Former Governor of Sokoto State. Probe into state fund allocations and treasury management.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'N15 Billion Fraud Case',
-        description: 'Historical allegations of financial misappropriation during his governorship that resurfaced for review.',
+        title: 'State Funds Allocation Probe',
+        description: 'Audit of state financial records during his tenure as Governor.',
         status: 'under_investigation',
-        amountInvolved: 15000000000,
+        amountInvolved: 0,
         currency: 'NGN',
-        caseStartDate: '2023-01-01',
+        caseStartDate: '2024-02-10',
+      }
+    ]
+  },
+  {
+    fullName: 'Theodore Orji',
+    primaryParty: 'PDP',
+    bio: 'Former Governor of Abia State. Facing trial regarding the alleged diversion of state funds.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Diversion of State Funds',
+        description: 'Ongoing trial regarding allegations of treasury looting and fund diversion.',
+        status: 'charged',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2020-02-24',
+      }
+    ]
+  },
+  {
+    fullName: 'Danjuma Goje',
+    primaryParty: 'APC',
+    bio: 'Former Governor of Gombe State. Previous N25bn fraud case withdrawn by judicial authorities.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'N25 Billion Fraud Case',
+        description: 'Allegations of financial misappropriation which were subsequently withdrawn.',
+        status: 'dismissed',
+        amountInvolved: 25000000000,
+        currency: 'NGN',
+        caseStartDate: '2011-10-10',
+      }
+    ]
+  },
+  {
+    fullName: 'Sule Lamido',
+    primaryParty: 'PDP',
+    bio: 'Former Governor of Jigawa State. Trial regarding alleged money laundering involving state contracts.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'N1.35 Billion Money Laundering',
+        description: 'Ongoing/retrial regarding alleged kickbacks and laundering of public funds.',
+        status: 'charged',
+        amountInvolved: 1350000000,
+        currency: 'NGN',
+        caseStartDate: '2015-07-09',
+      }
+    ]
+  },
+  {
+    fullName: 'Peter Odili',
+    primaryParty: 'PDP',
+    bio: 'Former Governor of Rivers State. Long-standing allegations revived following challenges to historical legal shields.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'N100 Billion Allegations',
+        description: 'Revived inquiries into massive state treasury management issues.',
+        status: 'under_investigation',
+        amountInvolved: 100000000000,
+        currency: 'NGN',
+        caseStartDate: '2024-04-01',
       }
     ]
   },
 
-  // CATEGORY B: CURRENT / RECENT GOVERNORS
+  // CATEGORY B: CURRENT / RECENT GOVERNORS & ACTIVE POLITICIANS
   {
     fullName: 'Willie Obiano',
     primaryParty: 'APGA',
@@ -96,7 +207,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     totalForfeiture: 0,
     cases: [
       {
-        title: 'N4 Billion Money Laundering',
+        title: 'N4 Billion Laundering Trial',
         description: 'Charges related to the diversion of Anambra State security votes.',
         status: 'charged',
         amountInvolved: 4000000000,
@@ -108,16 +219,96 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Rochas Okorocha',
     primaryParty: 'APC',
-    bio: 'Former Governor of Imo State and Senator. Involved in multiple probes regarding Imo state assets and treasury funds.',
+    bio: 'Former Governor of Imo State. Subject of multiple probes regarding state assets and treasury funds.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'N2.9 Billion Fraud Probe',
-        description: 'Allegations of diversion of public funds to his private accounts and family-linked entities.',
-        status: 'under_investigation',
-        amountInvolved: 2900000000,
+        title: 'N3 Billion Fraud Case',
+        description: 'Dismissed cases subject to revival attempts by anti-corruption agencies.',
+        status: 'dismissed',
+        amountInvolved: 3000000000,
         currency: 'NGN',
         caseStartDate: '2022-01-31',
+      }
+    ]
+  },
+  {
+    fullName: 'Abdulfatah Ahmed',
+    primaryParty: 'PDP',
+    bio: 'Former Governor of Kwara State. Facing trial for the alleged misappropriation of N10 billion.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'N10 Billion Misappropriation',
+        description: 'Ongoing trial regarding state financial records and fund allocations.',
+        status: 'charged',
+        amountInvolved: 10000000000,
+        currency: 'NGN',
+        caseStartDate: '2024-02-19',
+      }
+    ]
+  },
+  {
+    fullName: 'Tanko Al-Makura',
+    primaryParty: 'APC',
+    bio: 'Former Governor of Nasarawa State. Investigation into procurement processes and state contracts.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Procurement Fraud Inquiry',
+        description: 'Audit of infrastructure contracts and procurement during his tenure.',
+        status: 'under_investigation',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2023-09-01',
+      }
+    ]
+  },
+  {
+    fullName: 'Abdulaziz Yari',
+    primaryParty: 'APC',
+    bio: 'Former Governor of Zamfara State. Investigation into the diversion of state and local government funds.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Funds Diversion Probe',
+        description: 'Investigation into the management of state resources and Paris Club refund allocations.',
+        status: 'under_investigation',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2021-05-10',
+      }
+    ]
+  },
+  {
+    fullName: 'Godswill Akpabio',
+    primaryParty: 'APC',
+    bio: 'Senate President and former Governor. Subject of historical contract inquiries; no formal convictions.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Contract Management Inquiry',
+        description: 'Historical investigations into large-scale state infrastructure funding.',
+        status: 'alleged',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2015-01-01',
+      }
+    ]
+  },
+  {
+    fullName: 'Bukola Saraki',
+    primaryParty: 'PDP',
+    bio: 'Former Senate President and Governor. Acquitted in asset declaration cases after long judicial battles.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Asset Declaration Case',
+        description: 'Long-running legal battle regarding asset disclosure; ultimately acquitted.',
+        status: 'dismissed',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2015-09-22',
       }
     ]
   },
@@ -126,20 +317,12 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Diezani Alison-Madueke',
     primaryParty: 'PDP',
-    bio: 'Former Minister of Petroleum Resources. At the center of massive international asset recovery cases involving oil bribery.',
+    bio: 'Former Minister of Petroleum Resources. Central figure in massive international asset recovery cases.',
     totalForfeiture: 153000000,
     cases: [
       {
-        title: 'Permanent Asset Forfeiture',
-        description: 'Permanent forfeiture of $153 million and dozens of properties to the FGN.',
-        status: 'convicted',
-        amountInvolved: 153000000,
-        currency: 'USD',
-        caseStartDate: '2017-08-28',
-      },
-      {
-        title: 'UK Oil Bribery Trial',
-        description: 'Charges brought by the UK NCA regarding oil-linked bribery.',
+        title: 'Oil Bribery Trial (UK)',
+        description: 'International legal proceedings regarding oil-linked bribery and asset acquisition.',
         status: 'charged',
         amountInvolved: 0,
         currency: 'USD',
@@ -148,30 +331,30 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     ]
   },
   {
-    fullName: 'Ahmed Idris',
-    primaryParty: 'Independent',
-    bio: 'Former Accountant-General of the Federation. Facing trial for the alleged misappropriation of N109 billion.',
-    totalForfeiture: 30000000000,
+    fullName: 'Timipre Sylva',
+    primaryParty: 'APC',
+    bio: 'Former Minister of State for Petroleum and Governor. Charged regarding financial transactions during tenure.',
+    totalForfeiture: 0,
     cases: [
       {
-        title: 'N109 Billion Treasury Fraud',
-        description: 'Trial for allegedly misappropriating N109 billion in public funds.',
+        title: '$14.8 Million Fraud Charge',
+        description: 'Charges related to financial misappropriation and asset transfers.',
         status: 'charged',
-        amountInvolved: 109000000000,
-        currency: 'NGN',
-        caseStartDate: '2022-05-16',
+        amountInvolved: 14800000,
+        currency: 'USD',
+        caseStartDate: '2015-01-01',
       }
     ]
   },
   {
     fullName: 'Mohammed Bello Adoke',
     primaryParty: 'PDP',
-    bio: 'Former Attorney General of the Federation. Charged regarding roles in the controversial Malabu Oil Deal.',
+    bio: 'Former Attorney General of the Federation. Charged regarding roles in the Malabu Oil Deal.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'Malabu Oil Transaction',
-        description: 'Allegations of money laundering and conspiracy relating to the OPL 245 deal.',
+        title: 'Malabu Oil Deal Transaction',
+        description: 'Allegations of conspiracy and money laundering related to OPL 245.',
         status: 'charged',
         amountInvolved: 0,
         currency: 'USD',
@@ -179,17 +362,49 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
       }
     ]
   },
+  {
+    fullName: 'Ahmed Idris',
+    primaryParty: 'Independent',
+    bio: 'Former Accountant-General. Trial regarding the alleged misappropriation of N109 billion.',
+    totalForfeiture: 30000000000,
+    cases: [
+      {
+        title: 'N109 Billion Treasury Fraud',
+        description: 'Ongoing trial for allegedly diverting over N100bn from the federation account.',
+        status: 'charged',
+        amountInvolved: 109000000000,
+        currency: 'NGN',
+        caseStartDate: '2022-05-16',
+      }
+    ]
+  },
 
   // CATEGORY D: SENATORS / NATIONAL ASSEMBLY
   {
+    fullName: 'Olisa Metuh',
+    primaryParty: 'PDP',
+    bio: 'Former Party Spokesman. Convicted for his role in receiving funds from the ONSA armsgate fund.',
+    totalForfeiture: 400000000,
+    cases: [
+      {
+        title: 'N400 Million Armsgate Fund',
+        description: 'Convicted for receiving illicit funds meant for security procurement.',
+        status: 'convicted',
+        amountInvolved: 400000000,
+        currency: 'NGN',
+        caseStartDate: '2016-01-15',
+      }
+    ]
+  },
+  {
     fullName: 'Orji Uzor Kalu',
     primaryParty: 'APC',
-    bio: 'Senator and former Governor of Abia State. Case involves state treasury funds, currently facing retrial proceedings.',
+    bio: 'Senator and former Governor. Case involves N7.65bn in state funds; currently facing retrial proceedings.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'N7.65 Billion Retrial',
-        description: 'Retrial for alleged fraud committed during his tenure as Governor.',
+        title: 'N7.65 Billion Treasury Fraud',
+        description: 'Initial conviction followed by an order for a retrial on technical grounds.',
         status: 'charged',
         amountInvolved: 7650000000,
         currency: 'NGN',
@@ -200,12 +415,12 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Stella Oduah',
     primaryParty: 'PDP',
-    bio: 'Senator and former Minister of Aviation. Facing charges related to financial misappropriation of N5 billion.',
+    bio: 'Senator and former Minister. Charged regarding financial misappropriation of aviation funds.',
     totalForfeiture: 0,
     cases: [
       {
-        title: 'N5 Billion Money Laundering',
-        description: 'Allegations of conspiracy and money laundering involving aviation funds.',
+        title: 'N5 Billion Misappropriation',
+        description: 'Allegations of money laundering and conspiracy involving public aviation funds.',
         status: 'charged',
         amountInvolved: 5000000000,
         currency: 'NGN',
@@ -214,23 +429,39 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     ]
   },
   {
-    fullName: 'Olisa Metuh',
-    primaryParty: 'PDP',
-    bio: 'Former National Publicity Secretary of the PDP. Convicted for his role in the N400 million ONSA armsgate fund.',
-    totalForfeiture: 400000000,
+    fullName: 'Enyinnaya Abaribe',
+    primaryParty: 'APGA',
+    bio: 'Senator and former Deputy Governor. Previously involved in fraud-linked cases; ultimately discharged.',
+    totalForfeiture: 0,
     cases: [
       {
-        title: 'N400 Million Armsgate Fund',
-        description: 'Convicted for receiving funds meant for security procurement from the ONSA.',
-        status: 'convicted',
-        amountInvolved: 400000000,
+        title: 'Fraud-linked Inquiry',
+        description: 'Legal review of financial transactions; discharged by the courts.',
+        status: 'dismissed',
+        amountInvolved: 0,
         currency: 'NGN',
-        caseStartDate: '2016-01-15',
+        caseStartDate: '2018-01-01',
+      }
+    ]
+  },
+  {
+    fullName: 'Dino Melaye',
+    primaryParty: 'PDP',
+    bio: 'Former Senator and Governor candidate. Subject of various asset and misconduct issues; cases ultimately collapsed.',
+    totalForfeiture: 0,
+    cases: [
+      {
+        title: 'Asset Disclosure Issue',
+        description: 'Judicial inquiry into asset filings and public statements; cases collapsed.',
+        status: 'dismissed',
+        amountInvolved: 0,
+        currency: 'NGN',
+        caseStartDate: '2017-01-01',
       }
     ]
   },
 
-  // CATEGORY E: TOP-TIER / PRESIDENTIAL FIGURES
+  // CATEGORY E: PRESIDENTIAL / TOP-TIER
   {
     fullName: 'Bola Ahmed Tinubu',
     primaryParty: 'APC',
@@ -238,8 +469,8 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     totalForfeiture: 460000,
     cases: [
       {
-        title: 'Historical Financial Settlement',
-        description: 'Asset settlement involving funds in US bank accounts during the 1990s.',
+        title: 'Historical Financial Probe',
+        description: 'Settlement involving assets linked to investigations in the 1990s; no formal conviction.',
         status: 'alleged',
         amountInvolved: 460000,
         currency: 'USD',
@@ -250,12 +481,12 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Atiku Abubakar',
     primaryParty: 'PDP',
-    bio: 'Former Vice President of Nigeria. Involved in various international inquiries regarding business transactions.',
+    bio: 'Former Vice President. Involved in various international inquiries regarding business transactions; no formal conviction.',
     totalForfeiture: 0,
     cases: [
       {
         title: 'PTDF / International Inquiry',
-        description: 'US Senate reports and local inquiries into business transactions and offshore transfers.',
+        description: 'Allegations related to business transactions and offshore transfers.',
         status: 'alleged',
         amountInvolved: 40000000,
         currency: 'USD',
@@ -264,11 +495,11 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
     ]
   },
 
-  // ADDITIONAL FORFEITURE CLUSTER
+  // CATEGORY F: FORFEITURE & ASSET SEIZURE
   {
     fullName: 'Abdulrasheed Maina',
     primaryParty: 'Independent',
-    bio: 'Former Chairman of the Pension Reform Task Team. Convicted for massive pension fund diversion.',
+    bio: 'Former Pension Reform Boss. Convicted for massive diversion of public pension funds.',
     totalForfeiture: 2000000000,
     cases: [
       {
