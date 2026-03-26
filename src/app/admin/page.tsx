@@ -2,7 +2,8 @@
 'use client';
 
 import { useState } from 'react';
-import { politicians } from '@/lib/mock-data';
+import { useFirebase, useCollection } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { 
   Table, 
   TableBody, 
@@ -13,16 +14,54 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Edit2, Trash2, Search, Settings, ShieldCheck, Database } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, ShieldCheck, Database, Loader2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { politicians as mockPoliticians } from '@/lib/mock-data';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function AdminPage() {
+  const { db } = useFirebase();
   const [searchTerm, setSearchTerm] = useState('');
+  const [seeding, setSeeding] = useState(false);
 
-  const filtered = politicians.filter(p => 
-    p.fullName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const politiciansQuery = db ? collection(db, 'politicians') : null;
+  const { data: politicians, loading } = useCollection(politiciansQuery);
+
+  const filtered = politicians?.filter(p => 
+    (p as any).fullName.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const handleSeedData = async () => {
+    if (!db) return;
+    setSeeding(true);
+    try {
+      for (const p of mockPoliticians) {
+        const { id, ...data } = p;
+        const docRef = await addDoc(collection(db, 'politicians'), {
+          ...data,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+
+        // Add cases as subcollection
+        for (const c of p.cases) {
+          const { id: cid, ...caseData } = c;
+          await addDoc(collection(db, 'politicians', docRef.id, 'cases'), caseData);
+        }
+      }
+      alert('Mock data seeded successfully!');
+    } catch (e: any) {
+      const permissionError = new FirestorePermissionError({
+        path: 'politicians',
+        operation: 'create',
+      });
+      errorEmitter.emit('permission-error', permissionError);
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -36,10 +75,21 @@ export default function AdminPage() {
             <p className="opacity-80">Secure administrative panel for verifying and updating public records.</p>
           </div>
         </div>
-        <Button className="bg-accent hover:bg-accent/90 gap-2 h-12 px-6 font-bold">
-          <Plus className="w-5 h-5" />
-          Add New Politician
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            className="text-primary bg-white hover:bg-white/90"
+            onClick={handleSeedData}
+            disabled={seeding}
+          >
+            {seeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4 mr-2" />}
+            Seed Mock Data
+          </Button>
+          <Button className="bg-accent hover:bg-accent/90 gap-2 h-12 px-6 font-bold">
+            <Plus className="w-5 h-5" />
+            Add New Politician
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -48,7 +98,7 @@ export default function AdminPage() {
             <CardHeader className="flex flex-row items-center justify-between pb-6 border-b mb-6">
               <CardTitle className="text-xl flex items-center gap-2">
                 <Database className="w-5 h-5 text-primary" />
-                Active Records
+                Active Records {loading && <Loader2 className="w-4 h-4 animate-spin ml-2" />}
               </CardTitle>
               <div className="relative w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -65,21 +115,21 @@ export default function AdminPage() {
                 <TableHeader className="bg-muted/50">
                   <TableRow>
                     <TableHead className="font-bold">Politician</TableHead>
-                    <TableHead className="font-bold">Offices</TableHead>
-                    <TableHead className="font-bold">Status</TableHead>
-                    <TableHead className="font-bold">Cases</TableHead>
+                    <TableHead className="font-bold">Party</TableHead>
+                    <TableHead className="font-bold">Score</TableHead>
                     <TableHead className="text-right font-bold">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filtered.map((p) => (
+                  {filtered.map((p: any) => (
                     <TableRow key={p.id}>
                       <TableCell className="font-bold text-primary">{p.fullName}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{p.offices[0]}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="capitalize">{p.status}</Badge>
+                        <Badge variant="secondary">{p.primaryParty}</Badge>
                       </TableCell>
-                      <TableCell>{p.caseCount}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{p.accountabilityScore || 'N/A'}</Badge>
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/5">
@@ -92,6 +142,13 @@ export default function AdminPage() {
                       </TableCell>
                     </TableRow>
                   ))}
+                  {filtered.length === 0 && !loading && (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center py-8 text-muted-foreground italic">
+                        No records found. Seed data to get started.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -106,36 +163,11 @@ export default function AdminPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Total Records</span>
-                <span className="font-bold">{politicians.length}</span>
+                <span className="font-bold">{filtered.length}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Verified Sources</span>
                 <span className="font-bold text-green-600">100%</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Pending Submissions</span>
-                <Badge variant="secondary">12</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-accent/20 bg-accent/5">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Settings className="w-5 h-5" />
-                Audit Logs
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="text-xs border-b pb-2">
-                  <p className="font-bold">Updated Elena Valerius</p>
-                  <p className="text-muted-foreground">Admin: JDoe • 2 hours ago</p>
-                </div>
-                <div className="text-xs border-b pb-2">
-                  <p className="font-bold">Added source to Barnaby Sterling</p>
-                  <p className="text-muted-foreground">System • 5 hours ago</p>
-                </div>
               </div>
             </CardContent>
           </Card>

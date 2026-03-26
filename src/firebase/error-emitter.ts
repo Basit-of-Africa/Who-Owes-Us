@@ -1,0 +1,32 @@
+'use client';
+
+/**
+ * @fileOverview A central event emitter for Firebase-related errors.
+ * Used to decouple error detection in hooks/services from the UI that displays them.
+ */
+
+type ErrorListener = (error: any) => void;
+
+class ErrorEmitter {
+  private listeners: Record<string, ErrorListener[]> = {};
+
+  on(event: string, listener: ErrorListener) {
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
+    }
+    this.listeners[event].push(listener);
+    return () => this.off(event, listener);
+  }
+
+  off(event: string, listener: ErrorListener) {
+    if (!this.listeners[event]) return;
+    this.listeners[event] = this.listeners[event].filter(l => l !== listener);
+  }
+
+  emit(event: string, error: any) {
+    if (!this.listeners[event]) return;
+    this.listeners[event].forEach(listener => listener(error));
+  }
+}
+
+export const errorEmitter = new ErrorEmitter();

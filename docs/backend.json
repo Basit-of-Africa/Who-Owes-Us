@@ -1,0 +1,79 @@
+
+{
+  "entities": {
+    "Politician": {
+      "title": "Politician",
+      "description": "A public official being tracked for accountability.",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "aliasNames": { "type": "array", "items": { "type": "string" } },
+        "dateOfBirth": { "type": "string", "format": "date" },
+        "profileImageUrl": { "type": "string" },
+        "bio": { "type": "string" },
+        "primaryParty": { "type": "string" },
+        "accountabilityScore": { "type": "number" },
+        "totalForfeiture": { "type": "number" },
+        "partyHistory": { 
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "party": { "type": "string" },
+              "years": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["fullName", "primaryParty"]
+    },
+    "CaseRecord": {
+      "title": "Case Record",
+      "description": "A legal case involving a politician.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["alleged", "under_investigation", "charged", "convicted", "dismissed"] },
+        "amountInvolved": { "type": "number" },
+        "currency": { "type": "string" },
+        "caseStartDate": { "type": "string", "format": "date" },
+        "caseEndDate": { "type": "string", "format": "date" },
+        "sources": { 
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "url": { "type": "string" },
+              "publisher": { "type": "string" },
+              "publicationDate": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["title", "status"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/politicians/{politicianId}": {
+      "schema": "#/entities/Politician",
+      "description": "Collection of politicians."
+    },
+    "/politicians/{politicianId}/cases/{caseId}": {
+      "schema": "#/entities/CaseRecord",
+      "description": "Cases associated with a politician."
+    },
+    "/politicians/{politicianId}/offices/{officeId}": {
+      "schema": { "type": "object" },
+      "description": "Offices held by a politician."
+    },
+    "/politicians/{politicianId}/detentions/{detentionId}": {
+      "schema": { "type": "object" },
+      "description": "Detention records for a politician."
+    }
+  }
+}
