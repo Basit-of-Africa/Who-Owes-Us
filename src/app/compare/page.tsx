@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import { X, Scale, Wallet, Loader2, Users, User, Landmark, ShieldCheck, Search } from 'lucide-react';
+import { X, Scale, Wallet, Loader2, Users, Landmark, Search, CheckCircle2, ShieldCheck, Trophy, Medal, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
@@ -29,9 +29,12 @@ export default function ComparePage() {
 
   const filteredOptions = useMemo(() => {
     if (!politicians) return [];
-    return politicians.filter((p: any) => 
-      p.fullName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return [...politicians]
+      .filter((p: any) => 
+        p.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.primaryParty.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => (b as any).totalForfeiture - (a as any).totalForfeiture);
   }, [politicians, searchQuery]);
 
   const selectedPoliticians = useMemo(() => {
@@ -43,148 +46,201 @@ export default function ComparePage() {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <Loader2 className="w-12 h-12 animate-spin mx-auto text-accent" />
-        <p className="mt-4 text-muted-foreground font-medium uppercase tracking-widest text-xs">Opening Audit Matrix...</p>
+        <p className="mt-4 text-muted-foreground font-black uppercase tracking-widest text-[10px]">Opening Audit Matrix...</p>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="text-center mb-10 md:mb-12">
-        <h1 className="text-3xl md:text-4xl font-headline font-black text-primary mb-2 uppercase tracking-tight">Audit Comparison</h1>
-        <p className="text-sm md:text-base text-muted-foreground font-medium">Select up to 3 figures to audit their records side-by-side.</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="space-y-2">
+          <Badge className="bg-accent/10 text-accent hover:bg-accent/10 border-none px-4 py-1 font-black uppercase text-[10px] tracking-widest">
+            Comparative Matrix
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-black text-primary uppercase tracking-tighter">Cross-Audit Figures</h1>
+          <p className="text-muted-foreground font-medium max-w-lg">Select up to three political figures from the registry to perform a side-by-side accountability audit.</p>
+        </div>
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input 
+            placeholder="Search by name or party..." 
+            className="pl-12 h-12 bg-white border-none shadow-sm rounded-xl focus:ring-2 focus:ring-accent font-medium"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
 
-      <section className="mb-12 md:mb-16">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <h3 className="text-[10px] md:text-xs font-black flex items-center gap-2 text-primary uppercase tracking-widest">
-            <Users className="w-4 h-4 text-accent" />
-            Registry Selection ({politicians?.length || 0})
-          </h3>
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search registry..." 
-              className="pl-10 h-10 bg-white border-primary/10 rounded-xl md:rounded-2xl"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+      <section className="mb-16">
+        <div className="flex items-center gap-3 mb-8 border-b border-primary/5 pb-4">
+          <Users className="w-5 h-5 text-accent" />
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Registry Selection ({selectedIds.length}/3)</h3>
         </div>
         
-        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-          {filteredOptions.map((p: any) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredOptions.map((p: any, index: number) => {
             const isSelected = selectedIds.includes(p.id);
+            const rank = index + 1;
+            
             return (
-              <button
+              <Card 
                 key={p.id}
                 onClick={() => toggleSelect(p.id)}
                 className={cn(
-                  "group relative p-3 md:p-4 rounded-xl md:rounded-2xl border-2 transition-all flex flex-col items-center text-center gap-2 md:gap-3",
+                  "group cursor-pointer transition-all duration-300 border-none overflow-hidden relative rounded-2xl md:rounded-[2rem] flex flex-col",
                   isSelected 
-                    ? "bg-primary border-primary shadow-xl scale-105" 
-                    : "bg-white border-transparent hover:border-accent/30 shadow-sm"
+                    ? "ring-4 ring-accent shadow-2xl scale-[1.02] bg-accent/5" 
+                    : "bg-white shadow-md hover:shadow-xl hover:translate-y-[-4px]"
                 )}
               >
-                <div className={cn(
-                  "p-2 md:p-3 rounded-lg md:rounded-xl transition-colors",
-                  isSelected ? "bg-white/10" : "bg-primary/5 group-hover:bg-primary/10"
-                )}>
-                  <Landmark className={cn("w-5 h-5 md:w-6 md:h-6", isSelected ? "text-white" : "text-primary")} />
-                </div>
-                <div className="space-y-1">
-                  <p className={cn("font-black text-[9px] md:text-[10px] leading-tight line-clamp-2", isSelected ? "text-white" : "text-primary")}>
-                    {p.fullName}
-                  </p>
-                  <p className={cn("text-[7px] md:text-[8px] font-bold uppercase tracking-tighter", isSelected ? "text-white/60" : "text-muted-foreground")}>
-                    {p.primaryParty}
-                  </p>
-                </div>
-                {isSelected && (
-                  <div className="absolute -top-1.5 -right-1.5 bg-accent text-white p-1 rounded-full shadow-lg">
-                    <X className="w-2.5 h-2.5" />
+                <div className="aspect-[4/3] relative bg-primary/5 flex items-center justify-center">
+                  <div className={cn(
+                    "flex flex-col items-center gap-3 transition-all duration-500",
+                    isSelected ? "opacity-30 scale-110" : "opacity-10 group-hover:opacity-20"
+                  )}>
+                    <Landmark className="w-16 h-16 text-primary" />
                   </div>
-                )}
-              </button>
+                  
+                  <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-2">
+                    {isSelected ? (
+                      <div className="bg-accent text-white p-2 rounded-full shadow-lg animate-in zoom-in-50">
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                    ) : (
+                      <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} className="shadow-lg bg-white/95 backdrop-blur-md border-none text-[10px]" />
+                    )}
+                  </div>
+
+                  {rank <= 3 && !isSelected && (
+                    <div className="absolute top-4 left-4 z-20">
+                      <Badge className={cn(
+                        "px-2 py-0.5 font-black uppercase text-[8px] tracking-widest border-none flex items-center gap-1 shadow-sm",
+                        rank === 1 ? "bg-yellow-500 text-white" : rank === 2 ? "bg-slate-400 text-white" : "bg-orange-600 text-white"
+                      )}>
+                        #{rank}
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent">
+                     <p className="text-accent text-[8px] font-black uppercase tracking-[0.2em] mb-1">{p.primaryParty}</p>
+                     <h3 className="text-white text-lg font-black leading-tight uppercase tracking-tight">{p.fullName}</h3>
+                  </div>
+                </div>
+                <CardContent className="p-4 flex items-center justify-between bg-white">
+                  <div className="space-y-0.5">
+                    <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">Amount Tied</p>
+                    <p className="text-sm font-black text-primary">
+                      {p.totalForfeiture >= 1000000000 
+                        ? `₦${(p.totalForfeiture / 1000000000).toFixed(1)}B` 
+                        : `₦${(p.totalForfeiture / 1000000).toFixed(0)}M`}
+                    </p>
+                  </div>
+                  <Button variant="ghost" size="sm" className={cn(
+                    "text-[10px] font-black uppercase tracking-widest h-8 rounded-lg",
+                    isSelected ? "text-accent bg-accent/10" : "text-muted-foreground"
+                  )}>
+                    {isSelected ? 'Remove' : 'Select'}
+                  </Button>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
       </section>
 
-      <div className="relative mb-8 md:mb-12">
+      <div className="relative mb-12">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
           <div className="w-full border-t border-primary/5"></div>
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-background px-4 md:px-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Comparative Matrix</span>
+          <span className="bg-background px-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-3">
+            <Scale className="w-4 h-4" />
+            Comparative Audit Matrix
+          </span>
         </div>
       </div>
 
-      <div className="mt-8 md:mt-12">
+      <div className="mt-12">
         {selectedPoliticians.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {selectedPoliticians.map((p: any) => (
-              <Card key={p.id} className="border-none overflow-hidden relative shadow-2xl bg-white rounded-2xl md:rounded-3xl group">
+              <Card key={p.id} className="border-none overflow-hidden relative shadow-2xl bg-white rounded-[2rem] group flex flex-col">
                 <button 
                   onClick={() => toggleSelect(p.id)}
-                  className="absolute top-4 right-4 z-20 p-2 bg-white/90 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors shadow-lg backdrop-blur-md"
+                  className="absolute top-6 right-6 z-20 p-2.5 bg-white/90 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors shadow-lg backdrop-blur-md"
                 >
                   <X className="w-4 h-4" />
                 </button>
                 
-                <div className="aspect-[4/3] relative bg-primary/5 flex items-center justify-center overflow-hidden">
+                <div className="aspect-video relative bg-primary/5 flex items-center justify-center overflow-hidden">
                   <div className="flex flex-col items-center gap-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Landmark className="w-16 h-16 md:w-20 md:h-20 text-primary" />
+                    <Landmark className="w-20 h-20 text-primary" />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/20 to-transparent" />
-                  <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6">
-                     <p className="text-accent text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-1">{p.primaryParty}</p>
-                     <h2 className="text-white text-xl md:text-2xl font-black leading-tight">{p.fullName}</h2>
+                  <div className="absolute bottom-6 left-8 right-8">
+                     <p className="text-accent text-[10px] font-black uppercase tracking-[0.2em] mb-2">{p.primaryParty}</p>
+                     <h2 className="text-white text-3xl font-black leading-tight uppercase tracking-tighter">{p.fullName}</h2>
                   </div>
                 </div>
 
-                <CardContent className="p-0 divide-y divide-primary/5">
-                  <div className="p-4 md:p-6 flex items-center justify-between bg-secondary/10">
-                    <span className="text-[9px] md:text-[10px] font-black uppercase text-muted-foreground tracking-widest">Accountability Score</span>
-                    <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} className="shadow-sm bg-white border-none text-xs" />
+                <CardContent className="p-0 flex-grow divide-y divide-primary/5">
+                  <div className="p-8 flex items-center justify-between bg-secondary/10">
+                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Audit Score</span>
+                    <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} className="shadow-sm bg-white border-none text-xs font-black px-4 py-2" />
                   </div>
 
-                  <div className="p-4 md:p-6 space-y-4">
+                  <div className="p-8 space-y-6">
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-[10px] md:text-xs font-black text-primary flex items-center gap-2 uppercase tracking-widest">
-                        <Wallet className="w-3.5 md:w-4 h-3.5 md:h-4 text-accent" />
-                        Restitution
+                      <span className="text-[10px] font-black text-primary flex items-center gap-2 uppercase tracking-widest">
+                        <Wallet className="w-4 h-4 text-accent" />
+                        Restitution Tied
                       </span>
-                      <span className="text-xl md:text-2xl font-black text-accent truncate">
+                      <span className="text-2xl font-black text-accent truncate">
                         ₦{p.totalForfeiture >= 1000000000 
                           ? `${(p.totalForfeiture / 1000000000).toFixed(1)}B` 
                           : `${(p.totalForfeiture / 1000000).toFixed(0)}M`}
                       </span>
                     </div>
+                    
+                    <div className="space-y-4 pt-4 border-t border-primary/5">
+                       <div className="flex justify-between items-center text-[10px] font-black">
+                          <span className="text-muted-foreground uppercase tracking-widest">Archived Cases</span>
+                          <span className="text-primary text-base">{(p.cases || []).length}</span>
+                       </div>
+                       <div className="flex justify-between items-center text-[10px] font-black">
+                          <span className="text-muted-foreground uppercase tracking-widest">Audit Status</span>
+                          <Badge variant="outline" className="border-accent/20 text-accent font-black text-[9px] uppercase tracking-widest bg-accent/5 px-3 py-1">
+                            <ShieldCheck className="w-3.5 h-3.5 mr-1.5" />
+                            Verified
+                          </Badge>
+                       </div>
+                    </div>
                   </div>
-
-                  <div className="p-4 md:p-6 space-y-4">
-                     <div className="flex justify-between text-[10px] md:text-xs">
-                        <span className="text-muted-foreground font-black uppercase tracking-tighter">Archived Cases</span>
-                        <span className="font-black text-primary">{p.cases?.length || 0}</span>
-                     </div>
-                     <div className="flex justify-between text-[10px] md:text-xs items-center">
-                        <span className="text-muted-foreground font-black uppercase tracking-tighter">Status</span>
-                        <Badge variant="outline" className="border-accent/20 text-accent font-black text-[8px] md:text-[9px] uppercase tracking-widest bg-accent/5">
-                          <ShieldCheck className="w-3 h-3 mr-1" />
-                          Verified
-                        </Badge>
-                     </div>
+                  
+                  <div className="p-8 bg-primary/5">
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">Latest Legal Record</p>
+                    <div className="bg-white p-4 rounded-xl shadow-sm border border-primary/5">
+                      <p className="text-[11px] font-black text-primary line-clamp-2 uppercase leading-tight mb-2">
+                        {p.cases?.[0]?.title || 'No recent case records archived.'}
+                      </p>
+                      <p className="text-[10px] font-medium text-muted-foreground leading-relaxed italic line-clamp-2">
+                        "{p.cases?.[0]?.description || 'Audit trail remains consistent with public data.'}"
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 md:py-40 bg-white rounded-2xl md:rounded-3xl border-4 border-dashed border-primary/5">
-             <Scale className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 md:mb-6 text-muted-foreground opacity-20" />
-             <h2 className="text-xl md:text-2xl font-black text-primary mb-2 uppercase tracking-tight">Audit Matrix Ready</h2>
-             <p className="text-sm md:text-base text-muted-foreground max-w-[280px] md:max-w-sm mx-auto font-medium">Select figures from the registry above to begin a comparative audit.</p>
+          <div className="text-center py-40 bg-white rounded-[3rem] border-4 border-dashed border-primary/5 shadow-inner">
+             <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-8">
+               <Scale className="w-10 h-10 text-muted-foreground opacity-30" />
+             </div>
+             <h2 className="text-2xl font-black text-primary mb-3 uppercase tracking-tight">Audit Matrix Ready</h2>
+             <p className="text-muted-foreground max-w-sm mx-auto font-medium leading-relaxed">Select up to three figures from the registry above to begin a comparative accountability audit.</p>
           </div>
         )}
       </div>
