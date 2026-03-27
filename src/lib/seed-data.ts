@@ -1,4 +1,3 @@
-
 import { Politician } from './types';
 
 /**
