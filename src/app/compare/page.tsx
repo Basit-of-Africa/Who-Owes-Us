@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import { X, Scale, Wallet, Loader2, Users, Landmark, Search, CheckCircle2, ShieldCheck, Trophy, Medal, Award } from 'lucide-react';
+import { X, Scale, Wallet, Loader2, Users, Landmark, Search, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
@@ -20,29 +20,37 @@ export default function ComparePage() {
   const { data: politicians, loading } = useCollection(politiciansQuery);
 
   const toggleSelect = (id: string) => {
-    if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter(i => i !== id));
-    } else if (selectedIds.length < 3) {
-      setSelectedIds([...selectedIds, id]);
-    }
+    setSelectedIds(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(i => i !== id);
+      }
+      if (prev.length < 3) {
+        return [...prev, id];
+      }
+      return prev;
+    });
   };
 
   const filteredOptions = useMemo(() => {
     if (!politicians) return [];
     return [...politicians]
-      .filter((p: any) => 
-        p.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.primaryParty.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .sort((a, b) => (b as any).totalForfeiture - (a as any).totalForfeiture);
+      .filter((p: any) => {
+        const nameMatch = (p.fullName || '').toLowerCase().includes(searchQuery.toLowerCase());
+        const partyMatch = (p.primaryParty || '').toLowerCase().includes(searchQuery.toLowerCase());
+        return nameMatch || partyMatch;
+      })
+      .sort((a, b) => ((b as any).totalForfeiture || 0) - ((a as any).totalForfeiture || 0));
   }, [politicians, searchQuery]);
 
   const selectedPoliticians = useMemo(() => {
     if (!politicians) return [];
-    return selectedIds.map(id => politicians.find((p: any) => p.id === id)!).filter(Boolean);
+    return selectedIds
+      .map(id => politicians.find((p: any) => p.id === id))
+      .filter((p): p is any => !!p);
   }, [selectedIds, politicians]);
 
-  if (loading && !politicians) {
+  // Loading state
+  if (loading && (!politicians || politicians.length === 0)) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <Loader2 className="w-12 h-12 animate-spin mx-auto text-accent" />
@@ -134,7 +142,9 @@ export default function ComparePage() {
                     <p className="text-sm font-black text-primary">
                       {p.totalForfeiture >= 1000000000 
                         ? `₦${(p.totalForfeiture / 1000000000).toFixed(1)}B` 
-                        : `₦${(p.totalForfeiture / 1000000).toFixed(0)}M`}
+                        : p.totalForfeiture >= 1000000 
+                          ? `₦${(p.totalForfeiture / 1000000).toFixed(0)}M`
+                          : `₦${(p.totalForfeiture || 0).toLocaleString()}`}
                     </p>
                   </div>
                   <Button variant="ghost" size="sm" className={cn(
@@ -180,7 +190,7 @@ export default function ComparePage() {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/20 to-transparent" />
                   <div className="absolute bottom-6 left-8 right-8">
-                     <p className="text-accent text-[10px] font-black uppercase tracking-[0.2em] mb-2">{p.primaryParty}</p>
+                     <p className="text-accent text-[10px] font-black uppercase tracking-widest mb-2">{p.primaryParty}</p>
                      <h2 className="text-white text-3xl font-black leading-tight uppercase tracking-tighter">{p.fullName}</h2>
                   </div>
                 </div>
@@ -200,14 +210,16 @@ export default function ComparePage() {
                       <span className="text-2xl font-black text-accent truncate">
                         ₦{p.totalForfeiture >= 1000000000 
                           ? `${(p.totalForfeiture / 1000000000).toFixed(1)}B` 
-                          : `${(p.totalForfeiture / 1000000).toFixed(0)}M`}
+                          : p.totalForfeiture >= 1000000
+                            ? `${(p.totalForfeiture / 1000000).toFixed(0)}M`
+                            : (p.totalForfeiture || 0).toLocaleString()}
                       </span>
                     </div>
                     
                     <div className="space-y-4 pt-4 border-t border-primary/5">
                        <div className="flex justify-between items-center text-[10px] font-black">
                           <span className="text-muted-foreground uppercase tracking-widest">Archived Cases</span>
-                          <span className="text-primary text-base">{(p.cases || []).length}</span>
+                          <span className="text-primary text-base">{(p.cases?.length) || 0}</span>
                        </div>
                        <div className="flex justify-between items-center text-[10px] font-black">
                           <span className="text-muted-foreground uppercase tracking-widest">Audit Status</span>
@@ -216,18 +228,6 @@ export default function ComparePage() {
                             Verified
                           </Badge>
                        </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-8 bg-primary/5">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">Latest Legal Record</p>
-                    <div className="bg-white p-4 rounded-xl shadow-sm border border-primary/5">
-                      <p className="text-[11px] font-black text-primary line-clamp-2 uppercase leading-tight mb-2">
-                        {p.cases?.[0]?.title || 'No recent case records archived.'}
-                      </p>
-                      <p className="text-[10px] font-medium text-muted-foreground leading-relaxed italic line-clamp-2">
-                        "{p.cases?.[0]?.description || 'Audit trail remains consistent with public data.'}"
-                      </p>
                     </div>
                   </div>
                 </CardContent>
