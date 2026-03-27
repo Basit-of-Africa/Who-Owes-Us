@@ -10,7 +10,7 @@ import { differenceInDays, parseISO } from 'date-fns';
  *   (Investigations × 2) + 
  *   (Charges × 4) + 
  *   (Convictions × 8) + 
- *   log10(Total Forfeited + 1) × 5 + 
+ *   log10(Total Forfeited in NGN + 1) × 5 + 
  *   (Detention Days / 30)
  */
 export function calculateAccountabilityScore(politician: Politician): ScoreBreakdown {
@@ -21,17 +21,17 @@ export function calculateAccountabilityScore(politician: Politician): ScoreBreak
     convicted: politician.cases.filter(c => c.status === 'convicted').length,
   };
 
-  // Convert all forfeitures to a base value for log calculation
-  // For simplicity, we assume the totalForfeiture property is already in a normalized "value" units
+  // Ensure totalForfeiture is treated as NGN.
+  // We assume the data in the DB is already normalized or we use a baseline.
   const forfeitedFactor = Math.log10(politician.totalForfeiture + 1) * 5;
 
-  const detentionDays = (politician.detentions || []).reduce((sum, d) => {
+  const totalDetentionDays = (politician.detentions || []).reduce((sum, d) => {
     const start = parseISO(d.startDate);
     const end = d.endDate ? parseISO(d.endDate) : new Date();
     return sum + Math.max(0, differenceInDays(end, start));
   }, 0);
 
-  const detentionFactor = detentionDays / 30;
+  const detentionScore = totalDetentionDays / 30;
 
   const total = 
     (counts.alleged * 1) +
@@ -39,15 +39,15 @@ export function calculateAccountabilityScore(politician: Politician): ScoreBreak
     (counts.charged * 4) +
     (counts.convicted * 8) +
     forfeitedFactor +
-    detentionFactor;
+    detentionScore;
 
   return {
-    alleged: counts.alleged,
-    investigations: counts.under_investigation,
-    charges: counts.charged,
-    convictions: counts.convicted,
-    forfeitedFactor: Math.round(forfeitedFactor * 100) / 100,
-    detentionDays: Math.round(detentionFactor * 100) / 100,
+    allegedCount: counts.alleged,
+    investigationCount: counts.under_investigation,
+    chargeCount: counts.charged,
+    convictionCount: counts.convicted,
+    forfeitureScore: Math.round(forfeitedFactor * 100) / 100,
+    detentionScore: Math.round(detentionScore * 100) / 100,
     total: Math.round(total * 10) / 10
   };
 }

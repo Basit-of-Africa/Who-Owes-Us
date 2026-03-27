@@ -65,18 +65,18 @@ export interface Politician {
   forfeitures: Forfeiture[];
   detentions: Detention[];
   accountabilityScore: number;
-  totalForfeiture: number;
+  totalForfeiture: number; // Normalized to NGN for ranking
   partyHistory: { party: string; years: string }[];
   sourceOrigin?: string;
   sourceUrl?: string;
 }
 
 export interface ScoreBreakdown {
-  alleged: number;
-  investigations: number;
-  charges: number;
-  convictions: number;
-  forfeitedFactor: number;
-  detentionDays: number;
+  allegedCount: number;
+  investigationCount: number;
+  chargeCount: number;
+  convictionCount: number;
+  forfeitureScore: number;
+  detentionScore: number;
   total: number;
 }

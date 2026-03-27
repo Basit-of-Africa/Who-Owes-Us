@@ -7,7 +7,6 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Tooltip, 
   ResponsiveContainer,
   Cell
 } from "recharts";
@@ -23,11 +22,11 @@ const chartConfig = {
 
 export function ScoreBreakdownChart({ breakdown }: { breakdown: ScoreBreakdown }) {
   const data = [
-    { name: "Convictions", value: breakdown.convictions * 8, color: "hsl(0 84% 60%)" },
-    { name: "Charges", value: breakdown.charges * 4, color: "hsl(24 95% 53%)" },
-    { name: "Inquiries", value: breakdown.investigations * 2, color: "hsl(199 89% 48%)" },
-    { name: "Restitution", value: breakdown.forfeitedFactor, color: "hsl(var(--accent))" },
-    { name: "Detention", value: breakdown.detentionDays, color: "hsl(262 83% 58%)" },
+    { name: "Convictions", value: breakdown.convictionCount * 8, color: "hsl(0 84% 60%)" },
+    { name: "Charges", value: breakdown.chargeCount * 4, color: "hsl(24 95% 53%)" },
+    { name: "Inquiries", value: breakdown.investigationCount * 2, color: "hsl(199 89% 48%)" },
+    { name: "Restitution", value: breakdown.forfeitureScore, color: "hsl(var(--accent))" },
+    { name: "Detention", value: breakdown.detentionScore, color: "hsl(262 83% 58%)" },
   ].filter(d => d.value > 0);
 
   if (data.length === 0) return null;
