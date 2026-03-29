@@ -5,26 +5,26 @@
 
 @layer base {
   :root {
-    --background: 210 20% 96%; /* #EBF1F3 - Very light grey-blue */
-    --foreground: 222 47% 11%;
+    --background: 140 20% 98%; /* #F7F9F7 - Clean off-white mint */
+    --foreground: 160 50% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 160 50% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 220 85% 32%; /* #0C3D99 - Deep trustworthy blue */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 261 68% 62%; /* #895CDD - Moderate purple */
-    --accent-foreground: 210 40% 98%;
+    --popover-foreground: 160 50% 10%;
+    --primary: 160 84% 12%; /* #003324 - Deep authoritative forest green */
+    --primary-foreground: 140 20% 98%;
+    --secondary: 140 30% 94%;
+    --secondary-foreground: 160 84% 12%;
+    --muted: 140 20% 94%;
+    --muted-foreground: 160 15% 40%;
+    --accent: 142 70% 40%; /* #1E9146 - Official Nigerian Green feel */
+    --accent-foreground: 140 20% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 220 85% 32%;
-    --radius: 0.5rem;
+    --border: 140 20% 90%;
+    --input: 140 20% 90%;
+    --ring: 142 70% 40%;
+    --radius: 0.75rem;
   }
 }
 
