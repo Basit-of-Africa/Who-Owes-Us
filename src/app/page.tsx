@@ -40,7 +40,7 @@ export default function HomePage() {
               </div>
               
               <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.85] animate-in fade-in slide-in-from-left-8 duration-700">
-                Who <br/> Owes <br/> <span className="text-accent">Us?</span>
+                Who <br className="md:hidden" /> Owes <br className="md:hidden" /> <span className="text-accent">Us?</span>
               </h1>
               
               <p className="text-lg md:text-xl font-medium text-white/70 max-w-xl mx-auto lg:mx-0 leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
@@ -65,7 +65,7 @@ export default function HomePage() {
                 <span className="text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
                   <TrendingUp className="w-3 h-3 text-accent" /> Trending Audits:
                 </span>
-                <div className="flex gap-4 animate-marquee">
+                <div className="flex gap-4">
                   {['Bola Tinubu', 'Diezani Madueke', 'Ahmed Idris', 'Peter Obi', 'Atiku Abubakar'].map((name) => (
                     <span key={name} className="text-[9px] font-bold uppercase tracking-widest bg-white/5 px-3 py-1 rounded-md">{name}</span>
                   ))}
