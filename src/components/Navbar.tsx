@@ -17,7 +17,7 @@ export function Navbar() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: 'Leaderboard', href: '/', icon: Trophy },
+    { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
     { name: 'Compare', href: '/compare', icon: BarChart3 },
     { name: 'Admin', href: '/admin', icon: Settings },
   ];
