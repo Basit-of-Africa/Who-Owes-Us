@@ -120,24 +120,34 @@ export default function AdminPage() {
     }
   };
 
+  const handleDeletePolitician = async (id: string) => {
+    if (!db) return;
+    try {
+      await deleteDoc(doc(db, 'politicians', id));
+      toast({ title: "Profile Removed" });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Delete Failed" });
+    }
+  };
+
   return (
     <div className="container mx-auto px-6 md:px-[50px] py-8 max-w-7xl">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 bg-primary p-10 rounded-3xl text-primary-foreground shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 bg-primary p-8 md:p-10 rounded-[1.5rem] md:rounded-3xl text-primary-foreground shadow-xl">
         <div className="flex items-center gap-4">
-          <div className="p-4 bg-accent/20 rounded-2xl border border-white/10">
-            <Gavel className="w-10 h-10 text-accent" />
+          <div className="p-3 md:p-4 bg-accent/20 rounded-2xl border border-white/10">
+            <Gavel className="w-8 h-8 md:w-10 md:h-10 text-accent" />
           </div>
           <div>
-            <h1 className="text-3xl font-headline font-black">Registry Management</h1>
-            <p className="text-primary-foreground/60 text-sm font-medium">Verified Public Record Audits</p>
+            <h1 className="text-2xl md:text-3xl font-headline font-black uppercase">Registry Management</h1>
+            <p className="text-primary-foreground/60 text-[10px] md:text-sm font-medium uppercase tracking-widest">Verified Public Record Audits</p>
           </div>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10" onClick={handleSeedRegistry} disabled={isBatching}>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest" onClick={handleSeedRegistry} disabled={isBatching}>
             <ListPlus className="w-4 h-4 mr-2" />
             Seed Initial Registry
           </Button>
-          <Button variant="destructive" onClick={handleClearDatabase} disabled={clearing} className="shadow-lg">
+          <Button variant="destructive" onClick={handleClearDatabase} disabled={clearing} className="shadow-lg text-[10px] font-black uppercase tracking-widest">
             Wipe Registry
           </Button>
         </div>
@@ -158,69 +168,72 @@ export default function AdminPage() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3 space-y-8">
-          <Card className="shadow-sm border-primary/5">
-            <CardContent className="p-6">
-              <div className="flex gap-4">
-                <div className="relative flex-grow">
-                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                   <Input 
-                    placeholder="Enter politician name to AI-Scrape records..." 
-                    className="h-14 pl-12 border-2 focus:border-accent rounded-xl"
-                    value={scrapeName}
-                    onChange={(e) => setScrapeName(e.target.value)}
-                  />
-                </div>
-                <Button onClick={handleAIScrape} disabled={isScraping} className="h-14 px-8 bg-accent hover:bg-accent/90 rounded-xl font-bold shadow-lg">
-                  {isScraping ? <Loader2 className="animate-spin mr-2" /> : <Sparkles className="mr-2" />} 
-                  Audit & Archive
-                </Button>
+      <div className="grid grid-cols-1 gap-8">
+        <Card className="shadow-sm border-primary/5">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-grow">
+                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                 <Input 
+                  placeholder="Enter politician name to AI-Scrape records..." 
+                  className="h-14 pl-12 border-2 focus:border-accent rounded-xl"
+                  value={scrapeName}
+                  onChange={(e) => setScrapeName(e.target.value)}
+                />
               </div>
-            </CardContent>
-          </Card>
+              <Button onClick={handleAIScrape} disabled={isScraping} className="h-14 px-8 bg-accent hover:bg-accent/90 rounded-xl font-bold shadow-lg w-full md:w-auto">
+                {isScraping ? <Loader2 className="animate-spin mr-2" /> : <Sparkles className="mr-2" />} 
+                Audit & Archive
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card className="shadow-sm border-primary/5">
-            <CardHeader className="flex flex-row items-center justify-between pb-6 border-b">
-              <div>
-                <CardTitle className="text-xl font-black">Tracked Dossiers</CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">{filtered.length} profiles in active registry</p>
-              </div>
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input placeholder="Filter records..." className="pl-10 h-10 border shadow-none" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader className="bg-secondary/5">
-                  <TableRow>
-                    <TableHead className="font-bold">Politician</TableHead>
-                    <TableHead className="font-bold">Primary Party</TableHead>
-                    <TableHead className="font-bold">Score</TableHead>
-                    <TableHead className="text-right font-bold">Actions</TableHead>
+        <Card className="shadow-sm border-primary/5">
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b gap-4">
+            <div>
+              <CardTitle className="text-xl font-black uppercase tracking-tight">Tracked Dossiers</CardTitle>
+              <p className="text-[10px] text-muted-foreground mt-1 font-bold uppercase tracking-widest">{filtered.length} profiles in active registry</p>
+            </div>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Filter records..." className="pl-10 h-10 border shadow-none" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            </div>
+          </CardHeader>
+          <CardContent className="p-0 overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-secondary/5">
+                <TableRow>
+                  <TableHead className="font-bold uppercase text-[10px]">Politician</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px]">Party</TableHead>
+                  <TableHead className="font-bold uppercase text-[10px]">Score</TableHead>
+                  <TableHead className="text-right font-bold uppercase text-[10px]">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((p: any) => (
+                  <TableRow key={p.id} className="hover:bg-muted/30">
+                    <TableCell className="font-bold text-primary">{p.fullName}</TableCell>
+                    <TableCell><Badge variant="secondary" className="bg-primary/5 text-primary border-none text-[9px] uppercase">{p.primaryParty}</Badge></TableCell>
+                    <TableCell>
+                      <span className="font-black text-accent">{p.accountabilityScore?.toFixed(1) || '0.0'}</span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-muted-foreground hover:text-destructive transition-colors"
+                        onClick={() => handleDeletePolitician(p.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filtered.map((p: any) => (
-                    <TableRow key={p.id} className="hover:bg-muted/30">
-                      <TableCell className="font-bold text-primary">{p.fullName}</TableCell>
-                      <TableCell><Badge variant="secondary" className="bg-primary/5 text-primary border-none">{p.primaryParty}</Badge></TableCell>
-                      <TableCell>
-                        <span className="font-black text-accent">{p.accountabilityScore?.toFixed(1) || '0.0'}</span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

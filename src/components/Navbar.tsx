@@ -30,8 +30,8 @@ export function Navbar() {
             <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="font-black text-lg md:text-xl tracking-tighter leading-none uppercase">Who Owes Us?</span>
-            <span className="text-[8px] font-black uppercase tracking-[0.3em] opacity-60">National Registry</span>
+            <span className="font-black text-base md:text-xl tracking-tighter leading-none uppercase">Who Owes Us?</span>
+            <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.3em] opacity-60">National Registry</span>
           </div>
         </Link>
 
