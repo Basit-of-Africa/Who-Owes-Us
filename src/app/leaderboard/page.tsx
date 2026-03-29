@@ -1,13 +1,13 @@
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useFirebase, useCollection } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, limit, getDocs } from 'firebase/firestore';
-import { Input } from '@/components/ui/input';
+import { collection } from 'firebase/firestore';
 import { 
-  Search, ArrowUpDown, Landmark, Trophy, Medal, 
-  Award, Loader2, ShieldAlert, ChevronRight 
+  Search, ArrowUpDown, Landmark, Trophy, 
+  Loader2, ShieldAlert, ChevronRight, Gavel
 } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -19,63 +19,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from '@/components/ui/badge';
-import { INITIAL_REGISTRY_SEED } from '@/lib/seed-data';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 export default function LeaderboardPage() {
   const { db } = useFirebase();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('forfeiture');
-  const [isAutoSeeding, setIsAutoSeeding] = useState(false);
+  const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('score');
 
   const politiciansRef = db ? collection(db, 'politicians') : null;
   const { data: politicians, loading } = useCollection(politiciansRef);
-
-  useEffect(() => {
-    async function performAutoSeed() {
-      if (!db || loading || isAutoSeeding) return;
-      
-      const q = query(collection(db, 'politicians'), limit(1));
-      const snapshot = await getDocs(q);
-      
-      if (!snapshot.empty) return;
-      
-      setIsAutoSeeding(true);
-      try {
-        await Promise.all(INITIAL_REGISTRY_SEED.map(async (data) => {
-          const polRef = await addDoc(collection(db, 'politicians'), {
-            fullName: data.fullName,
-            aliasNames: data.aliasNames || [],
-            bio: data.bio || '',
-            primaryParty: data.primaryParty || 'Unknown',
-            accountabilityScore: 0, 
-            totalForfeiture: data.totalForfeiture || 0,
-            profileImageUrl: '', 
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
-
-          if (data.cases) {
-            await Promise.all(data.cases.map(c => 
-              addDoc(collection(db, 'politicians', polRef.id, 'cases'), {
-                ...c,
-                politicianId: polRef.id,
-                amountInvolved: c.amountInvolved || 0,
-                currency: c.currency || 'NGN',
-                caseStartDate: c.caseStartDate || new Date().toISOString()
-              })
-            ));
-          }
-        }));
-      } catch (e) {
-        console.error("Auto-seed failed", e);
-      } finally {
-        setIsAutoSeeding(false);
-      }
-    }
-
-    performAutoSeed();
-  }, [db, loading, isAutoSeeding]);
 
   const filteredPoliticians = useMemo(() => {
     if (!politicians) return [];
@@ -83,8 +36,9 @@ export default function LeaderboardPage() {
     return [...politicians]
       .filter(p => {
         const fullName = (p as any).fullName || '';
-        const matchesSearch = fullName.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesSearch;
+        const party = (p as any).primaryParty || '';
+        return fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+               party.toLowerCase().includes(searchQuery.toLowerCase());
       })
       .sort((a, b) => {
         if (sortBy === 'score') return ((b as any).accountabilityScore || 0) - ((a as any).accountabilityScore || 0);
@@ -94,112 +48,79 @@ export default function LeaderboardPage() {
   }, [searchQuery, sortBy, politicians]);
 
   return (
-    <div className="container mx-auto px-4 py-16 max-w-7xl">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+    <div className="container mx-auto px-4 py-12 max-w-7xl">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
         <div className="space-y-4">
-          <Badge className="bg-primary text-white hover:bg-primary border-none px-4 py-1 font-black uppercase text-[10px] tracking-widest">
+          <Badge className="bg-primary text-white hover:bg-primary px-3 py-1 font-bold uppercase text-[10px] tracking-widest">
             Audit Leaderboard
           </Badge>
-          <h1 className="text-5xl md:text-7xl font-black text-primary uppercase tracking-tighter leading-none">National Registry</h1>
-          <p className="text-xl text-muted-foreground font-medium max-w-xl">Sorted by **Amount Tied** to public records. Higher values reflect greater fiscal impact on the registry.</p>
+          <h1 className="text-4xl md:text-6xl font-black text-primary uppercase tracking-tight">National Registry</h1>
+          <p className="text-muted-foreground font-medium max-w-xl">Ranked by Accountability Score. Higher values reflect greater documented legal and financial impact.</p>
         </div>
         
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           <div className="relative flex-grow md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
-              placeholder="Filter by name or party..." 
-              className="pl-12 h-14 bg-white border-none shadow-xl rounded-2xl focus:ring-2 focus:ring-accent font-medium"
+              placeholder="Search by name or party..." 
+              className="pl-10 h-12 bg-white border-none shadow-sm rounded-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
-            <SelectTrigger className="w-full md:w-[220px] h-14 bg-white border-none shadow-xl rounded-2xl font-black uppercase text-[10px] tracking-widest px-6">
-              <div className="flex items-center gap-3">
-                <ArrowUpDown className="w-4 h-4 text-accent" />
+            <SelectTrigger className="w-full md:w-[200px] h-12 bg-white border-none shadow-sm font-bold uppercase text-[10px] tracking-widest px-4">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="w-3.5 h-3.5 text-accent" />
                 <SelectValue placeholder="Sort Registry" />
               </div>
             </SelectTrigger>
-            <SelectContent className="rounded-2xl border-none shadow-2xl">
-              <SelectItem value="forfeiture">Restitution (High-Low)</SelectItem>
+            <SelectContent>
               <SelectItem value="score">Accountability Score</SelectItem>
-              <SelectItem value="name">Alphabetical (A-Z)</SelectItem>
+              <SelectItem value="forfeiture">Amount Tied (High-Low)</SelectItem>
+              <SelectItem value="name">Name (A-Z)</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {isAutoSeeding && (
-        <div className="mb-12 p-20 bg-white border-4 border-dashed border-accent/10 rounded-[4rem] flex flex-col items-center justify-center gap-6 text-center shadow-sm">
-          <Loader2 className="w-16 h-16 animate-spin text-accent" />
-          <div>
-            <h3 className="font-black text-3xl text-primary uppercase tracking-tighter">Assembling Master Dossiers...</h3>
-            <p className="text-lg text-muted-foreground mt-2 font-medium">Archiving high-value records for investigative audit.</p>
-          </div>
-        </div>
-      )}
-
-      {!loading || filteredPoliticians.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+      {!loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredPoliticians.map((p: any, index: number) => {
             const rank = index + 1;
-            const isTop3 = rank <= 3 && sortBy === 'forfeiture';
-            
             return (
               <Link key={p.id} href={`/politician/${p.id}`} className="group">
-                <Card className="h-full hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 border-none shadow-xl bg-white rounded-[3rem] flex flex-col overflow-hidden relative">
-                  <div className="aspect-[4/5] relative overflow-hidden bg-primary/5 flex items-center justify-center transition-colors group-hover:bg-primary/10">
-                    <div className="flex flex-col items-center gap-4 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700">
-                      <Landmark className="w-28 h-28 text-primary" />
+                <Card className="h-full hover:shadow-lg transition-all border-none shadow-sm bg-white rounded-xl overflow-hidden">
+                  <div className="aspect-square relative bg-primary/5 flex items-center justify-center">
+                    <div className="absolute top-4 left-4 z-20">
+                      <div className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs">
+                        #{rank}
+                      </div>
                     </div>
+                    <Landmark className="w-20 h-20 text-primary opacity-10 group-hover:scale-110 transition-transform" />
                     
-                    <div className="absolute top-8 right-8 z-20 flex flex-col items-end gap-3">
-                      <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} className="shadow-2xl bg-white/95 backdrop-blur-md border-none px-5 py-2.5" />
-                      {isTop3 && (
-                        <Badge className={cn(
-                          "px-5 py-2 font-black uppercase text-[10px] tracking-widest border-none flex items-center gap-2 shadow-2xl",
-                          rank === 1 ? "bg-yellow-500 text-white" :
-                          rank === 2 ? "bg-slate-400 text-white" :
-                          "bg-orange-600 text-white"
-                        )}>
-                          {rank === 1 ? <Trophy className="w-4 h-4" /> : rank === 2 ? <Medal className="w-4 h-4" /> : <Award className="w-4 h-4" />}
-                          Rank #{rank}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <div className="absolute bottom-0 left-0 right-0 p-10 bg-gradient-to-t from-primary/95 via-primary/40 to-transparent z-10">
-                       <p className="text-accent text-[11px] font-black uppercase tracking-[0.3em] mb-2">{p.primaryParty}</p>
-                       <h3 className="text-white text-3xl font-black leading-tight uppercase tracking-tighter">{p.fullName}</h3>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-primary/80 to-transparent">
+                       <p className="text-accent-foreground text-[10px] font-bold uppercase tracking-widest mb-1">{p.primaryParty}</p>
+                       <h3 className="text-white text-xl font-black uppercase tracking-tight">{p.fullName}</h3>
                     </div>
                   </div>
-                  <CardContent className="p-10 flex-grow">
-                    <div className="grid grid-cols-2 gap-10">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-end">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">Archived Cases</p>
-                        <p className="text-3xl font-black text-primary">{(p as any).cases?.length || 0}</p>
-                      </div>
-                      <div className="space-y-1 text-right">
-                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.3em]">Amount Tied</p>
-                        <p className="text-3xl font-black text-accent truncate">
-                          {p.totalForfeiture >= 1000000000 
-                            ? `₦${(p.totalForfeiture / 1000000000).toFixed(1)}B` 
-                            : p.totalForfeiture >= 1000000 
-                              ? `₦${(p.totalForfeiture / 1000000).toFixed(1)}M`
-                              : `₦${(p.totalForfeiture).toLocaleString()}`
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">Amount Tied</p>
+                        <p className="text-lg font-black text-primary">
+                          ₦{p.totalForfeiture >= 1000000000 
+                            ? `${(p.totalForfeiture / 1000000000).toFixed(1)}B` 
+                            : `${(p.totalForfeiture / 1000000).toFixed(1)}M`
                           }
                         </p>
                       </div>
+                      <AccountabilityBadge score={Math.round(p.accountabilityScore || 0)} />
                     </div>
                   </CardContent>
-                  <CardFooter className="px-10 py-8 bg-secondary/10 border-t border-primary/5 flex items-center justify-between">
-                    <Badge variant="outline" className="text-[10px] font-black text-muted-foreground uppercase tracking-widest border-primary/10 bg-white/50">
-                      Audit Verified
-                    </Badge>
-                    <span className="text-primary text-xs font-black flex items-center gap-2 group-hover:text-accent transition-colors uppercase tracking-widest">
-                      Full Dossier <ChevronRight className="w-4 h-4" />
-                    </span>
+                  <CardFooter className="px-6 py-4 bg-secondary/30 border-t flex justify-between items-center">
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground">Audit Status: Verified</span>
+                    <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
                   </CardFooter>
                 </Card>
               </Link>
@@ -207,17 +128,17 @@ export default function LeaderboardPage() {
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-60 space-y-4">
-          <Loader2 className="w-20 h-20 animate-spin text-accent/20" />
-          <p className="text-muted-foreground font-black uppercase tracking-[0.3em] text-[12px]">Assembling national matrix...</p>
+        <div className="flex flex-col items-center justify-center py-40">
+          <Loader2 className="w-12 h-12 animate-spin text-accent" />
+          <p className="mt-4 text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Assembling Registry...</p>
         </div>
       )}
 
-      {filteredPoliticians.length === 0 && !loading && !isAutoSeeding && (
-        <div className="text-center py-60 bg-white rounded-[4rem] border-4 border-dashed border-primary/5">
-          <ShieldAlert className="w-24 h-24 mx-auto mb-8 text-muted-foreground opacity-10" />
-          <h3 className="text-3xl font-black text-primary uppercase tracking-tighter">No Dossiers Found</h3>
-          <p className="text-xl text-muted-foreground mt-2 font-medium">Refine your search parameters to access the archive.</p>
+      {filteredPoliticians.length === 0 && !loading && (
+        <div className="text-center py-40 bg-white rounded-xl border border-dashed">
+          <ShieldAlert className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-20" />
+          <h3 className="text-xl font-bold text-primary uppercase">No Records Found</h3>
+          <p className="text-muted-foreground mt-2">Refine your search parameters.</p>
         </div>
       )}
     </div>

@@ -3,27 +3,30 @@ import { Politician, ScoreBreakdown } from './types';
 import { differenceInDays, parseISO } from 'date-fns';
 
 /**
- * Scoring Algorithm
+ * Scoring Algorithm (Strictly per PRD)
  * Formula:
  * Score = 
  *   (Alleged × 1) + 
  *   (Investigations × 2) + 
  *   (Charges × 4) + 
  *   (Convictions × 8) + 
- *   log10(Total Forfeited in NGN + 1) × 5 + 
+ *   log10(Total Forfeited + 1) × 5 + 
  *   (Detention Days / 30)
+ * 
+ * Note: Excludes dismissed cases.
  */
 export function calculateAccountabilityScore(politician: Politician): ScoreBreakdown {
+  const activeCases = (politician.cases || []).filter(c => c.status !== 'dismissed');
+  
   const counts = {
-    alleged: politician.cases.filter(c => c.status === 'alleged').length,
-    under_investigation: politician.cases.filter(c => c.status === 'under_investigation').length,
-    charged: politician.cases.filter(c => c.status === 'charged').length,
-    convicted: politician.cases.filter(c => c.status === 'convicted').length,
+    alleged: activeCases.filter(c => c.status === 'alleged').length,
+    under_investigation: activeCases.filter(c => c.status === 'under_investigation').length,
+    charged: activeCases.filter(c => c.status === 'charged').length,
+    convicted: activeCases.filter(c => c.status === 'convicted').length,
   };
 
-  // Ensure totalForfeiture is treated as NGN.
-  // We assume the data in the DB is already normalized or we use a baseline.
-  const forfeitedFactor = Math.log10(politician.totalForfeiture + 1) * 5;
+  const totalForfeited = (politician.forfeitures || []).reduce((sum, f) => sum + (f.amount || 0), 0);
+  const forfeitureScore = Math.log10(totalForfeited + 1) * 5;
 
   const totalDetentionDays = (politician.detentions || []).reduce((sum, d) => {
     const start = parseISO(d.startDate);
@@ -38,7 +41,7 @@ export function calculateAccountabilityScore(politician: Politician): ScoreBreak
     (counts.under_investigation * 2) +
     (counts.charged * 4) +
     (counts.convicted * 8) +
-    forfeitedFactor +
+    forfeitureScore +
     detentionScore;
 
   return {
@@ -46,7 +49,7 @@ export function calculateAccountabilityScore(politician: Politician): ScoreBreak
     investigationCount: counts.under_investigation,
     chargeCount: counts.charged,
     convictionCount: counts.convicted,
-    forfeitureScore: Math.round(forfeitedFactor * 100) / 100,
+    forfeitureScore: Math.round(forfeitureScore * 100) / 100,
     detentionScore: Math.round(detentionScore * 100) / 100,
     total: Math.round(total * 10) / 10
   };

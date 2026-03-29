@@ -7,7 +7,7 @@ export interface Source {
   url: string;
   publisher: string;
   publicationDate: string;
-  credibilityRating: number; // 1-5
+  credibilityRating: number; // 1–5
 }
 
 export interface CaseRecord {
@@ -26,6 +26,7 @@ export interface CaseRecord {
 export interface Forfeiture {
   id?: string;
   caseId: string;
+  politicianId: string;
   amount: number;
   currency: string;
   forfeitureType: 'temporary' | 'permanent';
@@ -60,15 +61,25 @@ export interface Politician {
   profileImageUrl: string;
   bio: string;
   primaryParty: string;
-  offices: OfficeHeld[];
-  cases: CaseRecord[];
-  forfeitures: Forfeiture[];
-  detentions: Detention[];
-  accountabilityScore: number;
-  totalForfeiture: number; // Normalized to NGN for ranking
-  partyHistory: { party: string; years: string }[];
   sourceOrigin?: string;
   sourceUrl?: string;
+  createdAt?: any;
+  updatedAt?: any;
+  
+  // Computed fields (from summary or aggregation)
+  offices?: OfficeHeld[];
+  cases?: CaseRecord[];
+  forfeitures?: Forfeiture[];
+  detentions?: Detention[];
+}
+
+export interface AccountabilitySummary {
+  politicianId: string;
+  accountabilityScore: number;
+  totalCases: number;
+  totalConvictions: number;
+  totalForfeited: number;
+  lastCalculatedAt: any;
 }
 
 export interface ScoreBreakdown {
