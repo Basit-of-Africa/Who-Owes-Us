@@ -25,20 +25,20 @@ export default function RootLayout({
       <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col" suppressHydrationWarning>
         <FirebaseProvider>
           <Navbar />
-          <main className="flex-grow">
+          <main className="flex-grow px-6 md:px-[50px]">
             {children}
           </main>
-          <footer className="border-t bg-white py-12 mt-20">
-            <div className="container mx-auto px-4 text-center space-y-4">
-              <p className="text-muted-foreground text-sm">
-                &copy; {new Date().getFullYear()} Who Owes Us? Project. Data provided for transparency and civic awareness.
+          <footer className="border-t bg-white py-12 mt-20 px-6 md:px-[50px]">
+            <div className="container mx-auto text-center space-y-4">
+              <p className="text-muted-foreground text-sm font-medium">
+                &copy; {new Date().getFullYear()} Who Owes Us? Project. Independent Nigerian Civic Tech Initiative.
               </p>
               <div className="flex justify-center gap-6">
-                <Link href="/disclaimer" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-accent transition-colors">
+                <Link href="/disclaimer" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-accent transition-colors">
                   Legal Disclaimer
                 </Link>
-                <Link href="/" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-accent transition-colors">
-                  Public Registry
+                <Link href="/leaderboard" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-accent transition-colors">
+                  National Registry
                 </Link>
               </div>
             </div>
