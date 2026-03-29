@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -7,10 +6,9 @@ import { useFirebase, useDoc, useCollection } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
 import { calculateAccountabilityScore } from '@/lib/scoring';
 import { 
-  ArrowLeft, Landmark, ShieldAlert, 
-  Download, Gavel, Wallet, Clock, 
-  ExternalLink, FileText, Info, Loader2, User, ChevronRight,
-  ShieldCheck, History, Share2
+  ArrowLeft, ShieldAlert, 
+  ExternalLink, FileText, Loader2, User,
+  ShieldCheck, History
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
@@ -19,7 +17,6 @@ import { FactSnippet } from '@/components/FactSnippet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from '@/lib/utils';
 import { Politician } from '@/lib/types';
 
 export default function PoliticianProfile() {
@@ -52,7 +49,7 @@ export default function PoliticianProfile() {
 
   if (polLoading || casesLoading || officesLoading) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
+      <div className="container mx-auto px-6 md:px-[50px] py-20 text-center">
         <Loader2 className="w-12 h-12 animate-spin mx-auto text-accent" />
         <p className="mt-4 text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Accessing Archive...</p>
       </div>
@@ -61,7 +58,7 @@ export default function PoliticianProfile() {
 
   if (!fullPolitician) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
+      <div className="container mx-auto px-6 md:px-[50px] py-20 text-center">
         <ShieldAlert className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
         <h1 className="text-2xl font-black mb-2 uppercase">Record Not Found</h1>
         <Button onClick={() => router.push('/leaderboard')} className="bg-primary mt-4">Return to Registry</Button>
@@ -72,7 +69,7 @@ export default function PoliticianProfile() {
   const scoreBreakdown = calculateAccountabilityScore(fullPolitician);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-6 md:px-[50px] py-8 max-w-7xl">
       <button 
         onClick={() => router.back()}
         className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8 uppercase text-[10px] font-bold tracking-widest"

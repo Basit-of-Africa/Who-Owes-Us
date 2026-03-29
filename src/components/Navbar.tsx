@@ -1,9 +1,8 @@
-
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Trophy, BarChart3, Settings, Info, Menu, ShieldCheck } from 'lucide-react';
+import { Trophy, BarChart3, Settings, Menu, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Sheet,
@@ -25,7 +24,7 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-primary text-primary-foreground shadow-md">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-6 md:px-[50px] h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="bg-accent p-2 rounded-xl group-hover:rotate-6 transition-transform shadow-lg">
             <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-white" />

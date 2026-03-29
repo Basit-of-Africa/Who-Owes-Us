@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col" suppressHydrationWarning>
         <FirebaseProvider>
           <Navbar />
-          <main className="flex-grow px-6 md:px-[50px]">
+          <main className="flex-grow">
             {children}
           </main>
           <footer className="border-t bg-white py-12 mt-20 px-6 md:px-[50px]">

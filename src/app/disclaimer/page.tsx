@@ -1,4 +1,3 @@
-
 'use client';
 
 import { ShieldAlert, Gavel, Scale, Info, ArrowLeft } from 'lucide-react';
@@ -9,7 +8,7 @@ export default function DisclaimerPage() {
   const router = useRouter();
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="container mx-auto px-6 md:px-[50px] py-12 max-w-4xl">
       <Button 
         variant="ghost" 
         onClick={() => router.back()} 

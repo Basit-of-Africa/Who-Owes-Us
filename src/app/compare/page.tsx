@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -53,7 +52,7 @@ export default function ComparePage() {
   // Loading state
   if (loading && (!politicians || politicians.length === 0)) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
+      <div className="container mx-auto px-6 md:px-[50px] py-20 text-center">
         <Loader2 className="w-12 h-12 animate-spin mx-auto text-accent" />
         <p className="mt-4 text-muted-foreground font-black uppercase tracking-widest text-[10px]">Opening Audit Matrix...</p>
       </div>
@@ -61,7 +60,7 @@ export default function ComparePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-6 md:px-[50px] py-8 max-w-7xl">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="space-y-2">
           <Badge className="bg-accent/10 text-accent hover:bg-accent/10 border-none px-4 py-1 font-black uppercase text-[10px] tracking-widest">

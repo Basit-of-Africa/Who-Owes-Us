@@ -4,10 +4,9 @@ import Link from 'next/link';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { 
-  History, Scale, Gavel, Info, 
   ShieldCheck, ArrowRight, BarChart3, Database,
-  Landmark, Users, Search, TrendingUp, Fingerprint,
-  FileSearch, Activity
+  Landmark, Users, TrendingUp, Fingerprint,
+  FileSearch, Activity, Info
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,8 +21,8 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* HERO SECTION */}
-      <section className="bg-primary text-white py-20 md:py-32 relative overflow-hidden rounded-[2rem] mt-6">
+      {/* HERO SECTION - Edge-to-Edge Background */}
+      <section className="bg-primary text-white py-20 md:py-32 relative overflow-hidden">
         {/* Decorative Background Elements */}
         <div className="absolute inset-0 opacity-20 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-accent rounded-full blur-[150px] animate-pulse" />
@@ -31,7 +30,8 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
         </div>
         
-        <div className="container mx-auto relative z-10">
+        {/* Hero Content - Padding to match container */}
+        <div className="container mx-auto px-6 md:px-[50px] relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 animate-in fade-in slide-in-from-top-4 duration-700">
@@ -110,7 +110,7 @@ export default function HomePage() {
 
       {/* MISSION SECTION */}
       <section className="py-24 bg-background">
-        <div className="container mx-auto">
+        <div className="container mx-auto px-6 md:px-[50px]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-12">
               <div className="space-y-6">
@@ -179,7 +179,7 @@ export default function HomePage() {
 
       {/* CALL TO ACTION */}
       <section className="bg-white py-24 border-y rounded-[3rem] shadow-sm">
-        <div className="container mx-auto text-center space-y-8">
+        <div className="container mx-auto px-6 md:px-[50px] text-center space-y-8">
            <Badge className="bg-accent/10 text-accent hover:bg-accent/10 border-none px-6 py-1.5 font-black uppercase tracking-widest text-[10px]">
              Registry Status: Live
            </Badge>

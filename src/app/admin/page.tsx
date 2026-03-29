@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -14,12 +13,11 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Trash2, Search, Database, Loader2, Sparkles, Gavel, ListPlus } from 'lucide-react';
+import { Trash2, Search, Loader2, Sparkles, Gavel, ListPlus } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { scrapePoliticianData } from '@/ai/flows/scrape-politician-flow';
 import { INITIAL_REGISTRY_SEED } from '@/lib/seed-data';
-import { PROMINENT_NIGERIAN_POLITICIANS } from '@/lib/politician-names';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 
@@ -123,7 +121,7 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-6 md:px-[50px] py-8 max-w-7xl">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 bg-primary p-10 rounded-3xl text-primary-foreground shadow-xl">
         <div className="flex items-center gap-4">
           <div className="p-4 bg-accent/20 rounded-2xl border border-white/10">

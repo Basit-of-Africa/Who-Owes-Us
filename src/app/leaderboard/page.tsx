@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -6,8 +5,8 @@ import Link from 'next/link';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { 
-  Search, ArrowUpDown, Landmark, Trophy, 
-  Loader2, ShieldAlert, ChevronRight, Gavel
+  Search, ArrowUpDown, Landmark, 
+  Loader2, ShieldAlert, ChevronRight
 } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -48,7 +47,7 @@ export default function LeaderboardPage() {
   }, [searchQuery, sortBy, politicians]);
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-7xl">
+    <div className="container mx-auto px-6 md:px-[50px] py-12 max-w-7xl">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
         <div className="space-y-4">
           <Badge className="bg-primary text-white hover:bg-primary px-3 py-1 font-bold uppercase text-[10px] tracking-widest">
