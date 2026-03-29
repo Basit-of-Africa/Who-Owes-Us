@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -51,7 +52,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2 md:gap-4">
           <div className="hidden sm:block relative">
-             <span className="text-[10px] md:text-xs font-semibold bg-accent px-2 py-1 rounded text-white uppercase tracking-wider">Civic Accountability</span>
+             <span className="text-[10px] md:text-xs font-semibold bg-accent px-2 py-1 rounded text-white uppercase tracking-wider">National Accountability</span>
           </div>
 
           {/* Mobile Nav Toggle */}
@@ -86,7 +87,7 @@ export function Navbar() {
                 ))}
               </div>
               <div className="mt-auto pt-10 border-t border-white/10 opacity-40 text-[10px] font-bold uppercase tracking-[0.2em]">
-                Verified Civic Registry
+                Verified National Registry
               </div>
             </SheetContent>
           </Sheet>

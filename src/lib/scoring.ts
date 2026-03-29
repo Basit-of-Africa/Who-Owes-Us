@@ -10,11 +10,10 @@ import { differenceInDays, parseISO } from 'date-fns';
  *   (Investigations × 2) + 
  *   (Charges × 4) + 
  *   (Convictions × 8) + 
- *   log10(Normalized Forfeiture + 1) × 5 + 
+ *   log10(Total Forfeited + 1) × 5 + 
  *   (Detention Days / 30)
  * 
  * Note: Excludes dismissed cases.
- * Currency Normalization: 1 USD = ₦1,600
  */
 export function calculateAccountabilityScore(politician: Politician): ScoreBreakdown {
   const activeCases = (politician.cases || []).filter(c => c.status !== 'dismissed');
@@ -30,6 +29,7 @@ export function calculateAccountabilityScore(politician: Politician): ScoreBreak
   const totalForfeitedNGN = (politician.cases || []).reduce((sum, c) => {
     if (c.status === 'dismissed') return sum;
     const amount = c.amountInvolved || 0;
+    // Standardizing conversion: 1 USD = ₦1,600
     const multiplier = (c.currency === 'USD') ? 1600 : 1;
     return sum + (amount * multiplier);
   }, 0);
