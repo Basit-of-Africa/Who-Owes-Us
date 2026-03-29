@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 export default function LeaderboardPage() {
   const { db } = useFirebase();
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('score');
+  const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('forfeiture');
 
   const politiciansRef = db ? collection(db, 'politicians') : null;
   const { data: politicians, loading } = useCollection(politiciansRef);
@@ -52,10 +52,10 @@ export default function LeaderboardPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
         <div className="space-y-4">
           <Badge className="bg-primary text-white hover:bg-primary px-3 py-1 font-bold uppercase text-[10px] tracking-widest">
-            Audit Leaderboard
+            National Audit Registry
           </Badge>
-          <h1 className="text-4xl md:text-6xl font-black text-primary uppercase tracking-tight">National Registry</h1>
-          <p className="text-muted-foreground font-medium max-w-xl">Ranked by Accountability Score. Higher values reflect greater documented legal and financial impact.</p>
+          <h1 className="text-4xl md:text-6xl font-black text-primary uppercase tracking-tight leading-none">Registry Ranking</h1>
+          <p className="text-muted-foreground font-medium max-w-xl">Ranked by Restitution Amount and Accountability Score. Higher values reflect greater documented legal and financial impact.</p>
         </div>
         
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
@@ -76,8 +76,8 @@ export default function LeaderboardPage() {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="score">Accountability Score</SelectItem>
               <SelectItem value="forfeiture">Amount Tied (High-Low)</SelectItem>
+              <SelectItem value="score">Accountability Score</SelectItem>
               <SelectItem value="name">Name (A-Z)</SelectItem>
             </SelectContent>
           </Select>
@@ -90,18 +90,24 @@ export default function LeaderboardPage() {
             const rank = index + 1;
             return (
               <Link key={p.id} href={`/politician/${p.id}`} className="group">
-                <Card className="h-full hover:shadow-lg transition-all border-none shadow-sm bg-white rounded-xl overflow-hidden">
+                <Card className="h-full hover:shadow-lg transition-all border-none shadow-sm bg-white rounded-xl overflow-hidden relative">
                   <div className="aspect-square relative bg-primary/5 flex items-center justify-center">
                     <div className="absolute top-4 left-4 z-20">
-                      <div className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs">
+                      <div className={cn(
+                        "w-10 h-10 rounded-full flex items-center justify-center font-black text-xs shadow-lg border-2",
+                        rank === 1 ? "bg-yellow-500 border-yellow-300 text-white" :
+                        rank === 2 ? "bg-slate-300 border-slate-100 text-slate-700" :
+                        rank === 3 ? "bg-orange-600 border-orange-400 text-white" :
+                        "bg-primary border-primary-foreground/20 text-white"
+                      )}>
                         #{rank}
                       </div>
                     </div>
                     <Landmark className="w-20 h-20 text-primary opacity-10 group-hover:scale-110 transition-transform" />
                     
-                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-primary/80 to-transparent">
-                       <p className="text-accent-foreground text-[10px] font-bold uppercase tracking-widest mb-1">{p.primaryParty}</p>
-                       <h3 className="text-white text-xl font-black uppercase tracking-tight">{p.fullName}</h3>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent">
+                       <p className="text-accent text-[10px] font-bold uppercase tracking-widest mb-1">{p.primaryParty}</p>
+                       <h3 className="text-white text-xl font-black uppercase tracking-tight leading-none">{p.fullName}</h3>
                     </div>
                   </div>
                   <CardContent className="p-6">
@@ -130,7 +136,7 @@ export default function LeaderboardPage() {
       ) : (
         <div className="flex flex-col items-center justify-center py-40">
           <Loader2 className="w-12 h-12 animate-spin text-accent" />
-          <p className="mt-4 text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Assembling Registry...</p>
+          <p className="mt-4 text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Assembling National Registry...</p>
         </div>
       )}
 

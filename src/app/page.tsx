@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { useMemo } from 'react';
 
 export default function HomePage() {
   const { db } = useFirebase();
