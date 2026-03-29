@@ -6,7 +6,7 @@ import { useFirebase, useDoc, useCollection } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
 import { calculateAccountabilityScore } from '@/lib/scoring';
 import { 
-  ArrowLeft, Landmark, Calendar, ShieldAlert, 
+  ArrowLeft, Landmark, ShieldAlert, 
   Download, Gavel, Wallet, Clock, 
   ExternalLink, FileText, Info, Loader2, User, ChevronRight,
   ShieldCheck, History
@@ -18,7 +18,6 @@ import { FactSnippet } from '@/components/FactSnippet';
 import { ScoreBreakdownChart } from '@/components/ScoreBreakdownChart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   Popover,
@@ -70,7 +69,7 @@ export default function PoliticianProfile() {
         </div>
         <h1 className="text-2xl font-black mb-4 uppercase tracking-tight">Record Not Found</h1>
         <p className="text-muted-foreground mb-8">The requested dossier is not currently archived in our registry.</p>
-        <Button onClick={() => router.push('/')} className="bg-primary font-black uppercase tracking-widest px-8 h-12 rounded-xl">Return to Registry</Button>
+        <Button onClick={() => router.push('/leaderboard')} className="bg-primary font-black uppercase tracking-widest px-8 h-12 rounded-xl">Return to Registry</Button>
       </div>
     );
   }
@@ -80,11 +79,11 @@ export default function PoliticianProfile() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <button 
-        onClick={() => router.push('/')}
+        onClick={() => router.push('/leaderboard')}
         className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-12 group uppercase text-[10px] font-black tracking-[0.2em]"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        Back to Global Audit Leaderboard
+        Back to National Audit Leaderboard
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
@@ -205,7 +204,7 @@ export default function PoliticianProfile() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
         <div className="lg:col-span-2">
           <Tabs defaultValue="footprint" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-12 h-16 bg-primary/5 border-none p-1.5 rounded-[1.5rem] md:rounded-[2rem]">
+            <TabsList className="grid grid-cols-3 mb-12 h-16 bg-primary/5 border-none p-1.5 rounded-[1.5rem] md:rounded-[2rem]">
               <TabsTrigger value="footprint" className="gap-2 font-black uppercase tracking-widest text-[10px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-xl rounded-xl md:rounded-[1.5rem]">
                 <History className="w-4 h-4" />
                 Corruption Footprint

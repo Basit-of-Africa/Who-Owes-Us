@@ -100,7 +100,7 @@ export default function LeaderboardPage() {
           <Badge className="bg-primary text-white hover:bg-primary border-none px-4 py-1 font-black uppercase text-[10px] tracking-widest">
             Audit Leaderboard
           </Badge>
-          <h1 className="text-5xl md:text-7xl font-black text-primary uppercase tracking-tighter leading-none">Global Registry</h1>
+          <h1 className="text-5xl md:text-7xl font-black text-primary uppercase tracking-tighter leading-none">National Registry</h1>
           <p className="text-xl text-muted-foreground font-medium max-w-xl">Sorted by **Amount Tied** to public records. Higher values reflect greater fiscal impact on the registry.</p>
         </div>
         
@@ -209,7 +209,7 @@ export default function LeaderboardPage() {
       ) : (
         <div className="flex flex-col items-center justify-center py-60 space-y-4">
           <Loader2 className="w-20 h-20 animate-spin text-accent/20" />
-          <p className="text-muted-foreground font-black uppercase tracking-[0.3em] text-[12px]">Assembling global matrix...</p>
+          <p className="text-muted-foreground font-black uppercase tracking-[0.3em] text-[12px]">Assembling national matrix...</p>
         </div>
       )}
 

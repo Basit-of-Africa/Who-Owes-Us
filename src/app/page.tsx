@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useFirebase, useCollection } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { 
-  Landmark, History, Scale, Gavel, Info, ChevronRight, 
+  Landmark, History, Scale, Gavel, Info, 
   ShieldCheck, ArrowRight, BarChart3, Trophy
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { useMemo } from 'react';
 
 export default function HomePage() {
@@ -32,20 +32,20 @@ export default function HomePage() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-10">
             <Badge className="bg-accent/20 text-accent hover:bg-accent/20 border-accent/30 px-6 py-2 font-black uppercase tracking-[0.4em] text-xs">
-              National Restitution Registry
+              Nigerian Restitution Registry
             </Badge>
             <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter leading-[0.9]">
               Who Owes Us?
             </h1>
             <p className="text-xl md:text-4xl font-medium text-white/70 max-w-2xl mx-auto italic leading-tight">
-              "An independent, data-driven archive monitoring the corruption records and financial restitution history of public officials."
+              "An independent, data-driven archive monitoring the corruption records and financial restitution history of Nigerian public officials."
             </p>
             
             <div className="flex flex-col md:flex-row items-center justify-center gap-6 pt-12">
               <Link href="/leaderboard">
                 <button className="bg-white text-primary hover:bg-white/90 h-16 px-10 rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl transition-all hover:scale-105 inline-flex items-center gap-3">
                   <Trophy className="w-5 h-5" />
-                  View Global Leaderboard
+                  View National Leaderboard
                 </button>
               </Link>
               <Link href="/compare">
@@ -88,7 +88,7 @@ export default function HomePage() {
                 <p className="text-accent font-black uppercase tracking-[0.3em] text-xs">The Mandate</p>
                 <h2 className="text-5xl md:text-7xl font-black text-primary uppercase tracking-tighter leading-none">Civic Accountability <br/>Through Data.</h2>
                 <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-xl">
-                  We believe that transparency is the first step toward national restitution. By archiving verifiable public records, we provide citizens with a clear view of the legal and financial footprints of those entrusted with public power.
+                  We believe that transparency is the first step toward national restitution. By archiving verifiable public records, we provide citizens with a clear view of the legal and financial footprints of those entrusted with public power in Nigeria.
                 </p>
               </div>
 
@@ -156,7 +156,7 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row justify-center gap-8">
             <Link href="/leaderboard">
               <button className="bg-primary hover:bg-primary/90 text-white h-24 px-14 rounded-3xl font-black uppercase tracking-[0.2em] text-sm shadow-2xl transition-all hover:scale-105 inline-flex items-center gap-4">
-                Enter Global Registry
+                Enter National Registry
                 <ArrowRight className="w-6 h-6" />
               </button>
             </Link>
