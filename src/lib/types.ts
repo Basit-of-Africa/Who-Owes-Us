@@ -140,3 +140,30 @@ export interface ScoreBreakdown {
   detentionScore: number;
   total: number;
 }
+
+export interface CivicWhistleblowerTip {
+  id: string;
+  politicianId?: string;
+  politicianName?: string;
+  agencyTarget: 'EFCC' | 'ICPC' | 'CCB' | 'COURT' | 'GENERAL';
+  title: string;
+  description: string;
+  allegedAmount?: number;
+  currency?: string;
+  jurisdictionOrState?: string;
+  documentRefNumber?: string;
+  evidenceLinks?: string[];
+  status: 'submitted' | 'under_civic_review' | 'verified_in_registry' | 'dismissed';
+  submittedAt: string;
+  submitterAlias?: string;
+}
+
+export interface CaseAlertSubscription {
+  id: string;
+  politicianId: string;
+  politicianName: string;
+  emailOrPhone: string;
+  frequency: 'immediate' | 'weekly_digest';
+  subscribedAt: string;
+  active: boolean;
+}

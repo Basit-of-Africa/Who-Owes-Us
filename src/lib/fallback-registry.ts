@@ -1,4 +1,4 @@
-import { Politician } from './types';
+import { Politician, CivicWhistleblowerTip, CaseAlertSubscription } from './types';
 import { politicians as mockPoliticians } from './mock-data';
 import { INITIAL_REGISTRY_SEED } from './seed-data';
 import { calculateAccountabilityScore } from './scoring';
@@ -156,5 +156,134 @@ export const fallbackStore = {
     return () => {
       listeners.delete(listener);
     };
+  }
+};
+
+const initialTips: CivicWhistleblowerTip[] = [
+  {
+    id: 'tip-1',
+    politicianId: 'bola-ahmed-tinubu',
+    politicianName: 'Bola Ahmed Tinubu',
+    agencyTarget: 'EFCC',
+    title: 'Lagos State Alpha Beta Consulting Audit & Revenue Trail',
+    description: 'Statutory audit inquiry into consultancy commissions and treasury tax revenue disbursements from 2002 to 2019.',
+    allegedAmount: 100000000000,
+    currency: 'NGN',
+    jurisdictionOrState: 'Lagos State',
+    documentRefNumber: 'EFCC/CS/LAG/09/2019',
+    evidenceLinks: ['https://gazettengr.com/alpha-beta-documents/'],
+    status: 'under_civic_review',
+    submittedAt: '2024-04-12T10:30:00Z',
+    submitterAlias: 'CivicWatch Lagos'
+  },
+  {
+    id: 'tip-2',
+    politicianId: 'ahmed-idris',
+    politicianName: 'Ahmed Idris',
+    agencyTarget: 'EFCC',
+    title: 'Treasury Single Account (TSA) Bypass Real Estate Holdings',
+    description: 'Documents tracking 14 commercial plazas and luxury properties acquired in Kano and Abuja during accountant-general tenure.',
+    allegedAmount: 109000000000,
+    currency: 'NGN',
+    jurisdictionOrState: 'Abuja FCT / Kano',
+    documentRefNumber: 'EFCC/ABJ/TSA-INV/2022',
+    evidenceLinks: ['https://efcc.gov.ng/press-release/ahmed-idris-properties'],
+    status: 'verified_in_registry',
+    submittedAt: '2024-03-08T15:20:00Z',
+    submitterAlias: 'Integrity Advocate NG'
+  },
+  {
+    id: 'tip-3',
+    agencyTarget: 'ICPC',
+    title: 'Niger Delta Development Commission (NDDC) Emergency Desilting Contracts',
+    description: 'Unexecuted procurement contracts awarded to briefcase companies with inflated bill of quantities without BPP certificate of no objection.',
+    allegedAmount: 4500000000,
+    currency: 'NGN',
+    jurisdictionOrState: 'Rivers State',
+    documentRefNumber: 'ICPC/PET/NDDC/24/01',
+    status: 'submitted',
+    submittedAt: '2024-05-18T09:15:00Z',
+    submitterAlias: 'Public Procurement Watch'
+  }
+];
+
+let currentTips: CivicWhistleblowerTip[] = [...initialTips];
+const tipListeners = new Set<() => void>();
+
+function notifyTips() {
+  tipListeners.forEach(l => {
+    try { l(); } catch (e) { console.error(e); }
+  });
+}
+
+export const tipStore = {
+  getAll(): CivicWhistleblowerTip[] {
+    return [...currentTips];
+  },
+  add(tip: Omit<CivicWhistleblowerTip, 'id' | 'submittedAt' | 'status'> & Partial<CivicWhistleblowerTip>): CivicWhistleblowerTip {
+    const newTip: CivicWhistleblowerTip = {
+      id: `tip-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      status: 'submitted',
+      submittedAt: new Date().toISOString(),
+      politicianId: tip.politicianId,
+      politicianName: tip.politicianName,
+      agencyTarget: tip.agencyTarget || 'GENERAL',
+      title: tip.title,
+      description: tip.description,
+      allegedAmount: tip.allegedAmount || 0,
+      currency: tip.currency || 'NGN',
+      jurisdictionOrState: tip.jurisdictionOrState || 'Federal',
+      documentRefNumber: tip.documentRefNumber || '',
+      evidenceLinks: tip.evidenceLinks || [],
+      submitterAlias: tip.submitterAlias || 'Anonymous Citizen'
+    };
+    currentTips = [newTip, ...currentTips];
+    notifyTips();
+    return newTip;
+  },
+  updateStatus(id: string, status: CivicWhistleblowerTip['status']) {
+    currentTips = currentTips.map(t => t.id === id ? { ...t, status } : t);
+    notifyTips();
+  },
+  delete(id: string) {
+    currentTips = currentTips.filter(t => t.id !== id);
+    notifyTips();
+  },
+  subscribe(listener: () => void) {
+    tipListeners.add(listener);
+    return () => { tipListeners.delete(listener); };
+  }
+};
+
+let currentAlerts: CaseAlertSubscription[] = [];
+const alertListeners = new Set<() => void>();
+
+export const alertStore = {
+  getAll(): CaseAlertSubscription[] {
+    return [...currentAlerts];
+  },
+  subscribeAlert(politicianId: string, politicianName: string, emailOrPhone: string, frequency: 'immediate' | 'weekly_digest' = 'immediate'): CaseAlertSubscription {
+    const existing = currentAlerts.find(a => a.politicianId === politicianId && a.emailOrPhone.toLowerCase() === emailOrPhone.toLowerCase());
+    if (existing) {
+      existing.active = true;
+      existing.frequency = frequency;
+      return existing;
+    }
+    const newAlert: CaseAlertSubscription = {
+      id: `alert-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      politicianId,
+      politicianName,
+      emailOrPhone,
+      frequency,
+      subscribedAt: new Date().toISOString(),
+      active: true
+    };
+    currentAlerts = [newAlert, ...currentAlerts];
+    alertListeners.forEach(l => { try { l(); } catch (e) {} });
+    return newAlert;
+  },
+  unsubscribe(id: string) {
+    currentAlerts = currentAlerts.filter(a => a.id !== id);
+    alertListeners.forEach(l => { try { l(); } catch (e) {} });
   }
 };

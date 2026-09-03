@@ -23,6 +23,8 @@ import { ShareProfileModal, ShareProfileCard, QuickCopyLinkButton } from '@/comp
 import { VerificationBadge } from '@/components/VerificationBadge';
 import { SourceTypeBadge } from '@/components/SourceTypeBadge';
 import { DossierExportModal } from '@/components/DossierExportModal';
+import { CaseAlertModal } from '@/components/CaseAlertModal';
+import { SubmitTipModal } from '@/components/SubmitTipModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -88,7 +90,12 @@ export default function PoliticianProfile() {
           Back to Registry
         </button>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <CaseAlertModal politician={fullPolitician} />
+          <SubmitTipModal 
+            politicianId={fullPolitician.id} 
+            politicianName={fullPolitician.fullName} 
+          />
           <DossierExportModal politician={fullPolitician} />
           <Link href={`/compare?p1=${fullPolitician.id}`}>
             <Button 
