@@ -6,10 +6,11 @@ import { useFirebase, useCollection } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { 
   Search, ArrowUpDown, Landmark, 
-  Loader2, ShieldAlert, ChevronRight
+  Loader2, ShieldAlert, ChevronRight, Share2, Link2, Check
 } from 'lucide-react';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import {
   Select,
   SelectContent,
@@ -23,6 +24,8 @@ import { cn } from '@/lib/utils';
 
 export default function LeaderboardPage() {
   const { db } = useFirebase();
+  const { toast } = useToast();
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'score' | 'forfeiture' | 'name'>('forfeiture');
 
@@ -125,7 +128,32 @@ export default function LeaderboardPage() {
                   </CardContent>
                   <CardFooter className="px-6 py-4 bg-secondary/30 border-t flex justify-between items-center">
                     <span className="text-[10px] font-bold uppercase text-muted-foreground">Audit Status: Verified</span>
-                    <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        title="Copy profile link"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const url = `${window.location.origin}/politician/${p.id}`;
+                          navigator.clipboard.writeText(url);
+                          setCopiedId(p.id);
+                          setTimeout(() => setCopiedId(null), 2000);
+                          toast({
+                            title: "Profile Link Copied!",
+                            description: `Direct link for ${p.fullName} copied to clipboard.`,
+                          });
+                        }}
+                        className="p-1.5 rounded-lg hover:bg-white text-muted-foreground hover:text-primary transition-all flex items-center gap-1 text-[10px] font-bold uppercase"
+                      >
+                        {copiedId === p.id ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Share2 className="w-3.5 h-3.5 text-accent" />
+                        )}
+                      </button>
+                      <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </CardFooter>
                 </Card>
               </Link>

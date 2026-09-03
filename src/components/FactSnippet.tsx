@@ -40,10 +40,20 @@ export function FactSnippet({ politician }: { politician: Politician }) {
     loadFacts();
   }, [politician.id]);
 
+  const [currentUrl, setCurrentUrl] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
+
   const copyToClipboard = (text: string, idx: number) => {
-    navigator.clipboard.writeText(`${text} #WhoOwesUs #NigeriaAccountability`);
+    const url = currentUrl || (typeof window !== 'undefined' ? window.location.href : '');
+    const shareText = url ? `${text}\n\nProfile: ${url} #WhoOwesUs #NigeriaAccountability` : `${text} #WhoOwesUs #NigeriaAccountability`;
+    navigator.clipboard.writeText(shareText);
     setCopiedIdx(idx);
-    toast({ title: "Copied!", description: "Snippet copied for sharing." });
+    toast({ title: "Copied!", description: "Snippet and profile link copied for sharing." });
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
@@ -75,14 +85,29 @@ export function FactSnippet({ politician }: { politician: Politician }) {
                   className="h-8 px-3 text-[10px] gap-2 hover:bg-secondary text-primary font-black uppercase tracking-widest"
                   onClick={() => copyToClipboard(snippet, idx)}
                 >
-                  {copiedIdx === idx ? <Check className="w-3 h-3 text-green-600" /> : <Copy className="w-3 h-3" />}
+                  {copiedIdx === idx ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                   Copy
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="sm" 
+                  className="h-8 px-3 text-[10px] gap-2 hover:bg-emerald-50 text-emerald-600 font-black uppercase tracking-widest"
+                  onClick={() => {
+                    const url = currentUrl || (typeof window !== 'undefined' ? window.location.href : '');
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(snippet + (url ? '\n\n' + url : ''))}`, '_blank');
+                  }}
+                >
+                  <MessageCircle className="w-3 h-3" />
+                  WhatsApp
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
                   className="h-8 px-3 text-[10px] gap-2 hover:bg-sky-50 text-sky-600 font-black uppercase tracking-widest"
-                  onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(snippet + ' #WhoOwesUs')}`, '_blank')}
+                  onClick={() => {
+                    const url = currentUrl || (typeof window !== 'undefined' ? window.location.href : '');
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(snippet + ' #WhoOwesUs')}&url=${encodeURIComponent(url)}`, '_blank');
+                  }}
                 >
                   <Twitter className="w-3 h-3" />
                   X

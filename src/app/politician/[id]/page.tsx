@@ -8,7 +8,7 @@ import { calculateAccountabilityScore } from '@/lib/scoring';
 import { 
   ArrowLeft, ShieldAlert, 
   ExternalLink, FileText, Loader2, User,
-  ShieldCheck, History
+  ShieldCheck, History, Share2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ import { BadgeList } from '@/components/BadgeList';
 import { FactSnippet } from '@/components/FactSnippet';
 import { HistoricalTrendChart } from '@/components/HistoricalTrendChart';
 import { ScoreBreakdownChart } from '@/components/ScoreBreakdownChart';
+import { ShareProfileModal, ShareProfileCard, QuickCopyLinkButton } from '@/components/ShareProfileModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -73,13 +74,31 @@ export default function PoliticianProfile() {
 
   return (
     <div className="container mx-auto px-6 md:px-[50px] py-8 max-w-7xl">
-      <button 
-        onClick={() => router.back()}
-        className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8 uppercase text-[10px] font-bold tracking-widest"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Registry
-      </button>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <button 
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors uppercase text-[10px] font-bold tracking-widest"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Registry
+        </button>
+
+        <div className="flex items-center gap-2.5">
+          <QuickCopyLinkButton politicianId={fullPolitician.id} />
+          <ShareProfileModal 
+            politician={fullPolitician}
+            trigger={
+              <Button 
+                size="sm"
+                className="h-9 px-4 rounded-xl font-black text-xs uppercase tracking-wider gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+              >
+                <Share2 className="w-3.5 h-3.5 text-accent" />
+                <span>Share Dossier</span>
+              </Button>
+            }
+          />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
         <div className="lg:col-span-2 space-y-10">
@@ -223,6 +242,8 @@ export default function PoliticianProfile() {
               <ScoreBreakdownChart breakdown={scoreBreakdown} />
             </CardContent>
           </Card>
+
+          <ShareProfileCard politician={fullPolitician} />
 
           <FactSnippet politician={fullPolitician} />
           
