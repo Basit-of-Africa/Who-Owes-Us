@@ -12,7 +12,7 @@ export interface Source {
 
 export interface CaseRecord {
   id?: string;
-  politicianId: string;
+  politicianId?: string;
   title: string;
   description: string;
   status: CaseStatus;
@@ -25,8 +25,8 @@ export interface CaseRecord {
 
 export interface Forfeiture {
   id?: string;
-  caseId: string;
-  politicianId: string;
+  caseId?: string;
+  politicianId?: string;
   amount: number;
   currency: string;
   forfeitureType: 'temporary' | 'permanent';
@@ -35,7 +35,7 @@ export interface Forfeiture {
 
 export interface Detention {
   id?: string;
-  politicianId: string;
+  politicianId?: string;
   caseId?: string;
   startDate: string;
   endDate?: string;
@@ -45,7 +45,7 @@ export interface Detention {
 
 export interface OfficeHeld {
   id?: string;
-  politicianId: string;
+  politicianId?: string;
   officeTitle: string;
   state?: string;
   constituency?: string;
@@ -63,6 +63,9 @@ export interface Politician {
   primaryParty: string;
   sourceOrigin?: string;
   sourceUrl?: string;
+  accountabilityScore?: number;
+  totalForfeiture?: number;
+  partyHistory?: { party: string; years: string }[];
   createdAt?: any;
   updatedAt?: any;
   

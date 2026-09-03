@@ -1,0 +1,6 @@
+{
+  "name": "Who Owes Us?",
+  "description": "Politician accountability tracker monitoring legal footprints, asset forfeitures, and accountability scores of Nigerian public officials.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

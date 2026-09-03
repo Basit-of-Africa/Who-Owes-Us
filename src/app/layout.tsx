@@ -6,8 +6,12 @@ import { FirebaseProvider } from '@/firebase/provider';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Who Owes Us? | Politician Accountability Tracker',
-  description: 'Tracking transparency and civic duty by monitoring corruption records and accountability scores of public officials.',
+  title: 'Who Owes Us?',
+  description: 'Politician accountability tracker monitoring legal footprints, asset forfeitures, and accountability scores of Nigerian public officials.',
+  openGraph: {
+    title: 'Who Owes Us?',
+    description: 'Politician accountability tracker monitoring legal footprints, asset forfeitures, and accountability scores of Nigerian public officials.',
+  },
 };
 
 export default function RootLayout({

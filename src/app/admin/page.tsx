@@ -20,6 +20,7 @@ import { scrapePoliticianData } from '@/ai/flows/scrape-politician-flow';
 import { INITIAL_REGISTRY_SEED } from '@/lib/seed-data';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { fallbackStore } from '@/lib/fallback-registry';
 
 export default function AdminPage() {
   const { db } = useFirebase();
@@ -39,39 +40,46 @@ export default function AdminPage() {
   ) || [];
 
   const ingestPolitician = async (politicianData: any) => {
-    if (!db) return;
-    
-    const polRef = await addDoc(collection(db, 'politicians'), {
-      fullName: politicianData.fullName,
-      aliasNames: politicianData.aliasNames || [],
-      bio: politicianData.bio || '',
-      primaryParty: politicianData.primaryParty || 'Unknown',
-      accountabilityScore: 0, 
-      totalForfeiture: politicianData.totalForfeiture || 0,
-      profileImageUrl: politicianData.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(politicianData.fullName)}/400/400`,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    fallbackStore.add(politicianData);
 
-    if (politicianData.offices) {
-      for (const office of politicianData.offices) {
-        await addDoc(collection(db, 'politicians', polRef.id, 'offices'), office);
-      }
-    }
+    if (db) {
+      try {
+        const polRef = await addDoc(collection(db, 'politicians'), {
+          fullName: politicianData.fullName,
+          aliasNames: politicianData.aliasNames || [],
+          bio: politicianData.bio || '',
+          primaryParty: politicianData.primaryParty || 'Unknown',
+          accountabilityScore: politicianData.accountabilityScore || 0, 
+          totalForfeiture: politicianData.totalForfeiture || 0,
+          profileImageUrl: politicianData.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(politicianData.fullName)}/400/400`,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
 
-    if (politicianData.cases) {
-      for (const c of politicianData.cases) {
-        await addDoc(collection(db, 'politicians', polRef.id, 'cases'), c);
+        if (politicianData.offices) {
+          for (const office of politicianData.offices) {
+            await addDoc(collection(db, 'politicians', polRef.id, 'offices'), office);
+          }
+        }
+
+        if (politicianData.cases) {
+          for (const c of politicianData.cases) {
+            await addDoc(collection(db, 'politicians', polRef.id, 'cases'), c);
+          }
+        }
+      } catch (err) {
+        console.warn('Firestore write skipped or failed, saved to in-memory store:', err);
       }
     }
   };
 
   const handleSeedRegistry = async () => {
-    if (!db || isBatching) return;
+    if (isBatching) return;
     setIsBatching(true);
     setBatchProgress(0);
     
     try {
+      fallbackStore.reset();
       for (let i = 0; i < INITIAL_REGISTRY_SEED.length; i++) {
         await ingestPolitician(INITIAL_REGISTRY_SEED[i]);
         setBatchProgress(((i + 1) / INITIAL_REGISTRY_SEED.length) * 100);
@@ -85,7 +93,7 @@ export default function AdminPage() {
   };
 
   const handleAIScrape = async () => {
-    if (!db || !scrapeName.trim()) return;
+    if (!scrapeName.trim()) return;
     setIsScraping(true);
     try {
       const data = await scrapePoliticianData({ fullName: scrapeName });
@@ -107,12 +115,18 @@ export default function AdminPage() {
   };
 
   const handleClearDatabase = async () => {
-    if (!db) return;
     setClearing(true);
     try {
-      const snapshot = await getDocs(collection(db, 'politicians'));
-      for (const d of snapshot.docs) {
-        await deleteDoc(doc(db, 'politicians', d.id));
+      fallbackStore.clear();
+      if (db) {
+        try {
+          const snapshot = await getDocs(collection(db, 'politicians'));
+          for (const d of snapshot.docs) {
+            await deleteDoc(doc(db, 'politicians', d.id));
+          }
+        } catch (err) {
+          console.warn('Firestore clear skipped, in-memory store cleared:', err);
+        }
       }
       toast({ title: "Registry Cleared" });
     } finally {
@@ -121,13 +135,15 @@ export default function AdminPage() {
   };
 
   const handleDeletePolitician = async (id: string) => {
-    if (!db) return;
-    try {
-      await deleteDoc(doc(db, 'politicians', id));
-      toast({ title: "Profile Removed" });
-    } catch (e) {
-      toast({ variant: "destructive", title: "Delete Failed" });
+    fallbackStore.delete(id);
+    if (db) {
+      try {
+        await deleteDoc(doc(db, 'politicians', id));
+      } catch (err) {
+        console.warn('Firestore delete skipped, in-memory store updated:', err);
+      }
     }
+    toast({ title: "Profile Removed" });
   };
 
   return (

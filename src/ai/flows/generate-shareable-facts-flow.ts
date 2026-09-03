@@ -38,12 +38,6 @@ const GenerateShareableFactsOutputSchema = z.object({
 });
 export type GenerateShareableFactsOutput = z.infer<typeof GenerateShareableFactsOutputSchema>;
 
-export async function generateShareableFacts(
-  input: GenerateShareableFactsInput
-): Promise<GenerateShareableFactsOutput> {
-  return generateShareableFactsFlow(input);
-}
-
 const generateShareableFactsPrompt = ai.definePrompt({
   name: 'generateShareableFactsPrompt',
   input: {schema: GenerateShareableFactsInputSchema},
@@ -81,3 +75,22 @@ const generateShareableFactsFlow = ai.defineFlow(
     return output!;
   }
 );
+
+export async function generateShareableFacts(
+  input: GenerateShareableFactsInput
+): Promise<GenerateShareableFactsOutput> {
+  try {
+    const res = await generateShareableFactsFlow(input);
+    return res;
+  } catch (err) {
+    console.warn("AI facts error or key missing, using fallback snippets:", err);
+    return {
+      snippets: [
+        `Did you know? ${input.fullName} is actively documented in national civic accountability archives.`,
+        input.corruptionRecords && input.corruptionRecords.length > 0
+          ? `Did you know? Records track public proceedings regarding "${input.corruptionRecords[0].caseTitle}".`
+          : `Did you know? Asset verification and governance tenures are recorded for public oversight.`
+      ]
+    };
+  }
+}

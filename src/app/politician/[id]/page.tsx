@@ -11,6 +11,7 @@ import {
   ShieldCheck, History
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { BadgeList } from '@/components/BadgeList';
 import { FactSnippet } from '@/components/FactSnippet';
@@ -108,7 +109,7 @@ export default function PoliticianProfile() {
             </TabsList>
             
             <TabsContent value="cases" className="pt-8 space-y-6">
-              {fullPolitician.cases.length > 0 ? fullPolitician.cases.map((c, idx) => (
+              {(fullPolitician.cases || []).length > 0 ? (fullPolitician.cases || []).map((c, idx) => (
                 <Card key={idx} className="border-none shadow-sm overflow-hidden">
                   <div className="p-6 border-l-4 border-accent">
                     <div className="flex justify-between items-start mb-4">
@@ -132,7 +133,7 @@ export default function PoliticianProfile() {
             </TabsContent>
 
             <TabsContent value="offices" className="pt-8 space-y-4">
-              {fullPolitician.offices.length > 0 ? fullPolitician.offices.map((office, idx) => (
+              {(fullPolitician.offices || []).length > 0 ? (fullPolitician.offices || []).map((office, idx) => (
                 <div key={idx} className="p-6 bg-white border rounded-xl flex justify-between items-center">
                   <div>
                     <h4 className="font-black text-primary uppercase">{office.officeTitle}</h4>
@@ -173,7 +174,7 @@ export default function PoliticianProfile() {
               
               <div className="pt-4 border-t">
                  <p className="text-[8px] font-bold uppercase text-muted-foreground mb-1">Total Restitution Tied</p>
-                 <p className="text-2xl font-black text-accent">₦{fullPolitician.totalForfeiture?.toLocaleString()}</p>
+                 <p className="text-2xl font-black text-accent">₦{(fullPolitician.totalForfeiture || 0).toLocaleString()}</p>
               </div>
             </CardContent>
           </Card>

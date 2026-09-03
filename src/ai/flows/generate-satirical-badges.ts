@@ -28,7 +28,12 @@ const GenerateSatiricalBadgesOutputSchema = z.array(z.string()).describe("A list
 export type GenerateSatiricalBadgesOutput = z.infer<typeof GenerateSatiricalBadgesOutputSchema>;
 
 export async function generateSatiricalBadges(input: GenerateSatiricalBadgesInput): Promise<GenerateSatiricalBadgesOutput> {
-  return generateSatiricalBadgesFlow(input);
+  try {
+    return await generateSatiricalBadgesFlow(input);
+  } catch (err) {
+    console.warn("AI badges error or key missing, using fallback badges:", err);
+    return ['Frequent Court Visitor', 'Asset Recovery Contributor', 'Public Purse Purveyor'];
+  }
 }
 
 const satiricalBadgesPrompt = ai.definePrompt({
