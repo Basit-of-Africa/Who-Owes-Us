@@ -63,6 +63,11 @@ export function ShareProfileModal({
   const totalCases = politician.cases?.length || 0;
   const score = politician.accountabilityScore ?? 0;
   const restitution = (politician.totalForfeiture || 0).toLocaleString();
+  const forfeitureShort = politician.totalForfeiture && politician.totalForfeiture > 0 
+    ? `${(politician.totalForfeiture / 1000000000).toFixed(1)}B` 
+    : '0';
+
+  const ogImageUrl = `/api/og?name=${encodeURIComponent(politician.fullName)}&party=${encodeURIComponent(politician.primaryParty)}&state=${encodeURIComponent(politician.stateOfOrigin || '')}&score=${Math.round(score)}&forfeiture=${forfeitureShort}&cases=${totalCases}`;
 
   // Social share copy templates
   const tweetText = `🔍 Public Accountability Dossier: ${politician.fullName} (${politician.primaryParty})\n• Accountability Rating: ${score.toFixed(1)} pts\n• Documented Cases: ${totalCases}\n• Court Restitution: ₦${restitution}\n\nExamine the full case & asset audit on #WhoOwesUs:`;
@@ -304,6 +309,33 @@ ${profileUrl}`;
                   <span>More Apps...</span>
                 </button>
               )}
+            </div>
+          </div>
+
+          {/* Live Social Card Unfurl Preview (OG Card) */}
+          <div className="space-y-2 pt-2 border-t">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-black uppercase tracking-wider text-primary flex items-center gap-1.5">
+                <Smartphone className="w-3.5 h-3.5 text-accent" />
+                Social Media Preview Card (WhatsApp / X / FB)
+              </label>
+              <a
+                href={ogImageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-black uppercase text-accent hover:underline flex items-center gap-1"
+              >
+                <span>Open HQ Card</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <div className="rounded-xl overflow-hidden border bg-slate-950 aspect-[1200/630] relative shadow-inner group">
+              <img
+                src={ogImageUrl}
+                alt={`${politician.fullName} Social Card Preview`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             </div>
           </div>
 

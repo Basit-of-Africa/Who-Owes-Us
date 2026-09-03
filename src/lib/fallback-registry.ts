@@ -27,6 +27,10 @@ function buildInitialRegistry(): Politician[] {
       amountInvolved: c.amountInvolved || 0,
       currency: c.currency || 'NGN',
       caseStartDate: c.caseStartDate || '2022-01-01',
+      suitNumber: c.suitNumber,
+      courtJurisdiction: c.courtJurisdiction,
+      adjournmentsCount: c.adjournmentsCount,
+      verification: c.verification,
       sources: [
         {
           id: `source-${id}-${cIdx}`,

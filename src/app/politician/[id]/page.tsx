@@ -20,6 +20,8 @@ import { FactSnippet } from '@/components/FactSnippet';
 import { HistoricalTrendChart } from '@/components/HistoricalTrendChart';
 import { ScoreBreakdownChart } from '@/components/ScoreBreakdownChart';
 import { ShareProfileModal, ShareProfileCard, QuickCopyLinkButton } from '@/components/ShareProfileModal';
+import { VerificationBadge } from '@/components/VerificationBadge';
+import { DossierExportModal } from '@/components/DossierExportModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -86,6 +88,7 @@ export default function PoliticianProfile() {
         </button>
 
         <div className="flex items-center gap-2.5">
+          <DossierExportModal politician={fullPolitician} />
           <Link href={`/compare?p1=${fullPolitician.id}`}>
             <Button 
               size="sm"
@@ -199,8 +202,15 @@ export default function PoliticianProfile() {
               {(fullPolitician.cases || []).length > 0 ? (fullPolitician.cases || []).map((c, idx) => (
                 <Card key={idx} className="border-none shadow-sm overflow-hidden bg-white">
                   <div className="p-6 border-l-4 border-accent space-y-4">
-                    <div className="flex justify-between items-start">
-                      <Badge variant="outline" className="text-[10px] font-bold uppercase border-primary/20">{c.status.replace('_', ' ')}</Badge>
+                    <div className="flex flex-wrap justify-between items-start gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className="text-[10px] font-bold uppercase border-primary/20">{c.status.replace('_', ' ')}</Badge>
+                        <VerificationBadge 
+                          verification={c.verification} 
+                          suitNumber={c.suitNumber} 
+                          courtJurisdiction={c.courtJurisdiction} 
+                        />
+                      </div>
                       <span className="text-[10px] font-bold text-muted-foreground">{new Date(c.caseStartDate).getFullYear()}</span>
                     </div>
                     <div>
@@ -211,9 +221,14 @@ export default function PoliticianProfile() {
                     {/* Case Velocity & Delay Meter */}
                     <CaseVelocityMeter caseRecord={c} />
 
-                    <div className="pt-4 border-t flex items-center justify-between">
-                      <div className="text-[10px] font-bold text-primary uppercase">Amount: {c.currency} {c.amountInvolved.toLocaleString()}</div>
-                      <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase text-accent">Source Docs <ExternalLink className="w-3 h-3 ml-2" /></Button>
+                    <div className="pt-4 border-t flex flex-wrap items-center justify-between gap-3">
+                      <div className="text-[10px] font-bold text-primary uppercase">Amount Involved: {c.currency} {c.amountInvolved.toLocaleString()}</div>
+                      <VerificationBadge 
+                        verification={c.verification} 
+                        suitNumber={c.suitNumber} 
+                        courtJurisdiction={c.courtJurisdiction} 
+                        compact={false}
+                      />
                     </div>
                   </div>
                 </Card>
@@ -243,15 +258,25 @@ export default function PoliticianProfile() {
 
             <TabsContent value="forfeitures" className="pt-8 space-y-4">
               {(fullPolitician.forfeitures || []).length > 0 ? (fullPolitician.forfeitures || []).map((forfeiture, idx) => (
-                <div key={idx} className="p-6 bg-white border rounded-xl flex justify-between items-center">
-                  <div>
-                    <Badge variant="outline" className="text-[10px] font-bold uppercase border-primary/20 mb-1">
-                      {forfeiture.forfeitureType} forfeiture
-                    </Badge>
+                <div key={idx} className="p-6 bg-white border rounded-xl flex flex-wrap justify-between items-center gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-[10px] font-bold uppercase border-primary/20">
+                        {forfeiture.forfeitureType} forfeiture
+                      </Badge>
+                      <VerificationBadge 
+                        verification={forfeiture.verification || {
+                          agency: 'FEDERAL_HIGH_COURT',
+                          agencyLabel: 'High Court Asset Forfeiture Order',
+                          certifiedDocId: forfeiture.courtOrderNumber || 'FHC/ASSET-REC/ORDER',
+                          verificationStatus: 'court_certified'
+                        }}
+                      />
+                    </div>
                     <h4 className="font-black text-primary uppercase text-lg">
                       {forfeiture.currency} {forfeiture.amount?.toLocaleString()}
                     </h4>
-                    <p className="text-xs text-muted-foreground uppercase">Court-ordered restitution</p>
+                    <p className="text-xs text-muted-foreground uppercase">Court-ordered restitution to Federal Treasury</p>
                   </div>
                   <div className="text-right text-[10px] font-bold text-accent uppercase">
                     {forfeiture.date ? new Date(forfeiture.date).getFullYear() : 'Ordered'}

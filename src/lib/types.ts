@@ -1,6 +1,26 @@
 
 export type CaseStatus = 'alleged' | 'under_investigation' | 'charged' | 'convicted' | 'dismissed';
 
+export type VerificationAgency = 
+  | 'EFCC' 
+  | 'ICPC' 
+  | 'CCB' 
+  | 'FEDERAL_HIGH_COURT' 
+  | 'SUPREME_COURT' 
+  | 'UK_NCA' 
+  | 'US_DOJ' 
+  | 'GAZETTE';
+
+export interface VerificationSource {
+  agency: VerificationAgency;
+  agencyLabel: string;
+  certifiedDocId?: string;
+  gazetteNotice?: string;
+  courtOrderDate?: string;
+  verificationStatus: 'verified_official' | 'gazetted' | 'court_certified';
+  directDocUrl?: string;
+}
+
 export interface Source {
   id?: string;
   title: string;
@@ -27,6 +47,7 @@ export interface CaseRecord {
   adjournmentsCount?: number;
   prolongedDelay?: boolean;
   delayReason?: string;
+  verification?: VerificationSource;
 }
 
 export interface Forfeiture {
@@ -37,6 +58,9 @@ export interface Forfeiture {
   currency: string;
   forfeitureType: 'temporary' | 'permanent';
   date: string;
+  description?: string;
+  courtOrderNumber?: string;
+  verification?: VerificationSource;
 }
 
 export interface Detention {

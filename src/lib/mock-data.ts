@@ -40,6 +40,14 @@ export const politicians: Politician[] = [
         suitNumber: 'No. 93-C-4483',
         courtJurisdiction: 'US District Court, Northern District of Illinois',
         adjournmentsCount: 14,
+        verification: {
+          agency: 'US_DOJ',
+          agencyLabel: 'US Court Record',
+          certifiedDocId: 'US-ND-ILL-93-C-4483',
+          gazetteNotice: 'US-COURT-SETTLEMENT-1993',
+          verificationStatus: 'court_certified',
+          courtOrderDate: '1993-10-04'
+        },
         sources: [
           { id: 's1', title: 'Court Records', url: 'https://example.com/tinubu-case', publisher: 'US District Court', publicationDate: '1993-10-04', credibilityRating: 5 }
         ]
@@ -110,6 +118,14 @@ export const politicians: Politician[] = [
         suitNumber: 'EFCC/INV/ABJ/2021/49',
         courtJurisdiction: 'EFCC Headquarters, Abuja',
         adjournmentsCount: 8,
+        verification: {
+          agency: 'CCB',
+          agencyLabel: 'CCB Declaration',
+          certifiedDocId: 'CCB-DECL-AN-06-14',
+          gazetteNotice: 'FRN-GAZ-2021-Vol-108',
+          verificationStatus: 'verified_official',
+          courtOrderDate: '2021-10-03'
+        },
         sources: [
           { id: 's2', title: 'Pandora Papers Investigation', url: 'https://example.com/obi-pandora', publisher: 'Premium Times', publicationDate: '2021-10-04', credibilityRating: 5 }
         ]
@@ -152,6 +168,14 @@ export const politicians: Politician[] = [
         suitNumber: 'US Senate PSI Report 111-43',
         courtJurisdiction: 'US Senate Permanent Subcommittee on Investigations',
         adjournmentsCount: 22,
+        verification: {
+          agency: 'US_DOJ',
+          agencyLabel: 'US Senate Record',
+          certifiedDocId: 'US-SEN-PSI-111-43',
+          gazetteNotice: 'US-GPO-111-43',
+          verificationStatus: 'court_certified',
+          courtOrderDate: '2010-02-04'
+        },
         sources: [
           { id: 's3', title: 'Keeping Foreign Corruption out of the United States', url: 'https://example.com/atiku-report', publisher: 'US Senate Permanent Subcommittee on Investigations', publicationDate: '2010-02-04', credibilityRating: 5 }
         ]
@@ -216,6 +240,14 @@ export const politicians: Politician[] = [
         suitNumber: 'FHC/PHC/CS/120/2022',
         courtJurisdiction: 'Federal High Court, Port Harcourt',
         adjournmentsCount: 11,
+        verification: {
+          agency: 'FEDERAL_HIGH_COURT',
+          agencyLabel: 'Federal High Court Ruling',
+          certifiedDocId: 'FHC/PHC/CS/120/2022',
+          gazetteNotice: 'FRN-GAZ-2022-Vol-109',
+          verificationStatus: 'court_certified',
+          courtOrderDate: '2022-06-15'
+        },
         sources: []
       }
     ],

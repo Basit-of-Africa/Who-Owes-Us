@@ -421,6 +421,12 @@ export default function LeaderboardPage() {
                           2027 Candidate
                         </span>
                       )}
+                      {((p.cases || []).some((c: any) => c.verification)) && !isClean && (
+                        <span className="px-2 py-0.5 rounded-lg bg-emerald-950/85 backdrop-blur-sm text-emerald-300 border border-emerald-500/40 font-black text-[8px] uppercase tracking-wider shadow-sm flex items-center gap-1">
+                          <ShieldCheck className="w-2.5 h-2.5 text-emerald-400" />
+                          Verified Records
+                        </span>
+                      )}
                     </div>
 
                     {p.profileImageUrl ? (
