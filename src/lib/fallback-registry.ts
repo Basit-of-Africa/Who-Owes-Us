@@ -31,6 +31,7 @@ function buildInitialRegistry(): Politician[] {
       courtJurisdiction: c.courtJurisdiction,
       adjournmentsCount: c.adjournmentsCount,
       verification: c.verification,
+      sourceType: c.sourceType,
       sources: [
         {
           id: `source-${id}-${cIdx}`,

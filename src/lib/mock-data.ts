@@ -40,6 +40,7 @@ export const politicians: Politician[] = [
         suitNumber: 'No. 93-C-4483',
         courtJurisdiction: 'US District Court, Northern District of Illinois',
         adjournmentsCount: 14,
+        sourceType: 'Court Judgment',
         verification: {
           agency: 'US_DOJ',
           agencyLabel: 'US Court Record',
@@ -118,6 +119,7 @@ export const politicians: Politician[] = [
         suitNumber: 'EFCC/INV/ABJ/2021/49',
         courtJurisdiction: 'EFCC Headquarters, Abuja',
         adjournmentsCount: 8,
+        sourceType: 'Code of Conduct Bureau',
         verification: {
           agency: 'CCB',
           agencyLabel: 'CCB Declaration',
@@ -168,6 +170,7 @@ export const politicians: Politician[] = [
         suitNumber: 'US Senate PSI Report 111-43',
         courtJurisdiction: 'US Senate Permanent Subcommittee on Investigations',
         adjournmentsCount: 22,
+        sourceType: 'International Inquiry',
         verification: {
           agency: 'US_DOJ',
           agencyLabel: 'US Senate Record',
@@ -240,6 +243,7 @@ export const politicians: Politician[] = [
         suitNumber: 'FHC/PHC/CS/120/2022',
         courtJurisdiction: 'Federal High Court, Port Harcourt',
         adjournmentsCount: 11,
+        sourceType: 'Court Judgment',
         verification: {
           agency: 'FEDERAL_HIGH_COURT',
           agencyLabel: 'Federal High Court Ruling',

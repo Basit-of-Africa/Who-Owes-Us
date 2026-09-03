@@ -30,6 +30,17 @@ export interface Source {
   credibilityRating: number; // 1–5
 }
 
+export type CaseSourceType =
+  | 'EFCC Certified'
+  | 'Court Judgment'
+  | 'ICPC Documented'
+  | 'Official Gazette'
+  | 'Supreme Court Ruling'
+  | 'Code of Conduct Bureau'
+  | 'International Inquiry'
+  | 'Investigative Report'
+  | string;
+
 export interface CaseRecord {
   id?: string;
   politicianId?: string;
@@ -48,6 +59,7 @@ export interface CaseRecord {
   prolongedDelay?: boolean;
   delayReason?: string;
   verification?: VerificationSource;
+  sourceType?: CaseSourceType;
 }
 
 export interface Forfeiture {

@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { CaseVelocityMeter } from '@/components/CaseVelocityMeter';
+import { SourceTypeBadge } from '@/components/SourceTypeBadge';
 import { cn } from '@/lib/utils';
 import { Politician } from '@/lib/types';
 
@@ -399,9 +400,12 @@ function CompareContent() {
                         {/* First case velocity meter preview if exists */}
                         {p.cases && p.cases.length > 0 ? (
                           <div className="p-3 bg-secondary/30 rounded-xl space-y-2">
-                            <p className="text-[11px] font-black text-primary uppercase line-clamp-1">
-                              {p.cases[0].title}
-                            </p>
+                            <div className="flex flex-wrap items-center justify-between gap-1.5">
+                              <p className="text-[11px] font-black text-primary uppercase line-clamp-1">
+                                {p.cases[0].title}
+                              </p>
+                              <SourceTypeBadge sourceType={p.cases[0].sourceType} caseRecord={p.cases[0]} size="sm" />
+                            </div>
                             <CaseVelocityMeter caseRecord={p.cases[0]} />
                           </div>
                         ) : (

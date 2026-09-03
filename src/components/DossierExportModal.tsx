@@ -20,6 +20,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Politician } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { SourceTypeBadge } from '@/components/SourceTypeBadge';
 
 interface DossierExportModalProps {
   politician: Politician;
@@ -292,10 +293,13 @@ Full live digital audit sheet: ${typeof window !== 'undefined' ? window.location
                 <div className="divide-y border rounded-xl overflow-hidden">
                   {(politician.cases || []).map((c, idx) => (
                     <div key={idx} className="p-4 bg-white text-xs space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="font-black text-slate-900 uppercase">
-                          {c.title}
-                        </span>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-black text-slate-900 uppercase">
+                            {c.title}
+                          </span>
+                          <SourceTypeBadge sourceType={c.sourceType} caseRecord={c} size="sm" />
+                        </div>
                         <Badge variant="outline" className="text-[9px] font-bold uppercase border-slate-300">
                           {c.status.replace('_', ' ')}
                         </Badge>

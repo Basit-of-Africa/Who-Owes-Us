@@ -21,6 +21,7 @@ import { HistoricalTrendChart } from '@/components/HistoricalTrendChart';
 import { ScoreBreakdownChart } from '@/components/ScoreBreakdownChart';
 import { ShareProfileModal, ShareProfileCard, QuickCopyLinkButton } from '@/components/ShareProfileModal';
 import { VerificationBadge } from '@/components/VerificationBadge';
+import { SourceTypeBadge } from '@/components/SourceTypeBadge';
 import { DossierExportModal } from '@/components/DossierExportModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
@@ -205,6 +206,7 @@ export default function PoliticianProfile() {
                     <div className="flex flex-wrap justify-between items-start gap-2">
                       <div className="flex flex-wrap items-center gap-2">
                         <Badge variant="outline" className="text-[10px] font-bold uppercase border-primary/20">{c.status.replace('_', ' ')}</Badge>
+                        <SourceTypeBadge sourceType={c.sourceType} caseRecord={c} />
                         <VerificationBadge 
                           verification={c.verification} 
                           suitNumber={c.suitNumber} 
@@ -214,7 +216,10 @@ export default function PoliticianProfile() {
                       <span className="text-[10px] font-bold text-muted-foreground">{new Date(c.caseStartDate).getFullYear()}</span>
                     </div>
                     <div>
-                      <h3 className="text-xl font-black text-primary uppercase mb-2">{c.title}</h3>
+                      <div className="flex flex-wrap items-center gap-2.5 mb-2">
+                        <h3 className="text-xl font-black text-primary uppercase">{c.title}</h3>
+                        <SourceTypeBadge sourceType={c.sourceType} caseRecord={c} size="sm" />
+                      </div>
                       <p className="text-sm text-muted-foreground mb-3">{c.description}</p>
                     </div>
 

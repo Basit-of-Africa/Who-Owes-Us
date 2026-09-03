@@ -25,6 +25,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'UK-NCA/CR/2023/88',
         courtJurisdiction: 'Westminster Magistrates Court, London',
         adjournmentsCount: 9,
+        sourceType: 'Court Judgment',
         verification: {
           agency: 'UK_NCA',
           agencyLabel: 'UK NCA Certified',
@@ -56,6 +57,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FCT/HC/CR/299/2022',
         courtJurisdiction: 'FCT High Court, Maitama, Abuja',
         adjournmentsCount: 16,
+        sourceType: 'EFCC Certified',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -87,6 +89,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/ABJ/CS/56/2024',
         courtJurisdiction: 'Federal High Court, Abuja',
         adjournmentsCount: 5,
+        sourceType: 'Court Judgment',
         verification: {
           agency: 'FEDERAL_HIGH_COURT',
           agencyLabel: 'Federal High Court Ruling',
@@ -118,6 +121,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'US Senate PSI Report 111-43',
         courtJurisdiction: 'US Senate Permanent Subcommittee on Investigations',
         adjournmentsCount: 22,
+        sourceType: 'International Inquiry',
         verification: {
           agency: 'US_DOJ',
           agencyLabel: 'US Senate Record',
@@ -150,6 +154,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/JOS/CR/11/2011',
         courtJurisdiction: 'Federal High Court, Jos',
         adjournmentsCount: 38,
+        sourceType: 'Court Judgment',
         verification: {
           agency: 'FEDERAL_HIGH_COURT',
           agencyLabel: 'Federal High Court Ruling',
@@ -181,6 +186,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/LAF/CR/03/2010',
         courtJurisdiction: 'Federal High Court, Lafia',
         adjournmentsCount: 19,
+        sourceType: 'EFCC Certified',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -212,6 +218,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/IL/CR/12/2024',
         courtJurisdiction: 'Federal High Court, Ilorin',
         adjournmentsCount: 6,
+        sourceType: 'EFCC Certified',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -243,6 +250,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'SC/CV/622/2019',
         courtJurisdiction: 'Supreme Court of Nigeria / Federal High Court',
         adjournmentsCount: 52,
+        sourceType: 'Supreme Court Ruling',
         verification: {
           agency: 'SUPREME_COURT',
           agencyLabel: 'Supreme Court Certified',
@@ -274,6 +282,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/L/CR/377/2018',
         courtJurisdiction: 'Federal High Court, Ikoyi, Lagos',
         adjournmentsCount: 31,
+        sourceType: 'EFCC Certified',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -305,6 +314,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/ABJ/CR/316/2020',
         courtJurisdiction: 'Federal High Court, Abuja',
         adjournmentsCount: 24,
+        sourceType: 'EFCC Certified',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -336,6 +346,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/ABJ/CR/10/2024',
         courtJurisdiction: 'Federal High Court, Abuja',
         adjournmentsCount: 8,
+        sourceType: 'EFCC Certified',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -367,6 +378,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/ABJ/CR/28/2022',
         courtJurisdiction: 'Federal High Court, Abuja',
         adjournmentsCount: 15,
+        sourceType: 'Court Judgment',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -396,6 +408,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/ABJ/CR/264/2019',
         courtJurisdiction: 'Federal High Court, Abuja',
         adjournmentsCount: 42,
+        sourceType: 'Court Judgment',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -425,6 +438,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'FHC/ABJ/CR/225/2015',
         courtJurisdiction: 'Federal High Court, Abuja',
         adjournmentsCount: 34,
+        sourceType: 'EFCC Certified',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',
@@ -455,6 +469,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         caseStartDate: '1993-10-04',
         suitNumber: 'US-ND-ILL-93-C-4483',
         courtJurisdiction: 'US District Court, Northern District of Illinois',
+        sourceType: 'Court Judgment',
         verification: {
           agency: 'US_DOJ',
           agencyLabel: 'US Court Record',
@@ -484,6 +499,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'SC/CR/1364/2020',
         courtJurisdiction: 'Supreme Court of Nigeria',
         adjournmentsCount: 28,
+        sourceType: 'Supreme Court Ruling',
         verification: {
           agency: 'SUPREME_COURT',
           agencyLabel: 'Supreme Court Certified',
@@ -513,6 +529,7 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         suitNumber: 'EFCC-INV-2024-05',
         courtJurisdiction: 'EFCC Zonal Office, Ilorin',
         adjournmentsCount: 2,
+        sourceType: 'EFCC Certified',
         verification: {
           agency: 'EFCC',
           agencyLabel: 'EFCC Certified',

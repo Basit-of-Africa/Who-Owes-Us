@@ -33,6 +33,16 @@ const ScrapedDataSchema = z.object({
     amountInvolved: z.number(),
     currency: z.string(),
     caseStartDate: z.string(),
+    sourceType: z.enum([
+      'EFCC Certified',
+      'Court Judgment',
+      'ICPC Documented',
+      'Official Gazette',
+      'Supreme Court Ruling',
+      'Code of Conduct Bureau',
+      'International Inquiry',
+      'Investigative Report'
+    ]).optional().describe("Automated badge source classification, e.g. 'EFCC Certified' or 'Court Judgment'"),
     sources: z.array(z.object({
       title: z.string(),
       url: z.string(),
@@ -95,6 +105,7 @@ export async function scrapePoliticianData(input: ScrapePoliticianInput): Promis
           amountInvolved: 0,
           currency: 'NGN',
           caseStartDate: new Date().toISOString().split('T')[0],
+          sourceType: 'EFCC Certified',
           sources: [
             {
               title: 'Public Record Gazette',
