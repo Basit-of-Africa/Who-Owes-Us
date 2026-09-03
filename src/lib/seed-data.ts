@@ -8,6 +8,10 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
   {
     fullName: 'Diezani Alison-Madueke',
     primaryParty: 'PDP',
+    stateOfOrigin: 'Bayelsa',
+    currentOfficeType: 'minister',
+    candidateFor: 'Ex-Minister of Petroleum Resources',
+    isIncumbent: false,
     bio: 'Former Minister of Petroleum Resources. Involved in massive international asset recovery cases totalling over $153m.',
     totalForfeiture: 244800000000, // $153m * 1600 = 244.8 Billion NGN
     cases: [
@@ -18,12 +22,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 153000000,
         currency: 'USD',
         caseStartDate: '2023-08-22',
+        suitNumber: 'UK-NCA/CR/2023/88',
+        courtJurisdiction: 'Westminster Magistrates Court, London',
+        adjournmentsCount: 9,
       }
     ]
   },
   {
     fullName: 'Ahmed Idris',
     primaryParty: 'Independent',
+    stateOfOrigin: 'Kano',
+    currentOfficeType: 'minister',
+    candidateFor: 'Ex-Accountant General of the Federation',
+    isIncumbent: false,
     bio: 'Former Accountant-General of the Federation. Facing trial regarding the alleged misappropriation of over ₦109 billion.',
     totalForfeiture: 109000000000,
     cases: [
@@ -34,12 +45,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 109000000000,
         currency: 'NGN',
         caseStartDate: '2022-05-16',
+        suitNumber: 'FCT/HC/CR/299/2022',
+        courtJurisdiction: 'FCT High Court, Maitama, Abuja',
+        adjournmentsCount: 16,
       }
     ]
   },
   {
     fullName: 'Peter Odili',
     primaryParty: 'PDP',
+    stateOfOrigin: 'Rivers',
+    currentOfficeType: 'governor',
+    candidateFor: 'Elder Statesman (Ex-Governor)',
+    isIncumbent: false,
     bio: 'Former Governor of Rivers State. Reopened investigations into ₦100bn misappropriation following legal challenges.',
     totalForfeiture: 100000000000,
     cases: [
@@ -50,12 +68,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 100000000000,
         currency: 'NGN',
         caseStartDate: '2024-04-01',
+        suitNumber: 'FHC/ABJ/CS/56/2024',
+        courtJurisdiction: 'Federal High Court, Abuja',
+        adjournmentsCount: 5,
       }
     ]
   },
   {
     fullName: 'Atiku Abubakar',
     primaryParty: 'PDP',
+    stateOfOrigin: 'Adamawa',
+    currentOfficeType: 'vice_president',
+    candidateFor: 'Presidential Aspirant 2027',
+    isIncumbent: false,
     bio: 'Former Vice President. Involved in various international inquiries regarding business transactions.',
     totalForfeiture: 64000000000, // $40m * 1600 = 64 Billion NGN
     cases: [
@@ -66,12 +91,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 40000000,
         currency: 'USD',
         caseStartDate: '2010-02-04',
+        suitNumber: 'US Senate PSI Report 111-43',
+        courtJurisdiction: 'US Senate Permanent Subcommittee on Investigations',
+        adjournmentsCount: 22,
       }
     ]
   },
   {
     fullName: 'Danjuma Goje',
     primaryParty: 'APC',
+    stateOfOrigin: 'Gombe',
+    currentOfficeType: 'senator',
+    candidateFor: 'Incumbent Senator (Ex-Governor)',
+    isIncumbent: true,
     bio: 'Former Governor of Gombe State. Previous ₦25bn fraud case withdrawn by judicial authorities.',
     totalForfeiture: 25000000000,
     cases: [
@@ -82,12 +114,20 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 25000000000,
         currency: 'NGN',
         caseStartDate: '2011-10-10',
+        caseEndDate: '2019-07-05',
+        suitNumber: 'FHC/JOS/CR/11/2011',
+        courtJurisdiction: 'Federal High Court, Jos',
+        adjournmentsCount: 38,
       }
     ]
   },
   {
     fullName: 'Abdullahi Adamu',
     primaryParty: 'APC',
+    stateOfOrigin: 'Nasarawa',
+    currentOfficeType: 'governor',
+    candidateFor: 'Ex-Governor & Former Party Chairman',
+    isIncumbent: false,
     bio: 'Former Governor of Nasarawa State. Historical ₦15bn fraud allegations resurfaced recently.',
     totalForfeiture: 15000000000,
     cases: [
@@ -98,12 +138,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 15000000000,
         currency: 'NGN',
         caseStartDate: '2023-01-01',
+        suitNumber: 'FHC/LAF/CR/03/2010',
+        courtJurisdiction: 'Federal High Court, Lafia',
+        adjournmentsCount: 19,
       }
     ]
   },
   {
     fullName: 'Abdulfatah Ahmed',
     primaryParty: 'PDP',
+    stateOfOrigin: 'Kwara',
+    currentOfficeType: 'governor',
+    candidateFor: 'Ex-Governor',
+    isIncumbent: false,
     bio: 'Former Governor of Kwara State. Facing trial for the alleged misappropriation of ₦10 billion.',
     totalForfeiture: 10000000000,
     cases: [
@@ -114,12 +161,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 10000000000,
         currency: 'NGN',
         caseStartDate: '2024-02-19',
+        suitNumber: 'FHC/IL/CR/12/2024',
+        courtJurisdiction: 'Federal High Court, Ilorin',
+        adjournmentsCount: 6,
       }
     ]
   },
   {
     fullName: 'Orji Uzor Kalu',
     primaryParty: 'APC',
+    stateOfOrigin: 'Abia',
+    currentOfficeType: 'senator',
+    candidateFor: 'Incumbent Senator (Ex-Governor)',
+    isIncumbent: true,
     bio: 'Senator and former Governor of Abia State. Case involves ₦7.65bn; conviction overturned for retrial.',
     totalForfeiture: 7650000000,
     cases: [
@@ -130,12 +184,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 7650000000,
         currency: 'NGN',
         caseStartDate: '2007-07-11',
+        suitNumber: 'SC/CV/622/2019',
+        courtJurisdiction: 'Supreme Court of Nigeria / Federal High Court',
+        adjournmentsCount: 52,
       }
     ]
   },
   {
     fullName: 'Ayo Fayose',
     primaryParty: 'PDP',
+    stateOfOrigin: 'Ekiti',
+    currentOfficeType: 'governor',
+    candidateFor: 'Ex-Governor',
+    isIncumbent: false,
     bio: 'Former Governor of Ekiti State. Facing long-running trial regarding ₦6.9bn public fund misappropriation.',
     totalForfeiture: 6900000000,
     cases: [
@@ -146,12 +207,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 6900000000,
         currency: 'NGN',
         caseStartDate: '2018-10-22',
+        suitNumber: 'FHC/L/CR/377/2018',
+        courtJurisdiction: 'Federal High Court, Ikoyi, Lagos',
+        adjournmentsCount: 31,
       }
     ]
   },
   {
     fullName: 'Stella Oduah',
     primaryParty: 'PDP',
+    stateOfOrigin: 'Anambra',
+    currentOfficeType: 'senator',
+    candidateFor: 'Former Senator & Minister',
+    isIncumbent: false,
     bio: 'Senator and former Aviation Minister. Charged regarding ₦5bn financial misappropriation.',
     totalForfeiture: 5000000000,
     cases: [
@@ -162,12 +230,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 5000000000,
         currency: 'NGN',
         caseStartDate: '2021-02-22',
+        suitNumber: 'FHC/ABJ/CR/316/2020',
+        courtJurisdiction: 'Federal High Court, Abuja',
+        adjournmentsCount: 24,
       }
     ]
   },
   {
     fullName: 'Willie Obiano',
     primaryParty: 'APGA',
+    stateOfOrigin: 'Anambra',
+    currentOfficeType: 'governor',
+    candidateFor: 'Ex-Governor',
+    isIncumbent: false,
     bio: 'Former Governor of Anambra State. Facing trial regarding the alleged laundering of ₦4 billion.',
     totalForfeiture: 4000000000,
     cases: [
@@ -178,12 +253,19 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 4000000000,
         currency: 'NGN',
         caseStartDate: '2024-01-24',
+        suitNumber: 'FHC/ABJ/CR/10/2024',
+        courtJurisdiction: 'Federal High Court, Abuja',
+        adjournmentsCount: 8,
       }
     ]
   },
   {
     fullName: 'Rochas Okorocha',
     primaryParty: 'APC',
+    stateOfOrigin: 'Imo',
+    currentOfficeType: 'senator',
+    candidateFor: 'Former Governor & Senator',
+    isIncumbent: false,
     bio: 'Former Governor of Imo State. Subject of multiple probes regarding ₦3bn state assets.',
     totalForfeiture: 3000000000,
     cases: [
@@ -194,6 +276,9 @@ export const INITIAL_REGISTRY_SEED: Partial<Politician>[] = [
         amountInvolved: 3000000000,
         currency: 'NGN',
         caseStartDate: '2022-01-31',
+        suitNumber: 'FHC/ABJ/CR/28/2022',
+        courtJurisdiction: 'Federal High Court, Abuja',
+        adjournmentsCount: 15,
       }
     ]
   },

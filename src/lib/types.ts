@@ -21,6 +21,12 @@ export interface CaseRecord {
   caseStartDate: string;
   caseEndDate?: string;
   sources?: Source[];
+  courtJurisdiction?: string;
+  suitNumber?: string;
+  presidingJudge?: string;
+  adjournmentsCount?: number;
+  prolongedDelay?: boolean;
+  delayReason?: string;
 }
 
 export interface Forfeiture {
@@ -63,6 +69,10 @@ export interface Politician {
   primaryParty: string;
   sourceOrigin?: string;
   sourceUrl?: string;
+  stateOfOrigin?: string;
+  currentOfficeType?: 'president' | 'vice_president' | 'governor' | 'senator' | 'minister' | 'other';
+  candidateFor?: string;
+  isIncumbent?: boolean;
   accountabilityScore?: number;
   totalForfeiture?: number;
   partyHistory?: { party: string; years: string }[];

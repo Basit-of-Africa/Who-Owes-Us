@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 import { useFirebase, useDoc, useCollection } from '@/firebase';
@@ -8,11 +9,12 @@ import { calculateAccountabilityScore } from '@/lib/scoring';
 import { 
   ArrowLeft, ShieldAlert, 
   ExternalLink, FileText, Loader2, User,
-  ShieldCheck, History, Share2
+  ShieldCheck, History, Share2, MapPin, Award, CheckCircle2, Scale
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
+import { CaseVelocityMeter } from '@/components/CaseVelocityMeter';
 import { BadgeList } from '@/components/BadgeList';
 import { FactSnippet } from '@/components/FactSnippet';
 import { HistoricalTrendChart } from '@/components/HistoricalTrendChart';
@@ -84,6 +86,17 @@ export default function PoliticianProfile() {
         </button>
 
         <div className="flex items-center gap-2.5">
+          <Link href={`/compare?p1=${fullPolitician.id}`}>
+            <Button 
+              size="sm"
+              variant="outline"
+              className="h-9 px-3.5 rounded-xl font-black text-xs uppercase tracking-wider gap-2 border-primary/20 hover:bg-primary/5 text-primary shadow-sm"
+            >
+              <Scale className="w-3.5 h-3.5 text-accent" />
+              <span className="hidden sm:inline">Compare Candidate</span>
+              <span className="sm:hidden">Compare</span>
+            </Button>
+          </Link>
           <QuickCopyLinkButton politicianId={fullPolitician.id} />
           <ShareProfileModal 
             politician={fullPolitician}
@@ -117,9 +130,29 @@ export default function PoliticianProfile() {
             </div>
             <div className="flex-grow space-y-4">
               <div className="space-y-1">
-                <Badge className="bg-accent/10 text-accent hover:bg-accent/10 border-none px-3 py-1 font-bold uppercase text-[10px] tracking-widest">
-                  {fullPolitician.primaryParty} Affiliate
-                </Badge>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="bg-accent/10 text-accent hover:bg-accent/10 border-none px-3 py-1 font-bold uppercase text-[10px] tracking-widest">
+                    {fullPolitician.primaryParty} Affiliate
+                  </Badge>
+                  {fullPolitician.stateOfOrigin && (
+                    <Badge variant="outline" className="text-[10px] font-bold uppercase border-primary/20 bg-white">
+                      <MapPin className="w-3 h-3 mr-1 text-accent" />
+                      {fullPolitician.stateOfOrigin} State
+                    </Badge>
+                  )}
+                  {fullPolitician.candidateFor && (
+                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none text-[10px] font-bold uppercase">
+                      <Award className="w-3 h-3 mr-1 text-primary" />
+                      {fullPolitician.candidateFor}
+                    </Badge>
+                  )}
+                  {((fullPolitician.cases || []).length === 0 && (fullPolitician.forfeitures || []).length === 0 && (fullPolitician.accountabilityScore || 0) <= 5) && (
+                    <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-black text-[10px] uppercase tracking-wider">
+                      <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600 inline" />
+                      Hall of Integrity Record
+                    </Badge>
+                  )}
+                </div>
                 <h1 className="text-4xl md:text-5xl font-black text-primary leading-tight uppercase">
                   {fullPolitician.fullName}
                 </h1>
@@ -130,6 +163,22 @@ export default function PoliticianProfile() {
               <BadgeList politician={fullPolitician} />
             </div>
           </div>
+
+          {((fullPolitician.cases || []).length === 0 && (fullPolitician.forfeitures || []).length === 0 && (fullPolitician.accountabilityScore || 0) <= 5) && (
+            <div className="p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-start gap-4">
+              <div className="p-2.5 bg-emerald-600 text-white rounded-xl shadow-sm mt-0.5">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="font-black text-sm uppercase tracking-wider text-emerald-900">
+                  Clean Audit Certified • Hall of Integrity
+                </h4>
+                <p className="text-xs text-emerald-800 font-medium leading-relaxed">
+                  This public official holds verified administrative tenures with <strong>zero criminal indictments</strong>, <strong>zero asset forfeiture orders</strong>, and no pending EFCC or ICPC court charges registered in the national archive.
+                </p>
+              </div>
+            </div>
+          )}
 
           <HistoricalTrendChart politician={fullPolitician} />
 
@@ -148,14 +197,20 @@ export default function PoliticianProfile() {
             
             <TabsContent value="cases" className="pt-8 space-y-6">
               {(fullPolitician.cases || []).length > 0 ? (fullPolitician.cases || []).map((c, idx) => (
-                <Card key={idx} className="border-none shadow-sm overflow-hidden">
-                  <div className="p-6 border-l-4 border-accent">
-                    <div className="flex justify-between items-start mb-4">
+                <Card key={idx} className="border-none shadow-sm overflow-hidden bg-white">
+                  <div className="p-6 border-l-4 border-accent space-y-4">
+                    <div className="flex justify-between items-start">
                       <Badge variant="outline" className="text-[10px] font-bold uppercase border-primary/20">{c.status.replace('_', ' ')}</Badge>
                       <span className="text-[10px] font-bold text-muted-foreground">{new Date(c.caseStartDate).getFullYear()}</span>
                     </div>
-                    <h3 className="text-xl font-black text-primary uppercase mb-2">{c.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-4">{c.description}</p>
+                    <div>
+                      <h3 className="text-xl font-black text-primary uppercase mb-2">{c.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{c.description}</p>
+                    </div>
+
+                    {/* Case Velocity & Delay Meter */}
+                    <CaseVelocityMeter caseRecord={c} />
+
                     <div className="pt-4 border-t flex items-center justify-between">
                       <div className="text-[10px] font-bold text-primary uppercase">Amount: {c.currency} {c.amountInvolved.toLocaleString()}</div>
                       <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase text-accent">Source Docs <ExternalLink className="w-3 h-3 ml-2" /></Button>

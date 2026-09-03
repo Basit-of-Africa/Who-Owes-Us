@@ -46,6 +46,10 @@ function buildInitialRegistry(): Politician[] {
       profileImageUrl: seed.profileImageUrl || `https://picsum.photos/seed/${encodeURIComponent(seed.fullName || id)}/400/400`,
       bio: seed.bio || `Public record dossier for ${seed.fullName}. Records verified via official civic gazettes and investigative archives.`,
       primaryParty: seed.primaryParty || 'Independent',
+      stateOfOrigin: seed.stateOfOrigin,
+      currentOfficeType: seed.currentOfficeType,
+      candidateFor: seed.candidateFor,
+      isIncumbent: seed.isIncumbent,
       offices: seed.offices || [
         {
           id: `off-${id}-1`,
