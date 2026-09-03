@@ -15,6 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { AccountabilityBadge } from '@/components/AccountabilityBadge';
 import { BadgeList } from '@/components/BadgeList';
 import { FactSnippet } from '@/components/FactSnippet';
+import { HistoricalTrendChart } from '@/components/HistoricalTrendChart';
+import { ScoreBreakdownChart } from '@/components/ScoreBreakdownChart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -82,8 +84,17 @@ export default function PoliticianProfile() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-16">
         <div className="lg:col-span-2 space-y-10">
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            <div className="w-48 h-48 rounded-2xl bg-primary/5 border flex-shrink-0 flex items-center justify-center overflow-hidden">
-               <User className="w-24 h-24 text-primary opacity-20" />
+            <div className="w-48 h-48 rounded-2xl bg-primary/5 border flex-shrink-0 flex items-center justify-center overflow-hidden relative shadow-sm">
+              {fullPolitician.profileImageUrl ? (
+                <img 
+                  src={fullPolitician.profileImageUrl} 
+                  alt={fullPolitician.fullName}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-24 h-24 text-primary opacity-20" />
+              )}
             </div>
             <div className="flex-grow space-y-4">
               <div className="space-y-1">
@@ -101,11 +112,19 @@ export default function PoliticianProfile() {
             </div>
           </div>
 
+          <HistoricalTrendChart politician={fullPolitician} />
+
           <Tabs defaultValue="cases" className="w-full">
             <TabsList className="bg-secondary/50 border p-1 rounded-lg">
-              <TabsTrigger value="cases" className="uppercase text-[10px] font-bold tracking-widest px-6">Case Registry</TabsTrigger>
-              <TabsTrigger value="offices" className="uppercase text-[10px] font-bold tracking-widest px-6">Offices Held</TabsTrigger>
-              <TabsTrigger value="forfeitures" className="uppercase text-[10px] font-bold tracking-widest px-6">Asset Audit</TabsTrigger>
+              <TabsTrigger value="cases" className="uppercase text-[10px] font-bold tracking-widest px-6">
+                Case Registry ({fullPolitician.cases?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="offices" className="uppercase text-[10px] font-bold tracking-widest px-6">
+                Offices Held ({fullPolitician.offices?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="forfeitures" className="uppercase text-[10px] font-bold tracking-widest px-6">
+                Asset Audit ({fullPolitician.forfeitures?.length || 0})
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="cases" className="pt-8 space-y-6">
@@ -147,6 +166,30 @@ export default function PoliticianProfile() {
                 <p className="text-sm text-muted-foreground">No administrative history found.</p>
               )}
             </TabsContent>
+
+            <TabsContent value="forfeitures" className="pt-8 space-y-4">
+              {(fullPolitician.forfeitures || []).length > 0 ? (fullPolitician.forfeitures || []).map((forfeiture, idx) => (
+                <div key={idx} className="p-6 bg-white border rounded-xl flex justify-between items-center">
+                  <div>
+                    <Badge variant="outline" className="text-[10px] font-bold uppercase border-primary/20 mb-1">
+                      {forfeiture.forfeitureType} forfeiture
+                    </Badge>
+                    <h4 className="font-black text-primary uppercase text-lg">
+                      {forfeiture.currency} {forfeiture.amount?.toLocaleString()}
+                    </h4>
+                    <p className="text-xs text-muted-foreground uppercase">Court-ordered restitution</p>
+                  </div>
+                  <div className="text-right text-[10px] font-bold text-accent uppercase">
+                    {forfeiture.date ? new Date(forfeiture.date).getFullYear() : 'Ordered'}
+                  </div>
+                </div>
+              )) : (
+                <div className="text-center py-20 bg-primary/5 rounded-xl border border-dashed">
+                  <FileText className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-20" />
+                  <p className="text-xs font-bold text-muted-foreground uppercase">No asset restitution orders on file.</p>
+                </div>
+              )}
+            </TabsContent>
           </Tabs>
         </div>
 
@@ -176,6 +219,8 @@ export default function PoliticianProfile() {
                  <p className="text-[8px] font-bold uppercase text-muted-foreground mb-1">Total Restitution Tied</p>
                  <p className="text-2xl font-black text-accent">₦{(fullPolitician.totalForfeiture || 0).toLocaleString()}</p>
               </div>
+
+              <ScoreBreakdownChart breakdown={scoreBreakdown} />
             </CardContent>
           </Card>
 
